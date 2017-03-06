@@ -26,6 +26,12 @@ using Foundation;
 using UIKit;
 using NSAction = global::System.Action;
 using System.Globalization;
+using Photos;
+using CoreFoundation;
+using ImageIO;
+using CoreImage;
+using MobileCoreServices;
+using System.Diagnostics;
 
 namespace Plugin.Media
 {
@@ -277,6 +283,51 @@ namespace Plugin.Media
             return viewController.GetSupportedInterfaceOrientations().HasFlag(mask);
         }
 
+        private NSDictionary GetPictureMetadata(NSDictionary info)
+        {
+            NSDictionary meta = null;
+            NSUrl[] urls = { info[UIImagePickerController.ReferenceUrl] as NSUrl };
+            ALAssetsLibrary allib = new ALAssetsLibrary();
+            if (allib != null)
+            {
+                ALAsset asset = null;
+                allib.AssetForUrl(
+                    urls[0],
+                    (ALAsset obj) =>
+                    {
+                        asset = obj;
+                    },
+                    (NSError obj) =>
+                    {
+                        asset = null;
+                        Debug.WriteLine(obj);
+                    }
+                );
+                if (asset != null)
+                {
+                    meta = asset.DefaultRepresentation.Metadata;
+                }
+            }
+            else
+            {
+                PHAsset image = PHAsset.FetchAssets(urls, new PHFetchOptions()).firstObject as PHAsset;
+                NSMutableDictionary exif = new NSMutableDictionary();
+                exif[ImageIO.CGImageProperties.ExifDateTimeOriginal] = image.CreationDate ?? image.ModificationDate;
+                exif[ImageIO.CGImageProperties.ExifPixelXDimension] = new NSNumber(image.PixelWidth);
+                exif[ImageIO.CGImageProperties.ExifPixelYDimension] = new NSNumber(image.PixelHeight);
+                NSMutableDictionary gps = new NSMutableDictionary();
+                gps[ImageIO.CGImageProperties.GPSLongitude] = new NSNumber(image.Location.Coordinate.Longitude);
+                gps[ImageIO.CGImageProperties.GPSLatitude] = new NSNumber(image.Location.Coordinate.Latitude);
+                gps[ImageIO.CGImageProperties.GPSSpeed] = new NSNumber(image.Location.Speed);
+                gps[ImageIO.CGImageProperties.GPSAltitude] = new NSNumber(image.Location.Altitude);
+                gps[ImageIO.CGImageProperties.GPSTimeStamp] = image.Location.Timestamp;
+                meta = new NSMutableDictionary();
+                meta[ImageIO.CGImageProperties.ExifDictionary] = exif;
+                meta[ImageIO.CGImageProperties.GPSDictionary] = gps;
+            }
+            return meta;
+        }
+
         private async Task<MediaFile> GetPictureMediaFile(NSDictionary info)
         {
             var image = (UIImage)info[UIImagePickerController.EditedImage];
@@ -284,6 +335,10 @@ namespace Plugin.Media
                 image = (UIImage)info[UIImagePickerController.OriginalImage];
 
             var meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
+            if (meta == null)
+            {
+                meta = GetPictureMetadata(info);
+            }
 
 
             string path = GetOutputPath(MediaImplementation.TypeImage,
@@ -329,7 +384,32 @@ namespace Plugin.Media
 
             //iOS quality is 0.0-1.0
             var quality = (options.CompressionQuality / 100f);
-            image.AsJPEG(quality).Save(path, true);
+            if (meta == null)
+            {
+                image.AsJPEG(quality).Save(path, true);
+            }
+            else
+            {
+                var imageData = image.AsJPEG(quality);
+                var dataProvider = new CGDataProvider(imageData);
+                var cgImageFromJPEG = CGImage.FromJPEG(dataProvider, null, false, CGColorRenderingIntent.Default);
+                var imageWithExif = new NSMutableData();
+                var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1, null);
+                var cgImageMetadata = new CGImageMetadata(meta.Copy().Handle);
+                var destinationOptions = new CGImageDestinationOptions();
+                destinationOptions.ExifDictionary = new CGImagePropertiesExif(meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary);
+                //destinationOptions.GpsDictionary = new CGImagePropertiesGps(meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary);
+                destination.AddImageAndMetadata(cgImageFromJPEG, cgImageMetadata, destinationOptions);
+                var success = destination.Close();
+                if (success)
+                {
+                    imageWithExif.Save(path, true);
+                }
+                else
+                {
+                    imageData.Save(path, true);
+                }
+            }
 
             string aPath = null;
             if (source != UIImagePickerControllerSourceType.Camera)
