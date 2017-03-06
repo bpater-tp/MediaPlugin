@@ -284,31 +284,14 @@ namespace Plugin.Media
             return viewController.GetSupportedInterfaceOrientations().HasFlag(mask);
         }
 
-        private async Task<NSDictionary> GetLibraryAssetPictureMetaDataAsync(NSDictionary info)
-        {
-            var nsUrl = info[UIImagePickerController.ReferenceUrl] as NSUrl;
-            var assetsLibrary = new ALAssetsLibrary();
-            var asset = await assetsLibrary.AssetForUrlAsync(nsUrl);
-            if (asset != null)
-            {
-                var representation = asset.DefaultRepresentation;
-                var meta = representation.Metadata;
-                return meta;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         private NSDictionary GetPictureMetadata(NSDictionary info)
         {
             NSDictionary meta, exif = new NSMutableDictionary(), tiff = new NSMutableDictionary(), gps = new NSMutableDictionary();
             try
             {
                 NSUrl[] urls = { info[UIImagePickerController.ReferenceUrl] as NSUrl };
-                PHAsset image = PHAsset.FetchAssets(urls, new PHFetchOptions()).firstObject as PHAsset;
-                NSString date = new NSString(NSIso8601DateFormatter.Format(
+                var image = PHAsset.FetchAssets(urls, new PHFetchOptions()).firstObject as PHAsset;
+                var date = new NSString(NSIso8601DateFormatter.Format(
                     image.CreationDate ?? image.ModificationDate, 
                     NSTimeZone.DefaultTimeZone, 
                     NSIso8601DateFormatOptions.SpaceBetweenDateAndTime|NSIso8601DateFormatOptions.FullDate|NSIso8601DateFormatOptions.Time|NSIso8601DateFormatOptions.ColonSeparatorInTime));
@@ -320,8 +303,6 @@ namespace Plugin.Media
                 exif[ImageIO.CGImageProperties.ExifLensModel] = new NSString(UIDevice.CurrentDevice.Model);
 
                 tiff[ImageIO.CGImageProperties.TIFFDateTime] = date;
-                tiff[ImageIO.CGImageProperties.TIFFYResolution] = new NSNumber(image.PixelWidth);
-                tiff[ImageIO.CGImageProperties.TIFFYResolution] = new NSNumber(image.PixelHeight);
                 tiff[ImageIO.CGImageProperties.TIFFMake] = new NSString("Apple");
                 tiff[ImageIO.CGImageProperties.TIFFModel] = new NSString(UIDevice.CurrentDevice.Model);
 
@@ -353,15 +334,10 @@ namespace Plugin.Media
                 image = (UIImage)info[UIImagePickerController.OriginalImage];
 
             var meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
-            //if (meta == null)   //try ALAssetsLibrary first
-            //{
-            //    meta = await GetLibraryAssetPictureMetaDataAsync(info);
-            //}
             if (meta == null)   //fall back to PHPhotoLibrary
             {
                 meta = GetPictureMetadata(info);
             }
-
 
             string path = GetOutputPath(MediaImplementation.TypeImage,
                 options.Directory ?? ((IsCaptured) ? String.Empty : "temp"),
@@ -419,10 +395,28 @@ namespace Plugin.Media
                 var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1);
                 var cgImageMetadata = new CGMutableImageMetadata();
                 var destinationOptions = new CGImageDestinationOptions();
-                destinationOptions.ExifDictionary = new CGImagePropertiesExif(meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary);
-                destinationOptions.ExifAuxDictionary = meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary;
-                destinationOptions.GpsDictionary = new CGImagePropertiesGps(meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary);
-                destinationOptions.TiffDictionary = new CGImagePropertiesTiff(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
+                if (meta.ContainsKey(ImageIO.CGImageProperties.ExifDictionary))
+                {
+                    destinationOptions.ExifDictionary = new CGImagePropertiesExif(meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary);
+                }
+                if (meta.ContainsKey(ImageIO.CGImageProperties.TIFFDictionary))
+                {
+                    if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
+                    {
+                        var newTiffDict = new NSMutableDictionary();
+                        newTiffDict.SetValuesForKeysWithDictionary(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
+                        newTiffDict.SetValueForKey(meta[ImageIO.CGImageProperties.Orientation], ImageIO.CGImageProperties.TIFFOrientation);
+                        destinationOptions.TiffDictionary = new CGImagePropertiesTiff(newTiffDict);
+                    }
+                    else
+                    {
+                        destinationOptions.TiffDictionary = new CGImagePropertiesTiff(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
+                    }
+                }
+                if (meta.ContainsKey(ImageIO.CGImageProperties.GPSDictionary))
+                {
+                    destinationOptions.GpsDictionary = new CGImagePropertiesGps(meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary);
+                }
                 destination.AddImageAndMetadata(cgImageFromJPEG, cgImageMetadata, destinationOptions);
                 var success = destination.Close();
                 if (success)
