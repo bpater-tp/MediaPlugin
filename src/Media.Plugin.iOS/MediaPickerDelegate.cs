@@ -32,6 +32,7 @@ using ImageIO;
 using CoreImage;
 using MobileCoreServices;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Plugin.Media
 {
@@ -283,48 +284,65 @@ namespace Plugin.Media
             return viewController.GetSupportedInterfaceOrientations().HasFlag(mask);
         }
 
-        private NSDictionary GetPictureMetadata(NSDictionary info)
+        private async Task<NSDictionary> GetLibraryAssetPictureMetaDataAsync(NSDictionary info)
         {
-            NSDictionary meta = null;
-            NSUrl[] urls = { info[UIImagePickerController.ReferenceUrl] as NSUrl };
-            ALAssetsLibrary allib = new ALAssetsLibrary();
-            if (allib != null)
+            var nsUrl = info[UIImagePickerController.ReferenceUrl] as NSUrl;
+            var assetsLibrary = new ALAssetsLibrary();
+            var asset = await assetsLibrary.AssetForUrlAsync(nsUrl);
+            if (asset != null)
             {
-                ALAsset asset = null;
-                allib.AssetForUrl(
-                    urls[0],
-                    (ALAsset obj) =>
-                    {
-                        asset = obj;
-                    },
-                    (NSError obj) =>
-                    {
-                        asset = null;
-                        Debug.WriteLine(obj);
-                    }
-                );
-                if (asset != null)
-                {
-                    meta = asset.DefaultRepresentation.Metadata;
-                }
+                var representation = asset.DefaultRepresentation;
+                var meta = representation.Metadata;
+                return meta;
             }
             else
             {
+                return null;
+            }
+        }
+
+        private NSDictionary GetPictureMetadata(NSDictionary info)
+        {
+            NSDictionary meta, exif = new NSMutableDictionary(), tiff = new NSMutableDictionary(), gps = new NSMutableDictionary();
+            try
+            {
+                NSUrl[] urls = { info[UIImagePickerController.ReferenceUrl] as NSUrl };
                 PHAsset image = PHAsset.FetchAssets(urls, new PHFetchOptions()).firstObject as PHAsset;
-                NSMutableDictionary exif = new NSMutableDictionary();
-                exif[ImageIO.CGImageProperties.ExifDateTimeOriginal] = image.CreationDate ?? image.ModificationDate;
+                NSString date = new NSString(NSIso8601DateFormatter.Format(
+                    image.CreationDate ?? image.ModificationDate, 
+                    NSTimeZone.DefaultTimeZone, 
+                    NSIso8601DateFormatOptions.SpaceBetweenDateAndTime|NSIso8601DateFormatOptions.FullDate|NSIso8601DateFormatOptions.Time|NSIso8601DateFormatOptions.ColonSeparatorInTime));
+                exif[ImageIO.CGImageProperties.ExifDateTimeOriginal] = date;
+                exif[ImageIO.CGImageProperties.ExifDateTimeDigitized] = date;
                 exif[ImageIO.CGImageProperties.ExifPixelXDimension] = new NSNumber(image.PixelWidth);
                 exif[ImageIO.CGImageProperties.ExifPixelYDimension] = new NSNumber(image.PixelHeight);
-                NSMutableDictionary gps = new NSMutableDictionary();
-                gps[ImageIO.CGImageProperties.GPSLongitude] = new NSNumber(image.Location.Coordinate.Longitude);
-                gps[ImageIO.CGImageProperties.GPSLatitude] = new NSNumber(image.Location.Coordinate.Latitude);
-                gps[ImageIO.CGImageProperties.GPSSpeed] = new NSNumber(image.Location.Speed);
-                gps[ImageIO.CGImageProperties.GPSAltitude] = new NSNumber(image.Location.Altitude);
-                gps[ImageIO.CGImageProperties.GPSTimeStamp] = image.Location.Timestamp;
-                meta = new NSMutableDictionary();
-                meta[ImageIO.CGImageProperties.ExifDictionary] = exif;
-                meta[ImageIO.CGImageProperties.GPSDictionary] = gps;
+                exif[ImageIO.CGImageProperties.ExifLensMake] = new NSString("Apple");
+                exif[ImageIO.CGImageProperties.ExifLensModel] = new NSString(UIDevice.CurrentDevice.Model);
+
+                tiff[ImageIO.CGImageProperties.TIFFDateTime] = date;
+                tiff[ImageIO.CGImageProperties.TIFFYResolution] = new NSNumber(image.PixelWidth);
+                tiff[ImageIO.CGImageProperties.TIFFYResolution] = new NSNumber(image.PixelHeight);
+                tiff[ImageIO.CGImageProperties.TIFFMake] = new NSString("Apple");
+                tiff[ImageIO.CGImageProperties.TIFFModel] = new NSString(UIDevice.CurrentDevice.Model);
+
+                if (image.Location != null)
+                {
+                    gps[ImageIO.CGImageProperties.GPSLongitude] = new NSNumber(image.Location.Coordinate.Longitude);
+                    gps[ImageIO.CGImageProperties.GPSLatitude] = new NSNumber(image.Location.Coordinate.Latitude);
+                    gps[ImageIO.CGImageProperties.GPSSpeed] = new NSNumber(image.Location.Speed);
+                    gps[ImageIO.CGImageProperties.GPSAltitude] = new NSNumber(image.Location.Altitude);
+                    gps[ImageIO.CGImageProperties.GPSTimeStamp] = image.Location.Timestamp;
+                }
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            meta = new NSMutableDictionary();
+            meta[ImageIO.CGImageProperties.ExifDictionary] = exif;
+            meta[ImageIO.CGImageProperties.GPSDictionary] = gps;
+            meta[ImageIO.CGImageProperties.TIFFDictionary] = tiff;
+
             return meta;
         }
 
@@ -335,7 +353,11 @@ namespace Plugin.Media
                 image = (UIImage)info[UIImagePickerController.OriginalImage];
 
             var meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
-            if (meta == null)
+            //if (meta == null)   //try ALAssetsLibrary first
+            //{
+            //    meta = await GetLibraryAssetPictureMetaDataAsync(info);
+            //}
+            if (meta == null)   //fall back to PHPhotoLibrary
             {
                 meta = GetPictureMetadata(info);
             }
@@ -394,11 +416,13 @@ namespace Plugin.Media
                 var dataProvider = new CGDataProvider(imageData);
                 var cgImageFromJPEG = CGImage.FromJPEG(dataProvider, null, false, CGColorRenderingIntent.Default);
                 var imageWithExif = new NSMutableData();
-                var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1, null);
-                var cgImageMetadata = new CGImageMetadata(meta.Copy().Handle);
+                var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1);
+                var cgImageMetadata = new CGMutableImageMetadata();
                 var destinationOptions = new CGImageDestinationOptions();
                 destinationOptions.ExifDictionary = new CGImagePropertiesExif(meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary);
-                //destinationOptions.GpsDictionary = new CGImagePropertiesGps(meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary);
+                destinationOptions.ExifAuxDictionary = meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary;
+                destinationOptions.GpsDictionary = new CGImagePropertiesGps(meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary);
+                destinationOptions.TiffDictionary = new CGImagePropertiesTiff(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
                 destination.AddImageAndMetadata(cgImageFromJPEG, cgImageMetadata, destinationOptions);
                 var success = destination.Close();
                 if (success)
