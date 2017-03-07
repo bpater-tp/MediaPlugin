@@ -31,11 +31,12 @@ namespace Plugin.Media
                            if (fullimage?.Properties != null)
                            {
                                 meta = new NSMutableDictionary();
-                                meta[ImageIO.CGImageProperties.ExifDictionary] = fullimage.Properties?.Exif?.Dictionary;
-                                meta[ImageIO.CGImageProperties.TIFFDictionary] = fullimage.Properties?.Tiff?.Dictionary;
-                                meta[ImageIO.CGImageProperties.GPSDictionary] = fullimage.Properties?.Gps?.Dictionary;
-                                meta[ImageIO.CGImageProperties.IPTCDictionary] = fullimage.Properties?.Iptc?.Dictionary;
-                                meta[ImageIO.CGImageProperties.JFIFDictionary] = fullimage.Properties?.Jfif?.Dictionary;
+                                meta[ImageIO.CGImageProperties.Orientation] = new NSString(fullimage.Properties.Orientation.ToString());
+                                meta[ImageIO.CGImageProperties.ExifDictionary] = fullimage.Properties.Exif?.Dictionary;
+                                meta[ImageIO.CGImageProperties.TIFFDictionary] = fullimage.Properties.Tiff?.Dictionary;
+                                meta[ImageIO.CGImageProperties.GPSDictionary] = fullimage.Properties.Gps?.Dictionary;
+                                meta[ImageIO.CGImageProperties.IPTCDictionary] = fullimage.Properties.Iptc?.Dictionary;
+                                meta[ImageIO.CGImageProperties.JFIFDictionary] = fullimage.Properties.Jfif?.Dictionary;
                            }
                            completed = true;
                         }

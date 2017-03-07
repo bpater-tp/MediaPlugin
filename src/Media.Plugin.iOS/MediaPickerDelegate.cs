@@ -293,6 +293,16 @@ namespace Plugin.Media
             if (source == UIImagePickerControllerSourceType.Camera)
             {
                 meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
+                if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
+                {
+                    var newMeta = new NSMutableDictionary();
+                    newMeta.SetValuesForKeysWithDictionary(meta);
+                    var newTiffDict = new NSMutableDictionary();
+                    newTiffDict.SetValuesForKeysWithDictionary(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
+                    newTiffDict.SetValueForKey(meta[ImageIO.CGImageProperties.Orientation], ImageIO.CGImageProperties.TIFFOrientation);
+                    newMeta[ImageIO.CGImageProperties.TIFFDictionary] = newTiffDict;
+                    meta = newMeta;
+                }
             }
             else
             {
@@ -400,19 +410,7 @@ namespace Plugin.Media
             }
             if (meta.ContainsKey(ImageIO.CGImageProperties.TIFFDictionary))
             {
-                if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
-                {
-                    var newTiffDict = new NSMutableDictionary();
-                    newTiffDict.SetValuesForKeysWithDictionary(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
-                    newTiffDict.SetValueForKey(meta[ImageIO.CGImageProperties.Orientation],
-                        ImageIO.CGImageProperties.TIFFOrientation);
-                    destinationOptions.TiffDictionary = new CGImagePropertiesTiff(newTiffDict);
-                }
-                else
-                {
-                    destinationOptions.TiffDictionary =
-                        new CGImagePropertiesTiff(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
-                }
+                destinationOptions.TiffDictionary = new CGImagePropertiesTiff(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
             }
             if (meta.ContainsKey(ImageIO.CGImageProperties.GPSDictionary))
             {
