@@ -354,6 +354,7 @@ namespace Plugin.Media
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 return Task.FromResult(false);
+            var originalMetadata = new ExifInterface(filePath);
 
             try
             {
@@ -437,7 +438,7 @@ namespace Plugin.Media
                             GC.Collect();
 
                             //Save out new exif data
-                            SetExifData(filePath, Orientation.Normal);
+                            SetExifData(filePath, Orientation.Normal, originalMetadata);
                             return true;
                         }
 
@@ -605,16 +606,12 @@ namespace Plugin.Media
         }
 
 
-        void SetExifData(string filePath, Orientation orientation)
+        void SetExifData(string filePath, Orientation orientation, ExifInterface originalMetadata)
         {
             try
             {
-                using (var ei = new ExifInterface(filePath))
-                {
-
-                    ei.SetAttribute(ExifInterface.TagOrientation, Java.Lang.Integer.ToString((int)orientation));
-                    ei.SaveAttributes();                    
-                }
+                originalMetadata.SetAttribute(ExifInterface.TagOrientation, Java.Lang.Integer.ToString((int)orientation));
+                originalMetadata.SaveAttributes();                    
             }
             catch (Exception ex)
             {
