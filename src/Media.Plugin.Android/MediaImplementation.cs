@@ -86,7 +86,8 @@ namespace Plugin.Media
             {
                 try
                 {
-                    await FixOrientationAndResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
+                    //await FixOrientationAndResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
+                    await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
                 }
                 catch (Exception ex)
                 {
@@ -120,6 +121,13 @@ namespace Plugin.Media
 
             if (string.IsNullOrWhiteSpace(media?.Path))
                 return media;
+
+            //ExifInterface exif = new ExifInterface(media.Path);
+            //if (exif != null)
+            //{
+            //    exif.SetAttribute(ExifInterface.TagDatetime, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            //    exif.SaveAttributes();
+            //}
 
             if (options.SaveToAlbum)
             {
@@ -170,9 +178,10 @@ namespace Plugin.Media
 
             //check to see if we need to rotate if success
 
+
             try
             {
-                await FixOrientationAndResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
+                await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
             }
             catch(Exception ex)
             {
@@ -438,7 +447,7 @@ namespace Plugin.Media
                             GC.Collect();
 
                             //Save out new exif data
-                            SetExifData(filePath, Orientation.Normal, originalMetadata);
+                            SetExifData(originalMetadata, Orientation.Normal);
                             return true;
                         }
 
@@ -517,6 +526,7 @@ namespace Plugin.Media
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 return Task.FromResult(false);
+            var exif = new ExifInterface(filePath);
 
             try
             {
@@ -579,6 +589,7 @@ namespace Plugin.Media
                             }
                             
                             originalImage.Recycle();
+                            exif.SaveAttributes();
 
                             // Dispose of the Java side bitmap.
                             GC.Collect();
@@ -606,7 +617,7 @@ namespace Plugin.Media
         }
 
 
-        void SetExifData(string filePath, Orientation orientation, ExifInterface originalMetadata)
+        void SetExifData(ExifInterface originalMetadata, Orientation orientation)
         {
             try
             {
