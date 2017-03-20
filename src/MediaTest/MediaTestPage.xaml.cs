@@ -2,6 +2,7 @@
 using System.Reflection;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
+using Plugin.Messaging;
 using Xamarin.Forms;
 
 namespace MediaTest
@@ -20,21 +21,21 @@ namespace MediaTest
             {
                 Name = "photo.jpg",
                 PhotoSize = PhotoSize.Full,
-                SaveToAlbum = false
+                SaveToAlbum = false,
+                UseLocation = App.Location,
             });
-            var stream = photo.GetStream();
-            ExaminePhoto(stream);
+            ExaminePhoto(photo);
         }
 
         public async void PickPhoto(object sender, EventArgs args)
         {
             var photo = await CrossMedia.Current.PickPhotoAsync();
-            var stream = photo.GetStream();
-            ExaminePhoto(stream);
+            ExaminePhoto(photo);
         }
 
-        private void ExaminePhoto(System.IO.Stream stream)
+        private async void ExaminePhoto(MediaFile photo)
         {
+            var stream = photo.GetStream();
             var exif = ExifLib.ExifReader.ReadJpeg(stream);
             string exif_string = $"Dimenssions: {exif.Width}x{exif.Height}\n" +
                                  $"Date taken: {exif.DateTime}\n" +
@@ -43,7 +44,17 @@ namespace MediaTest
                                  $"Orientation: {exif.Orientation}\n" +
                                  $"GPS Lat: {exif.GpsLatitude[0]}'{exif.GpsLatitude[1]}\"{exif.GpsLatitude[2]}\n" +
                                  $"GPS Long: {exif.GpsLongitude[0]}'{exif.GpsLongitude[1]}\"{ exif.GpsLongitude[2]}";
-            DisplayAlert("photo", exif_string, "ok");
+            var send = await DisplayAlert("photo", exif_string, "ok", "cancel");
+            if (send)
+            {
+                var email = new EmailMessageBuilder()
+                    .To("nostah@gmail.com")
+                    .Subject("new photo from app")
+                    .WithAttachment(photo.Path, "image/jpg")
+                    .Build();
+                var emailTask = MessagingPlugin.EmailMessenger;
+                emailTask.SendEmail(email);
+            }
         }
 
     }
