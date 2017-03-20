@@ -208,6 +208,10 @@ namespace Plugin.Media.Abstractions
             }
         }
 
+        /// <summary>
+        /// Store provided location on iOS device
+        /// </summary>
+        public Location UseLocation { get; set; }
     }
 
     /// <summary>
