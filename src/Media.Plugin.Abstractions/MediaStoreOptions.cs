@@ -209,7 +209,7 @@ namespace Plugin.Media.Abstractions
         }
 
         /// <summary>
-        /// Store provided location on iOS device
+        /// Store provided location
         /// </summary>
         public Location UseLocation { get; set; }
     }
