@@ -298,7 +298,7 @@ namespace Plugin.Media
                     newMeta[ImageIO.CGImageProperties.TIFFDictionary] = newTiffDict;
                     meta = newMeta;
                 }
-                var location = options.UseLocation;
+                var location = options.Location;
                 if (meta != null && location.Latitude > 0.0)
                 {
                     meta = SetGpsLocation(meta, location);

@@ -211,7 +211,7 @@ namespace Plugin.Media.Abstractions
         /// <summary>
         /// Store provided location
         /// </summary>
-        public Location UseLocation { get; set; }
+        public Location Location { get; set; }
     }
 
     /// <summary>

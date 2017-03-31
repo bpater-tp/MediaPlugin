@@ -176,7 +176,7 @@ namespace Plugin.Media
             {
                 var exif = new ExifInterface(media.Path);
                 await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
-                SetMissingMetadata(exif, options.UseLocation);
+                SetMissingMetadata(exif, options.Location);
                 exif.SaveAttributes();
             }
             catch(Exception ex)
