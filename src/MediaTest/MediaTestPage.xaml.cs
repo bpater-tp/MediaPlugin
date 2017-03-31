@@ -22,14 +22,18 @@ namespace MediaTest
                 Name = "photo.jpg",
                 PhotoSize = PhotoSize.Full,
                 SaveToAlbum = false,
-                UseLocation = App.Location,
+                Location = App.Location,
+                RotateImage = true,
             });
             ExaminePhoto(photo);
         }
 
         public async void PickPhoto(object sender, EventArgs args)
         {
-            var photo = await CrossMedia.Current.PickPhotoAsync();
+            var photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
+            {
+                RotateImage = true,
+            });
             ExaminePhoto(photo);
         }
 
