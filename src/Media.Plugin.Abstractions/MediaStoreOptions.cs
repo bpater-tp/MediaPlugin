@@ -121,7 +121,7 @@ namespace Plugin.Media.Abstractions
         /// Should the library rotate image according to received exif orientation.
         /// Set to true by default.
         /// </summary>
-        public bool RotateImage { get; set; }
+        public bool RotateImage { get { return rotateImage; } set { rotateImage = value;} }
     }
 
     
