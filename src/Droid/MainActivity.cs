@@ -30,26 +30,52 @@ namespace MediaTest.Droid
             LoadApplication(new App());
         }
 
+        protected override void OnPause()
+        {
+            base.OnPause();
+            _locationManager.RemoveUpdates(this);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _locationManager.RemoveUpdates(this);
+        }
+
         protected override void OnResume()
         {
             base.OnResume();
 
-            _provider = LocationManager.GpsProvider;
-            if (_locationManager.IsProviderEnabled(_provider))
+            if (string.IsNullOrEmpty(_provider))
+            {
+                FindBestProvider();
+            }
+            else
+            {
+                _locationManager.RequestLocationUpdates(_provider, 3000, 10, this);
+            }
+        }
+
+        protected void FindBestProvider()
+        {
+            Criteria locCriteria = new Criteria()
+            {
+                Accuracy = Accuracy.Fine,
+                PowerRequirement = Power.Medium,
+            };
+
+            _provider = _locationManager.GetBestProvider(locCriteria, true);
+
+            if (!string.IsNullOrEmpty(_provider))
             {
                 App.AreLocationServicesEnabled = true;
                 _locationManager.RequestLocationUpdates(_provider, 3000, 10, this);
             }
             else
             {
+                App.AreLocationServicesEnabled = false;
                 Console.WriteLine("No location services enabled");
             }
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-            _locationManager.RemoveUpdates(this);
         }
 
         public void OnProviderEnabled(string provider)
@@ -64,13 +90,22 @@ namespace MediaTest.Droid
         {
             if (provider == _provider)
             {
-                App.AreLocationServicesEnabled = false;
+                FindBestProvider();
             }
         }
+
         public void OnStatusChanged(string provider, Availability status, Bundle extras)
         {
-            
+            if (_provider == provider && status != Availability.Available)
+            {
+                FindBestProvider();
+            }
+            else if (provider == LocationManager.GpsProvider && status == Availability.Available)
+            {
+                FindBestProvider();
+            }
         }
+
         public void OnLocationChanged(Location location)
         {
             App.Location.Altitude = location.Altitude;
