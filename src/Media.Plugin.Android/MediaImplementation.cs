@@ -661,8 +661,9 @@ namespace Plugin.Media
             coord = (coord % 1) * 60;
             int minutes = (int)coord;
             coord = (coord % 1) * 60000;
+            int sec = (int)coord;
 
-            return $"{degrees}/1, {minutes}/1, {coord}/1000";
+            return $"{degrees}/1,{minutes}/1,{sec}/1000";
         }
 
         static int GetRotation(ExifInterface exif)
