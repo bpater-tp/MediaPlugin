@@ -60,11 +60,12 @@ namespace MediaTest.Droid
         {
             Criteria locCriteria = new Criteria()
             {
-                Accuracy = Accuracy.Fine,
+                Accuracy = Accuracy.Medium,
                 PowerRequirement = Power.Medium,
             };
 
             _provider = _locationManager.GetBestProvider(locCriteria, true);
+            App.Provider = _provider;
 
             if (!string.IsNullOrEmpty(_provider))
             {
