@@ -306,14 +306,7 @@ namespace Plugin.Media
             }
             else
             {
-                try
-                {
-                    meta = await PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
-                }
-                catch (TaskCanceledException)
-                {
-                    Console.WriteLine("timed out waiting for icloud");
-                }
+                meta = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
             }
 
             string path = GetOutputPath(MediaImplementation.TypeImage,
