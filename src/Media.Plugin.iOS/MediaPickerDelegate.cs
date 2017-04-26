@@ -284,7 +284,7 @@ namespace Plugin.Media
         {
             var image = (UIImage)info[UIImagePickerController.EditedImage] ?? (UIImage)info[UIImagePickerController.OriginalImage];
 
-            NSDictionary meta;
+            NSDictionary meta = null;
             if (source == UIImagePickerControllerSourceType.Camera)
             {
                 meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
@@ -306,7 +306,14 @@ namespace Plugin.Media
             }
             else
             {
-                meta = await PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
+                try
+                {
+                    meta = await PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
+                }
+                catch (TaskCanceledException)
+                {
+                    Console.WriteLine("timed out waiting for icloud");
+                }
             }
 
             string path = GetOutputPath(MediaImplementation.TypeImage,
