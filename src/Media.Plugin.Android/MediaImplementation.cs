@@ -635,8 +635,8 @@ namespace Plugin.Media
             Single[] position = new Single[6];
             if (!exif.GetLatLong(position) && location.Latitude + location.Longitude > 0)
             {
-                exif.SetAttribute(ExifInterface.TagGpsLatitude, coordsToDMS(location.Latitude));
-                exif.SetAttribute(ExifInterface.TagGpsLongitude, coordsToDMS(location.Longitude));
+                exif.SetAttribute(ExifInterface.TagGpsLatitude, coordinateToRational(location.Latitude));
+                exif.SetAttribute(ExifInterface.TagGpsLongitude, coordinateToRational(location.Longitude));
                 exif.SetAttribute(ExifInterface.TagGpsLatitudeRef, location.Latitude > 0 ? "N" : "S");
                 exif.SetAttribute(ExifInterface.TagGpsLongitudeRef, location.Longitude > 0 ? "E" : "W");
             }
@@ -654,7 +654,7 @@ namespace Plugin.Media
             }
         }
 
-        private string coordsToDMS(double coord)
+		private string coordinateToRational(double coord)
         {
             coord = coord > 0 ? coord : -coord;
             int degrees = (int)coord;
