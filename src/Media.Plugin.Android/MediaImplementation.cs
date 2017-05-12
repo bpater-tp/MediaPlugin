@@ -36,7 +36,10 @@ namespace Plugin.Media
     [Android.Runtime.Preserve(AllMembers = true)]
     public class MediaImplementation : IMedia
     {
-        /// <summary>
+		const string TAG_PIXEL_X_DIMENSION = "PixelXDimension";
+		const string TAG_PIXEL_Y_DIMENSION = "PixelYDimension";
+
+		/// <summary>
         /// Implementation
         /// </summary>
         public MediaImplementation()
@@ -94,7 +97,7 @@ namespace Plugin.Media
                     }
                     else
                     {
-                        await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
+                        await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, originalMetadata);
                     }
                     originalMetadata.SaveAttributes();
                 }
@@ -190,7 +193,7 @@ namespace Plugin.Media
                 }
                 else
                 {
-                    await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize);
+                    await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, exif);
                 }
                 SetMissingMetadata(exif, options.Location);
                 exif.SaveAttributes();
@@ -432,43 +435,47 @@ namespace Plugin.Media
                         {
                             originalImage = Bitmap.CreateScaledBitmap(originalImage, finalWidth, finalHeight, true);
                         }
-                        //if we need to rotate then go for it.
-                        //then compresse it if needed
-                        if (rotation != 0)
-                        {
-                            var matrix = new Matrix();
-                            matrix.PostRotate(rotation);
-                            using (var rotatedImage = Bitmap.CreateBitmap(originalImage, 0, 0, originalImage.Width, originalImage.Height, matrix, true))
-                            {
-                                    
-                                //always need to compress to save back to disk
-                                using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
-                                {
-                                    rotatedImage.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
-                                    stream.Close();
-                                }
-                                rotatedImage.Recycle();
-                            }
-                            originalImage.Recycle();
-                            originalImage.Dispose();
-                            // Dispose of the Java side bitmap.
-                            GC.Collect();
+						if (rotation % 180 == 90)
+						{
+							var a = finalWidth;
+							finalWidth = finalHeight;
+							finalHeight = a;
+						}
 
-                            //change the orienation to "not rotated"
-                            exif.SetAttribute(ExifInterface.TagOrientation, Java.Lang.Integer.ToString((int)Orientation.Normal));
-                            return true;
-                        }
+						//set scaled and rotated image dimensions
+						exif.SetAttribute(TAG_PIXEL_X_DIMENSION, Java.Lang.Integer.ToString(finalWidth));
+						exif.SetAttribute(TAG_PIXEL_Y_DIMENSION, Java.Lang.Integer.ToString(finalHeight));
 
-                            
+						//if we need to rotate then go for it.
+						//then compresse it if needed
+						if (rotation != 0)
+						{
+							var matrix = new Matrix();
+							matrix.PostRotate(rotation);
+							using (var rotatedImage = Bitmap.CreateBitmap(originalImage, 0, 0, originalImage.Width, originalImage.Height, matrix, true))
+							{
 
-                        //always need to compress to save back to disk
-                        using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
-                        {
-                            originalImage.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
-                            stream.Close();
-                        }
-                            
-                            
+								//always need to compress to save back to disk
+								using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
+								{
+									rotatedImage.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
+									stream.Close();
+								}
+								rotatedImage.Recycle();
+							}
+							//change the orienation to "not rotated"
+							exif.SetAttribute(ExifInterface.TagOrientation, Java.Lang.Integer.ToString((int)Orientation.Normal));
+
+						}
+						else
+						{
+							//always need to compress to save back to disk
+							using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
+	                        {
+	                            originalImage.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
+	                            stream.Close();
+	                        }
+						}
 
                         originalImage.Recycle();
                         originalImage.Dispose();
@@ -529,8 +536,11 @@ namespace Plugin.Media
         /// </summary>
         /// <param name="filePath">The file image path</param>
         /// <param name="photoSize">Photo size to go to.</param>
+        /// <param name="quality">Image quality (1-100)</param>
+        /// <param name="customPhotoSize">Custom size in percent</param>
+        /// <param name="exif">original metadata</param>
         /// <returns>True if rotation or compression occured, else false</returns>
-        public Task<bool> ResizeAsync(string filePath, PhotoSize photoSize, int quality, int customPhotoSize)
+        public Task<bool> ResizeAsync(string filePath, PhotoSize photoSize, int quality, int customPhotoSize, ExifInterface exif)
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 return Task.FromResult(false);
@@ -541,8 +551,6 @@ namespace Plugin.Media
                 {
                     try
                     {
-                        
-
                         if (photoSize == PhotoSize.Full)
                             return false;
 
@@ -575,6 +583,10 @@ namespace Plugin.Media
 
                         var finalWidth = (int)(options.OutWidth * percent);
                         var finalHeight = (int)(options.OutHeight * percent);
+
+                        //set scaled image dimensions
+                        exif.SetAttribute(TAG_PIXEL_X_DIMENSION, Java.Lang.Integer.ToString(finalWidth));
+                        exif.SetAttribute(TAG_PIXEL_Y_DIMENSION, Java.Lang.Integer.ToString(finalHeight));
 
                         //calculate sample size
                         options.InSampleSize = CalculateInSampleSize(options, finalWidth, finalHeight);
