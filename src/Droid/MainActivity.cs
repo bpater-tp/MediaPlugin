@@ -65,7 +65,7 @@ namespace MediaTest.Droid
             };
 
             _provider = _locationManager.GetBestProvider(locCriteria, true);
-            App.Provider = _provider;
+            //App.Provider = _provider;
 
             if (!string.IsNullOrEmpty(_provider))
             {
