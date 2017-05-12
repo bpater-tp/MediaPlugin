@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 using Plugin.Messaging;
 using Xamarin.Forms;
+using static Plugin.Messaging.MessagingPlugin;
 
 namespace MediaTest
 {
@@ -13,6 +13,7 @@ namespace MediaTest
         {
             InitializeComponent();
             CrossMedia.Current.Initialize();
+            CrossMessaging.Current.EmailMessenger.SendEmail("noster@venture.org.pl", "test", "dupa dupa");
         }
 
         public async void TakePhoto(object sender, EventArgs args)
@@ -20,7 +21,7 @@ namespace MediaTest
             var photo = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions()
             {
                 Name = "photo.jpg",
-                PhotoSize = PhotoSize.Full,
+                PhotoSize = PhotoSize.Medium,
                 SaveToAlbum = false,
                 Location = App.Location,
                 RotateImage = true,
@@ -32,6 +33,7 @@ namespace MediaTest
         {
             var photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
             {
+                PhotoSize = PhotoSize.Small,
                 RotateImage = true,
             });
             ExaminePhoto(photo);
@@ -49,14 +51,15 @@ namespace MediaTest
                                  $"GPS Lat: {exif.GpsLatitude[0]}'{exif.GpsLatitude[1]}\"{exif.GpsLatitude[2]}\n" +
                                  $"GPS Long: {exif.GpsLongitude[0]}'{exif.GpsLongitude[1]}\"{ exif.GpsLongitude[2]}";
             var send = await DisplayAlert("photo", exif_string, "ok", "cancel");
-            if (send)
+            var emailTask = CrossMessaging.Current.EmailMessenger;
+            if (send && emailTask.CanSendEmailAttachments)
             {
                 var email = new EmailMessageBuilder()
                     .To("nostah@gmail.com")
                     .Subject("new photo from app")
+                    .Body("zdjęcie z plutona: "+exif_string)
                     .WithAttachment(photo.Path, "image/jpg")
                     .Build();
-                var emailTask = MessagingPlugin.EmailMessenger;
                 emailTask.SendEmail(email);
             }
         }
