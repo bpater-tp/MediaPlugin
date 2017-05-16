@@ -1,7 +1,7 @@
 #addin "Cake.FileHelpers"
 
 var TARGET = Argument ("target", Argument ("t", "Default"));
-var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "0.0.9999");
+var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "3.1.0");
 
 var libraries = new Dictionary<string, string> {
  	{ "./src/Media.sln", "Any" },
@@ -33,7 +33,7 @@ var BuildAction = new Action<Dictionary<string, string>> (solutions =>
 
 				NuGetRestore (sln.Key, new NuGetRestoreSettings
                 {
-					ToolPath = "./tools/nuget3.exe"
+					ToolPath = "./tools/nuget.exe"
 				});
 
 				// Windows Phone / Universal projects require not using the amd64 msbuild
@@ -72,7 +72,7 @@ Task ("NuGet")
 		Verbosity = NuGetVerbosity.Detailed,
 		OutputDirectory = "./Build/nuget/",
 		BasePath = "./",
-		ToolPath = "./tools/nuget3.exe"
+		ToolPath = "./tools/nuget.exe"
 	});	
 });
 
