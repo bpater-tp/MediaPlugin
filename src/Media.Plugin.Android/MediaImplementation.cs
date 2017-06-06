@@ -76,20 +76,25 @@ namespace Plugin.Media
         /// Picks a photo from the default gallery
         /// </summary>
         /// <returns>Media file or null if canceled</returns>
-        public async Task<MediaFile> PickPhotoAsync(PickMediaOptions options = null)
+        public async Task<List<MediaFile>> PickPhotoAsync(PickMediaOptions options = null)
         {
             if (!(await RequestStoragePermission()))
             {
                 return null;
             }
-            var media = (await TakeMediaAsync("image/*", Intent.ActionPick, null)).First();
+            var mediaList = await TakeMediaAsync("image/*", Intent.ActionPick, null);
 
             if (options == null)
                 options = new PickMediaOptions();
 
             //check to see if we picked a file, and if so then try to fix orientation and resize
-            if (!string.IsNullOrWhiteSpace(media?.Path))
+            foreach (var media in mediaList)
             {
+                if (string.IsNullOrWhiteSpace(media?.Path))
+                {
+                    continue;
+                }
+
                 try
                 {
                     var originalMetadata = new ExifInterface(media.Path);
@@ -109,8 +114,7 @@ namespace Plugin.Media
                     Console.WriteLine("Unable to check orientation: " + ex);
                 }
             }
-
-            return media;
+            return mediaList;
         }
 
 

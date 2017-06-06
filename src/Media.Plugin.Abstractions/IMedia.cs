@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Plugin.Media.Abstractions
@@ -40,7 +41,7 @@ namespace Plugin.Media.Abstractions
         /// Picks a photo from the default gallery
         /// </summary>
         /// <returns>Media file or null if canceled</returns>
-        Task<MediaFile> PickPhotoAsync(PickMediaOptions options = null);
+        Task<List<MediaFile>> PickPhotoAsync(PickMediaOptions options = null);
 
         /// <summary>
         /// Take a photo async with specified options

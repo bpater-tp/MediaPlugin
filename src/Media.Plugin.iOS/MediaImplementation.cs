@@ -16,6 +16,7 @@ using Plugin.Media.Abstractions;
 //
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
@@ -81,7 +82,7 @@ namespace Plugin.Media
         /// Picks a photo from the default gallery
         /// </summary>
         /// <returns>Media file or null if canceled</returns>
-        public Task<MediaFile> PickPhotoAsync(PickMediaOptions options = null)
+        public Task<List<MediaFile>> PickPhotoAsync(PickMediaOptions options = null)
         {
             if (!IsPickPhotoSupported)
                 throw new NotSupportedException();
@@ -94,7 +95,7 @@ namespace Plugin.Media
                 CompressionQuality = options?.CompressionQuality ?? 100
             };
 
-            return GetMediaAsync(UIImagePickerControllerSourceType.PhotoLibrary, TypeImage, cameraOptions);
+            return Task.Run(() => { return new List<MediaFile>(); }); //GetMediaAsync(UIImagePickerControllerSourceType.PhotoLibrary, TypeImage, cameraOptions);
         }
  
 
