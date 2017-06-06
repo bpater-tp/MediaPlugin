@@ -94,5 +94,32 @@ namespace Plugin.Media
             UIGraphics.EndImageContext();
             return modifiedImage;
         }
+        
+        public static UIImage ScaleImage(this UIImage sourceImage, float scale)
+        {
+            if (scale >= 0.999f)
+                return sourceImage;
+
+            UIImage resultImage;
+            float width = (float)(sourceImage.Size.Width * scale);
+            float height = (float)(sourceImage.Size.Height * scale);
+
+            if (sourceImage.Orientation == UIImageOrientation.Left || sourceImage.Orientation == UIImageOrientation.Right 
+                || sourceImage.Orientation == UIImageOrientation.LeftMirrored || sourceImage.Orientation == UIImageOrientation.RightMirrored) {
+                var w = width;
+                width = height;
+                height = w;
+            }
+            using (CGImage image = sourceImage.CGImage)
+            {
+                CGImageAlphaInfo alpha = image.AlphaInfo == CGImageAlphaInfo.None ? CGImageAlphaInfo.NoneSkipLast : image.AlphaInfo;
+                CGColorSpace color = CGColorSpace.CreateDeviceRGB();
+                var bitmap = new CGBitmapContext(IntPtr.Zero, (int)width, (int)height, image.BitsPerComponent, image.BytesPerRow, color, alpha);
+                bitmap.DrawImage(new CGRect(0, 0, (int)width, (int)height), image);
+                resultImage = UIImage.FromImage(bitmap.ToImage(), 1.0f, sourceImage.Orientation);
+            }
+
+            return resultImage;
+        }
     }
 }

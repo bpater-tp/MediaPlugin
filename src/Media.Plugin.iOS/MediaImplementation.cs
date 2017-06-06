@@ -21,9 +21,14 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
 using System.Linq;
-
+using CoreGraphics;
+using CoreImage;
 using UIKit;
 using Foundation;
+using GMImagePicker;
+using ImageIO;
+using MobileCoreServices;
+using Photos;
 
 namespace Plugin.Media
 {
@@ -42,6 +47,8 @@ namespace Plugin.Media
         ///<inheritdoc/>
         public Task<bool> Initialize() => Task.FromResult(true);
 
+        private static int _pickerDelegateCount = 1;
+
         /// <summary>
         /// Implementation
         /// </summary>
@@ -49,7 +56,7 @@ namespace Plugin.Media
         {
             StatusBarStyle = UIApplication.SharedApplication.StatusBarStyle;
             IsCameraAvailable = UIImagePickerController.IsCameraDeviceAvailable(UIKit.UIImagePickerControllerCameraDevice.Front)
-									   | UIImagePickerController.IsCameraDeviceAvailable(UIKit.UIImagePickerControllerCameraDevice.Rear);
+                               | UIImagePickerController.IsCameraDeviceAvailable(UIKit.UIImagePickerControllerCameraDevice.Rear);
 
             var availableCameraMedia = UIImagePickerController.AvailableMediaTypes(UIImagePickerControllerSourceType.Camera) ?? new string[0];
             var avaialbleLibraryMedia = UIImagePickerController.AvailableMediaTypes(UIImagePickerControllerSourceType.PhotoLibrary) ?? new string[0];
@@ -89,13 +96,7 @@ namespace Plugin.Media
 
             CheckPhotoUsageDescription();
 
-            var cameraOptions = new StoreCameraMediaOptions
-            {
-                PhotoSize = options?.PhotoSize ?? PhotoSize.Full,
-                CompressionQuality = options?.CompressionQuality ?? 100
-            };
-
-            return Task.Run(() => { return new List<MediaFile>(); }); //GetMediaAsync(UIImagePickerControllerSourceType.PhotoLibrary, TypeImage, cameraOptions);
+            return PickMultiplePhotos(options);
         }
  
 
@@ -219,25 +220,7 @@ namespace Plugin.Media
         private Task<MediaFile> GetMediaAsync(UIImagePickerControllerSourceType sourceType, string mediaType, StoreCameraMediaOptions options = null)
         {
 			
-			UIViewController viewController = null;
-            UIWindow window = UIApplication.SharedApplication.KeyWindow;
-            if (window == null)
-                throw new InvalidOperationException("There's no current active window");
-
-            if(window.WindowLevel == UIWindowLevel.Normal)
-                viewController = window.RootViewController;
-
-            if (viewController == null)
-            {
-                window = UIApplication.SharedApplication.Windows.OrderByDescending(w => w.WindowLevel).FirstOrDefault(w => w.RootViewController != null && w.WindowLevel == UIWindowLevel.Normal);
-                if (window == null)
-                    throw new InvalidOperationException("Could not find current view controller");
-                else
-                    viewController = window.RootViewController;
-            }
-
-            while (viewController.PresentedViewController != null)
-                viewController = viewController.PresentedViewController;
+			var viewController = FindRootViewController();
 
             MediaPickerDelegate ndelegate = new MediaPickerDelegate(viewController, sourceType, options);
             var od = Interlocked.CompareExchange(ref pickerDelegate, ndelegate, null);
@@ -272,6 +255,174 @@ namespace Plugin.Media
                 Interlocked.Exchange(ref pickerDelegate, null);
                 return t;
             }).Unwrap();
+        }
+
+        private static UIViewController FindRootViewController()
+        {
+            UIViewController viewController = null;
+            UIWindow window = UIApplication.SharedApplication.KeyWindow;
+            if (window == null)
+                throw new InvalidOperationException("There's no current active window");
+
+            if (window.WindowLevel == UIWindowLevel.Normal)
+                viewController = window.RootViewController;
+
+            if (viewController == null)
+            {
+                window = UIApplication.SharedApplication.Windows.OrderByDescending(w => w.WindowLevel)
+                    .FirstOrDefault(w => w.RootViewController != null && w.WindowLevel == UIWindowLevel.Normal);
+                if (window == null)
+                    throw new InvalidOperationException("Could not find current view controller");
+
+                viewController = window.RootViewController;
+            }
+
+            while (viewController.PresentedViewController != null)
+                viewController = viewController.PresentedViewController;
+            return viewController;
+        }
+
+        public Task<List<MediaFile>> PickMultiplePhotos(PickMediaOptions options = null)
+        {
+            var tcs = new TaskCompletionSource<Task<List<MediaFile>>>();
+
+            var colsInPortrait = 3;
+            var colsInLandscape = 5;
+
+            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            {
+                colsInPortrait = 6;
+                colsInLandscape = 8;
+            }
+            var picker = new GMImagePickerController
+            {
+                Title = options?.Title ?? "Photos",
+                MediaTypes = new[] {PHAssetMediaType.Image},
+                ColsInPortrait = colsInPortrait,
+                ColsInLandscape = colsInLandscape,
+            };
+            picker.FinishedPickingAssets += (sender, args) =>
+            {
+                var task = Task.Run(() =>
+                {
+                    var images = new List<MediaFile>();
+                    foreach (var asset in args.Assets)
+                    {
+                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full));
+                        images.Add(new MediaFile(path, () => File.OpenRead(path)));
+                    }
+                    return images;
+                });
+                tcs.TrySetResult(task);
+            };
+            picker.Canceled += (sender, args) => tcs.TrySetResult(null);
+
+            var od = Interlocked.CompareExchange(ref _pickerDelegateCount, 1, 1);
+            if (od != 1)
+            {
+                throw new InvalidOperationException("Only one operation can be active at at time");
+            }
+
+            var viewController = FindRootViewController();
+            viewController.PresentViewController(picker, true, null);
+            _pickerDelegateCount++;
+
+            return tcs.Task.ContinueWith(t =>
+            {
+                Interlocked.Exchange(ref _pickerDelegateCount, 1);
+                if (t != null)
+                {
+                    t.Wait();
+                    return t.Result?.Result;
+                }
+
+                return null;
+            });
+        }
+
+        private static string StorePickedImage(PHAsset asset, int quality, float scale)
+        {
+            var imageManager = PHImageManager.DefaultManager;
+            var requestOptions = new PHImageRequestOptions
+            {
+                Synchronous = true,
+                NetworkAccessAllowed = false,
+                DeliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat,
+            };
+            var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            string path = null;
+            imageManager.RequestImageData(asset, requestOptions, (data, dataUti, orientation, info) =>
+            {
+                var url = info["PHImageFileURLKey"] as NSUrl;
+                if (url != null)
+                {
+                    path = Path.Combine(targetDir, url.LastPathComponent);
+                }
+                else
+                {
+                    var parts = asset.LocalIdentifier.Split('/');
+                    path = Path.Combine(targetDir, parts[0], ".jpg");
+                }
+                var fullimage = CIImage.FromData(data);
+                var image = UIImage.LoadFromData(data);
+                var scaledImage = image.ScaleImage(scale);
+                SaveTempImage(fullimage, scaledImage, path, quality);
+            });
+
+            return path;
+        }
+
+        private static void SaveTempImage(CIImage fullimage, UIImage image, string outputFilename, int quality)
+        {
+            var imageData = image.AsJPEG(quality);
+            var dataProvider = new CGDataProvider(imageData);
+            var cgImageFromJpeg = CGImage.FromJPEG(dataProvider, null, false, CGColorRenderingIntent.Default);
+            var imageWithExif = new NSMutableData();
+            var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1);
+            var cgImageMetadata = new CGMutableImageMetadata();
+            var options = new CGImageDestinationOptions();
+            if (fullimage.Properties.Orientation != null)
+            {
+                options.Dictionary[ImageIO.CGImageProperties.Orientation] =
+                    new NSString(image.Orientation.ToString());
+            }
+            if (fullimage.Properties.DPIWidthF != null)
+            {
+                options.Dictionary[ImageIO.CGImageProperties.DPIWidth] =
+                    new NSNumber((nfloat)fullimage.Properties.DPIWidthF);
+            }
+            if (fullimage.Properties.DPIWidthF != null)
+            {
+                options.Dictionary[ImageIO.CGImageProperties.DPIHeight] =
+                    new NSNumber((nfloat)fullimage.Properties.DPIHeightF);
+            }
+            options.ExifDictionary = fullimage.Properties?.Exif ?? new CGImagePropertiesExif();
+            options.TiffDictionary = fullimage.Properties?.Tiff ?? new CGImagePropertiesTiff();
+            options.GpsDictionary = fullimage.Properties?.Gps ?? new CGImagePropertiesGps();
+            options.JfifDictionary = fullimage.Properties?.Jfif ?? new CGImagePropertiesJfif();
+            options.IptcDictionary = fullimage.Properties?.Iptc ?? new CGImagePropertiesIptc();
+            destination.AddImageAndMetadata(cgImageFromJpeg, cgImageMetadata, options);
+            var success = destination.Close();
+            if (success)
+            {
+                imageWithExif.Save(outputFilename, true);
+            }
+            else
+            {
+                imageData.Save(outputFilename, true);
+            }
+        }
+
+        private static float GetScale(PhotoSize size)
+        {
+            var scaleMap = new Dictionary<PhotoSize, float>{
+                {PhotoSize.Custom, 2.0f},
+                {PhotoSize.Full,   1.0f},
+                {PhotoSize.Large,  0.75f},
+                {PhotoSize.Medium, 0.5f},
+                {PhotoSize.Small,  0.25f},
+            };
+            return scaleMap[size];
         }
 
         private static UIImagePickerControllerCameraDevice GetUICameraDevice(CameraDevice device)

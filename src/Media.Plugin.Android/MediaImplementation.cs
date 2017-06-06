@@ -83,6 +83,8 @@ namespace Plugin.Media
                 return null;
             }
             var mediaList = await TakeMediaAsync("image/*", Intent.ActionPick, null);
+            if (mediaList == null)
+                return null;
 
             if (options == null)
                 options = new PickMediaOptions();
@@ -136,8 +138,11 @@ namespace Plugin.Media
 
             VerifyOptions(options);
 
-            var media = (await TakeMediaAsync("image/*", MediaStore.ActionImageCapture, options)).First();
+            var mediaList = (await TakeMediaAsync("image/*", MediaStore.ActionImageCapture, options));
+            if (mediaList == null)
+                return null;
 
+            var media = mediaList.First();
             if (string.IsNullOrWhiteSpace(media?.Path))
                 return media;
 

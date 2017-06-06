@@ -129,6 +129,8 @@ namespace Plugin.Media.Abstractions
         /// Set to true by default.
         /// </summary>
         public bool RotateImage { get { return rotateImage; } set { rotateImage = value;} }
+
+        public string Title { get; set; }
     }
 
     
