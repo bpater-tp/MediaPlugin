@@ -82,7 +82,7 @@ namespace Plugin.Media
             {
                 return null;
             }
-            var media = await TakeMediaAsync("image/*", Intent.ActionPick, null);
+            var media = (await TakeMediaAsync("image/*", Intent.ActionPick, null)).First();
 
             if (options == null)
                 options = new PickMediaOptions();
@@ -132,7 +132,7 @@ namespace Plugin.Media
 
             VerifyOptions(options);
 
-            var media = await TakeMediaAsync("image/*", MediaStore.ActionImageCapture, options);
+            var media = (await TakeMediaAsync("image/*", MediaStore.ActionImageCapture, options)).First();
 
             if (string.IsNullOrWhiteSpace(media?.Path))
                 return media;
@@ -221,7 +221,7 @@ namespace Plugin.Media
                 return null;
             }
 
-            return await TakeMediaAsync("video/*", Intent.ActionPick, null);
+            return (await TakeMediaAsync("video/*", Intent.ActionPick, null)).First();
         }
 
         /// <summary>
@@ -241,12 +241,12 @@ namespace Plugin.Media
 
             VerifyOptions(options);
 
-            return await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options);
+            return (await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options)).First();
         }
 
         private readonly Context context;
         private int requestId;
-        private TaskCompletionSource<MediaFile> completionSource;
+        private TaskCompletionSource<List<MediaFile>> completionSource;
 
 
 		async Task<bool> RequestCameraPermissions()
@@ -374,15 +374,15 @@ namespace Plugin.Media
                 options.Directory = Regex.Replace(options.Directory, IllegalCharacters, string.Empty).Replace(@"\", string.Empty);
         }
 
-        private Intent CreateMediaIntent(int id, string type, string action, StoreMediaOptions options, bool tasked = true)
+        private Intent CreateMediaIntent(int id, string type, string action, StoreMediaOptions options, bool tasked = true, bool multiple = true)
         {
             Intent pickerIntent = new Intent(this.context, typeof(MediaPickerActivity));
             pickerIntent.PutExtra(MediaPickerActivity.ExtraId, id);
             pickerIntent.PutExtra(MediaPickerActivity.ExtraType, type);
             pickerIntent.PutExtra(MediaPickerActivity.ExtraAction, action);
             pickerIntent.PutExtra(MediaPickerActivity.ExtraTasked, tasked);
-
-            if (options != null)
+            pickerIntent.PutExtra(MediaPickerActivity.ExtraMultiple, multiple);
+			if (options != null)
             {
                 pickerIntent.PutExtra(MediaPickerActivity.ExtraPath, options.Directory);
                 pickerIntent.PutExtra(MediaStore.Images.ImageColumns.Title, options.Name);
@@ -427,20 +427,20 @@ namespace Plugin.Media
             return id;
         }
 
-        private Task<MediaFile> TakeMediaAsync(string type, string action, StoreMediaOptions options)
+        private Task<List<MediaFile>> TakeMediaAsync(string type, string action, StoreMediaOptions options)
         {
             int id = GetRequestId();
 
-            var ntcs = new TaskCompletionSource<MediaFile>(id);
-            if (Interlocked.CompareExchange(ref this.completionSource, ntcs, null) != null)
+            var ntcs = new TaskCompletionSource<List<MediaFile>>(id);
+            if (Interlocked.CompareExchange(ref completionSource, ntcs, null) != null)
                 throw new InvalidOperationException("Only one operation can be active at a time");
 
-            this.context.StartActivity(CreateMediaIntent(id, type, action, options));
+            context.StartActivity(CreateMediaIntent(id, type, action, options));
 
             EventHandler<MediaPickedEventArgs> handler = null;
             handler = (s, e) =>
             {
-                var tcs = Interlocked.Exchange(ref this.completionSource, null);
+                var tcs = Interlocked.Exchange(ref completionSource, null);
 
                 MediaPickerActivity.MediaPicked -= handler;
 
@@ -499,111 +499,45 @@ namespace Plugin.Media
                 {
                     try
                     {
-                        //First decode to just get dimensions
-                        var options = new BitmapFactory.Options
-                        {
-                            InJustDecodeBounds = true
-                        };
-
-                        //already on background task
-                        BitmapFactory.DecodeFile(filePath, options);
-
                         var rotation = GetRotation(exif);
-
                         // if we don't need to rotate, aren't resizing, and aren't adjusting quality then simply return
                         if (rotation == 0 && mediaOptions.PhotoSize == PhotoSize.Full && mediaOptions.CompressionQuality == 100)
                             return false;
 
-                        var percent = 1.0f;
-                        switch (mediaOptions.PhotoSize)
-                        {
-                            case PhotoSize.Large:
-                                percent = .75f;
-                                break;
-                            case PhotoSize.Medium:
-                                percent = .5f;
-                                break;
-                            case PhotoSize.Small:
-                                percent = .25f;
-                                break;
-                            case PhotoSize.Custom:
-                                percent = (float)mediaOptions.CustomPhotoSize / 100f;
-                                break;
-                        }
+                        var percent = CalculatePercent(mediaOptions.PhotoSize, mediaOptions.CustomPhotoSize);
 
-                        if (mediaOptions.PhotoSize == PhotoSize.MaxWidthHeight && mediaOptions.MaxWidthHeight.HasValue)
-                        {
-                            var max = Math.Max(options.OutWidth, options.OutHeight);
-                            if (max > mediaOptions.MaxWidthHeight)
-                            {
-                                percent = (float)mediaOptions.MaxWidthHeight / (float)max;
-                            }
-                        }
-
-                        var finalWidth = (int)(options.OutWidth * percent);
-                        var finalHeight = (int)(options.OutHeight * percent);
-
-                        //calculate sample size
-                        options.InSampleSize = CalculateInSampleSize(options, finalWidth, finalHeight);
-                        
-                        //turn off decode
-                        options.InJustDecodeBounds = false;
-
-
-                        //this now will return the requested width/height from file, so no longer need to scale
-                        var originalImage = BitmapFactory.DecodeFile(filePath, options);
-                        
-                        if (finalWidth != originalImage.Width || finalHeight != originalImage.Height)
-                        {
-                            originalImage = Bitmap.CreateScaledBitmap(originalImage, finalWidth, finalHeight, true);
-                        }
-                        if (rotation % 180 == 90)
-                        {
-                            var a = finalWidth;
-                            finalWidth = finalHeight;
-                            finalHeight = a;
-                        }
-
-                        //set scaled and rotated image dimensions
-                        exif.SetAttribute(TAG_PIXEL_X_DIMENSION, Java.Lang.Integer.ToString(finalWidth));
-                        exif.SetAttribute(TAG_PIXEL_Y_DIMENSION, Java.Lang.Integer.ToString(finalHeight));
-
-                        //if we need to rotate then go for it.
-                        //then compresse it if needed
+                        var matrix = new Matrix();
+                        matrix.PreScale(percent, percent);
                         if (rotation != 0)
                         {
-                            var matrix = new Matrix();
-                            matrix.PostRotate(rotation);
-                            using (var rotatedImage = Bitmap.CreateBitmap(originalImage, 0, 0, originalImage.Width, originalImage.Height, matrix, true))
-                            {
-                                //always need to compress to save back to disk
-                                using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
-                                {
-                                    rotatedImage.Compress(Bitmap.CompressFormat.Jpeg, mediaOptions.CompressionQuality, stream);
-                                    stream.Close();
-                                }
-                                rotatedImage.Recycle();
-                            }
+                            matrix.PreRotate(rotation);
                             //change the orienation to "not rotated"
                             exif.SetAttribute(ExifInterface.TagOrientation, Java.Lang.Integer.ToString((int)Orientation.Normal));
-
                         }
-                        else
+
+                        var options = new BitmapFactory.Options
                         {
+                            InJustDecodeBounds = false,
+                            InSampleSize = 1,
+                        };
+                        //this now will return the requested width/height from file, so no longer need to scale
+                        using (var originalImage = BitmapFactory.DecodeFile(filePath, options))
+                        {
+                            var scaled = Bitmap.CreateBitmap(originalImage, 0, 0, options.OutWidth, options.OutHeight, matrix, true);
                             //always need to compress to save back to disk
                             using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
                             {
-                                originalImage.Compress(Bitmap.CompressFormat.Jpeg, mediaOptions.CompressionQuality, stream);
+                                scaled.Compress(Bitmap.CompressFormat.Jpeg, mediaOptions.CompressionQuality, stream);
                                 stream.Close();
                             }
-                        }
 
-                        originalImage.Recycle();
-                        originalImage.Dispose();
-                        // Dispose of the Java side bitmap.
-                        GC.Collect();
-                        return true;
-                        
+                            originalImage.Recycle();
+                            originalImage.Dispose();
+
+                            // Dispose of the Java side bitmap.
+                            GC.Collect();
+                            return true;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -624,32 +558,6 @@ namespace Plugin.Media
 #endif
             }
 
-        }
-
-        public int CalculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight)
-        {
-            // Raw height and width of image
-            var height = options.OutHeight;
-            var width = options.OutWidth;
-            var inSampleSize = 1;
-
-            if (height > reqHeight || width > reqWidth)
-            {
-
-                var halfHeight = height / 2;
-                var halfWidth = width / 2;
-
-                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-                // height and width larger than the requested height and width.
-                while ((halfHeight / inSampleSize) >= reqHeight
-                        && (halfWidth / inSampleSize) >= reqWidth)
-                {
-                    inSampleSize *= 2;
-                }
-            }
-
-            return inSampleSize;
         }
 
         /// <summary>
@@ -675,60 +583,28 @@ namespace Plugin.Media
                         if (photoSize == PhotoSize.Full)
                             return false;
 
-                        var percent = 1.0f;
-                        switch (photoSize)
-                        {
-                            case PhotoSize.Large:
-                                percent = .75f;
-                                break;
-                            case PhotoSize.Medium:
-                                percent = .5f;
-                                break;
-                            case PhotoSize.Small:
-                                percent = .25f;
-                                break;
-                            case PhotoSize.Custom:
-                                percent = (float)customPhotoSize / 100f;
-                                break;
-                        }
-
-
+                        var percent = CalculatePercent(photoSize, customPhotoSize);
                         //First decode to just get dimensions
                         var options = new BitmapFactory.Options
                         {
-                            InJustDecodeBounds = true
+                            InJustDecodeBounds = false,
+                            InSampleSize = 1,
                         };
-
-                        //already on background task
-                        BitmapFactory.DecodeFile(filePath, options);
-
-                        var finalWidth = (int)(options.OutWidth * percent);
-                        var finalHeight = (int)(options.OutHeight * percent);
-
-                        //set scaled image dimensions
-                        exif.SetAttribute(TAG_PIXEL_X_DIMENSION, Java.Lang.Integer.ToString(finalWidth));
-                        exif.SetAttribute(TAG_PIXEL_Y_DIMENSION, Java.Lang.Integer.ToString(finalHeight));
-
-                        //calculate sample size
-                        options.InSampleSize = CalculateInSampleSize(options, finalWidth, finalHeight);
-
-                        //turn off decode
-                        options.InJustDecodeBounds = false;
-
 
                         //this now will return the requested width/height from file, so no longer need to scale
                         using (var originalImage = BitmapFactory.DecodeFile(filePath, options))
                         {
-
+                            var matrix = new Matrix();
+                            matrix.PreScale(percent, percent);
+                            var scaled = Bitmap.CreateBitmap(originalImage, 0, 0, options.OutWidth, options.OutHeight, matrix, true);
                             //always need to compress to save back to disk
                             using (var stream = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite))
                             {
-
-                                originalImage.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
+                                scaled.Compress(Bitmap.CompressFormat.Jpeg, quality, stream);
                                 stream.Close();
                             }
-                            
                             originalImage.Recycle();
+                            originalImage.Dispose();
 
                             // Dispose of the Java side bitmap.
                             GC.Collect();
@@ -753,6 +629,27 @@ namespace Plugin.Media
                 return Task.FromResult(false);
 #endif
             }
+        }
+
+        private static float CalculatePercent(PhotoSize photoSize, int customPhotoSize)
+        {
+            var percent = 1.0f;
+            switch (photoSize)
+            {
+                case PhotoSize.Large:
+                    percent = .75f;
+                    break;
+                case PhotoSize.Medium:
+                    percent = .5f;
+                    break;
+                case PhotoSize.Small:
+                    percent = .25f;
+                    break;
+                case PhotoSize.Custom:
+                    percent = (float) customPhotoSize / 100f;
+                    break;
+            }
+            return percent;
         }
 
         void SetMissingMetadata(ExifInterface exif, Location location)

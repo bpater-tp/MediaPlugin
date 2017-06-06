@@ -15,6 +15,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Android.Content;
@@ -36,7 +37,7 @@ namespace Plugin.Media
         /// <param name="self"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static Task<MediaFile> GetMediaFileExtraAsync(this Intent self, Context context)
+        public static Task<List<MediaFile>> GetMediaFileExtraAsync(this Intent self, Context context)
         {
             if (self == null)
                 throw new ArgumentNullException("self");
@@ -57,7 +58,7 @@ namespace Plugin.Media
             }
             catch { }
 
-            return MediaPickerActivity.GetMediaFileAsync(context, 0, action, isPhoto, ref path, uri, saveToAlbum)
+            return MediaPickerActivity.GetMediaFileAsync(context, 0, action, isPhoto, ref path, uri, null, saveToAlbum)
                 .ContinueWith(t => t.Result.ToTask()).Unwrap();
         }
     }
