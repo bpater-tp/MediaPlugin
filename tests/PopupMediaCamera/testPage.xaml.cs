@@ -38,7 +38,7 @@ namespace test
 			{
 				var pickerOptions = new PickMediaOptions();
 
-				var file = await CrossMedia.Current.PickPhotoAsync(pickerOptions);
+                var file = (await CrossMedia.Current.PickPhotoAsync(pickerOptions))[0];
 
 				profilePicture.Source = ImageSource.FromStream(() => file.GetStream());
 

@@ -71,12 +71,13 @@ namespace MediaAndroidTest
               {
                   try
                   {
-                      var file = await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                      var files = (await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
                       {
                           PhotoSize = switchSize.Checked ? Plugin.Media.Abstractions.PhotoSize.Large : Plugin.Media.Abstractions.PhotoSize.Full
-                      });
-                      if (file == null)
+                    }));
+                      if (files == null)
                           return;
+                      var file = files[0];
                       var path = file.Path;
                       Toast.MakeText(this, path, ToastLength.Long).Show();
                       System.Diagnostics.Debug.WriteLine(path);

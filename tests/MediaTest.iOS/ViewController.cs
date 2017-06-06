@@ -61,13 +61,14 @@ namespace MediaTest.iOS
                 if (test == null)
                     return;
 
-                new UIAlertView("Success", test.Path, null, "OK").Show();
+                var mediafile = test.First();
+                new UIAlertView("Success", mediafile.Path, null, "OK").Show();
 
-                var stream = test.GetStream();
+                var stream = mediafile.GetStream();
                 using (var data = NSData.FromStream(stream))
                     MainImage.Image = UIImage.LoadFromData(data);
 
-                test.Dispose();
+                mediafile.Dispose();
             };
 
             TakeVideo.TouchUpInside += async (sender, args) =>
