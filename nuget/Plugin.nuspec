@@ -22,6 +22,9 @@
            <group targetFramework="MonoAndroid10">
                <dependency id="Plugin.Permissions" version="1.2.1"/>
            </group>
+           <group targetFramework="Xamarin.iOS10">
+               <dependency id="GMImagePicker.Xamarin" version="1.0.1.0"/>
+           </group>
        </dependencies>
    </metadata>
    <files>
