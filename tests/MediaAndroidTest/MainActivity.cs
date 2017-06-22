@@ -73,7 +73,8 @@ namespace MediaAndroidTest
                   {
                       var files = (await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
                       {
-                          PhotoSize = switchSize.Checked ? Plugin.Media.Abstractions.PhotoSize.Large : Plugin.Media.Abstractions.PhotoSize.Full
+                          PhotoSize = switchSize.Checked ? Plugin.Media.Abstractions.PhotoSize.Medium : Plugin.Media.Abstractions.PhotoSize.Full,
+                          RotateImage = true,
                     }));
                       if (files == null)
                           return;

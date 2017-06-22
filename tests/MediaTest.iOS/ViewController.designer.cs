@@ -1,6 +1,6 @@
 // WARNING
 //
-// This file has been generated automatically by Xamarin Studio from the outlets and
+// This file has been generated automatically by Visual Studio from the outlets and
 // actions declared in your storyboard file.
 // Manual changes to this file will not be maintained.
 //
@@ -29,6 +29,26 @@ namespace MediaTest.iOS
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIImageView MainImage { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView MainImage1 { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView MainImage2 { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView MainImage3 { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView MainImage4 { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView MainImage5 { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -78,6 +98,31 @@ namespace MediaTest.iOS
             if (MainImage != null) {
                 MainImage.Dispose ();
                 MainImage = null;
+            }
+
+            if (MainImage1 != null) {
+                MainImage1.Dispose ();
+                MainImage1 = null;
+            }
+
+            if (MainImage2 != null) {
+                MainImage2.Dispose ();
+                MainImage2 = null;
+            }
+
+            if (MainImage3 != null) {
+                MainImage3.Dispose ();
+                MainImage3 = null;
+            }
+
+            if (MainImage4 != null) {
+                MainImage4.Dispose ();
+                MainImage4 = null;
+            }
+
+            if (MainImage5 != null) {
+                MainImage5.Dispose ();
+                MainImage5 = null;
             }
 
             if (OverlaySwitch != null) {

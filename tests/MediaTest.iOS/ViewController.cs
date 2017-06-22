@@ -61,14 +61,23 @@ namespace MediaTest.iOS
                 if (test == null)
                     return;
 
-                var mediafile = test.First();
-                new UIAlertView("Success", mediafile.Path, null, "OK").Show();
+                foreach (var t in test) {
+                    Console.WriteLine(t.Path);
+                }
+                //new UIAlertView("Success", mediafile.Path, null, "OK").Show();
 
-                var stream = mediafile.GetStream();
-                using (var data = NSData.FromStream(stream))
-                    MainImage.Image = UIImage.LoadFromData(data);
+                int i = 0;
+                var images = new[] {MainImage, MainImage1, MainImage2, MainImage3, MainImage4, MainImage5};
+                foreach(var mediafile in test)
+                {
+                    var image = images[i++];
+                    if (i > 6) continue;
+                    var stream = mediafile.GetStream();
+                    using (var data = NSData.FromStream(stream))
+                        image.Image = UIImage.LoadFromData(data);
 
-                mediafile.Dispose();
+                    mediafile.Dispose();
+                }
             };
 
             TakeVideo.TouchUpInside += async (sender, args) =>
