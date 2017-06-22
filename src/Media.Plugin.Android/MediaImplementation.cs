@@ -1,19 +1,3 @@
-//
-//  Copyright 2011-2013, Xamarin Inc.
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
-
 using System;
 using System.IO;
 using System.Threading;
@@ -444,11 +428,11 @@ namespace Plugin.Media
 
         private int GetRequestId()
         {
-            int id = this.requestId;
-            if (this.requestId == Int32.MaxValue)
-                this.requestId = 0;
+            var id = requestId;
+            if (requestId == int.MaxValue)
+                requestId = 0;
             else
-                this.requestId++;
+                requestId++;
 
             return id;
         }
@@ -802,7 +786,7 @@ namespace Plugin.Media
 
         void SetMissingMetadata(ExifInterface exif, Location location)
         {
-            Single[] position = new Single[6];
+            var position = new float[6];
             if (!exif.GetLatLong(position) && location != null)
             {
                 exif.SetLatLong(location.Latitude, location.Longitude);

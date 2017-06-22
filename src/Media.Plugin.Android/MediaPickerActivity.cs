@@ -1,19 +1,3 @@
-//
-//  Copyright 2011-2013, Xamarin Inc.
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//        http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,18 +12,20 @@ using Environment = Android.OS.Environment;
 using Path = System.IO.Path;
 using Uri = Android.Net.Uri;
 using Plugin.Media.Abstractions;
-using Android.Net;
-using Android.Support.V4.Content;
 using Android.Content.PM;
 using System.Globalization;
+<<<<<<< HEAD
 using System.Linq;
+=======
+using Android.Support.V4.Content;
+>>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
 
 namespace Plugin.Media
 {
-    /// <summary>
-    /// Picker
-    /// </summary>
-    [Activity(ConfigurationChanges=Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
+	/// <summary>
+	/// Picker
+	/// </summary>
+	[Activity(ConfigurationChanges= ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public class MediaPickerActivity
         : Activity, Android.Media.MediaScannerConnection.IOnScanCompletedListener
     {
@@ -94,7 +80,10 @@ namespace Plugin.Media
             outState.PutBoolean(ExtraSaveToAlbum, saveToAlbum);
             outState.PutBoolean(ExtraTasked, tasked);
             outState.PutInt(ExtraFront, front);
+<<<<<<< HEAD
             outState.PutBoolean(ExtraMultiple, multiple);
+=======
+>>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
 
             if (path != null)
                 outState.PutString(ExtraPath, path.Path);
@@ -112,9 +101,9 @@ namespace Plugin.Media
         {
             base.OnCreate(savedInstanceState);
 
-            Bundle b = (savedInstanceState ?? Intent.Extras);
+            var b = (savedInstanceState ?? Intent.Extras);
 
-            bool ran = b.GetBoolean("ran", defaultValue: false);
+            var ran = b.GetBoolean("ran", defaultValue: false);
 
             title = b.GetString(MediaStore.MediaColumns.Title);
             description = b.GetString(MediaStore.Images.ImageColumns.Description);
@@ -132,7 +121,10 @@ namespace Plugin.Media
             {
                 pickIntent = new Intent(action);
                 if (action == Intent.ActionPick)
+<<<<<<< HEAD
                 {
+=======
+>>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
                     pickIntent.SetType(type);
                     pickIntent.PutExtra(Intent.ExtraAllowMultiple, b.GetBoolean(ExtraMultiple));
                 }
@@ -285,7 +277,7 @@ namespace Plugin.Media
                 if (data != null && data.Path != originalPath)
                 {
                     originalPath = data.ToString();
-                    string currentPath = path.Path;
+                    var currentPath = path.Path;
                     pathFuture = TryMoveFileAsync(context, data, path, isPhoto, false).ContinueWith(t =>
                         t.Result ? currentPath : null);
                 }
@@ -321,7 +313,6 @@ namespace Plugin.Media
             {
                 return pathFuture.ContinueWith(t =>
                 {
-                
                     string resultPath = t.Result;
                     if (resultPath != null && File.Exists(resultPath))
                     {
@@ -429,9 +420,9 @@ namespace Plugin.Media
             }
         }
 
-        public static Task<bool> TryMoveFileAsync(Context context, Uri url, Uri path, bool isPhoto, bool saveToAlbum)
+        static Task<bool> TryMoveFileAsync(Context context, Uri url, Uri path, bool isPhoto, bool saveToAlbum)
         {
-            string moveTo = GetLocalPath(path);
+            var moveTo = GetLocalPath(path);
             return GetFileForUriAsync(context, url, isPhoto, false).ContinueWith(t =>
             {
                 if (t.Result == null)
@@ -484,25 +475,34 @@ namespace Plugin.Media
 
         private static string GetUniquePath(string folder, string name, bool isPhoto)
         {
-            string ext = Path.GetExtension(name);
-            if (ext == String.Empty)
+            var ext = Path.GetExtension(name);
+            if (ext == string.Empty)
                 ext = ((isPhoto) ? ".jpg" : ".mp4");
 
             name = Path.GetFileNameWithoutExtension(name);
 
-            string nname = name + ext;
-            int i = 1;
+            var nname = name + ext;
+            var i = 1;
             while (File.Exists(Path.Combine(folder, nname)))
                 nname = name + "_" + (i++) + ext;
 
             return Path.Combine(folder, nname);
         }
 
+		/// <summary>
+		/// Try go get output file
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="subdir"></param>
+		/// <param name="name"></param>
+		/// <param name="isPhoto"></param>
+		/// <param name="saveToAlbum"></param>
+		/// <returns></returns>
         public static Uri GetOutputMediaFile(Context context, string subdir, string name, bool isPhoto, bool saveToAlbum)
         {
-            subdir = subdir ?? String.Empty;
+            subdir = subdir ?? string.Empty;
 
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
                 if (isPhoto)
@@ -511,9 +511,9 @@ namespace Plugin.Media
                     name = "VID_" + timestamp + ".mp4";
             }
 
-            string mediaType = (isPhoto) ? Environment.DirectoryPictures : Environment.DirectoryMovies;
+            var mediaType = (isPhoto) ? Environment.DirectoryPictures : Environment.DirectoryMovies;
             var directory = saveToAlbum ? Environment.GetExternalStoragePublicDirectory(mediaType) : context.GetExternalFilesDir(mediaType);
-            using (Java.IO.File mediaStorageDir = new Java.IO.File(directory, subdir))
+            using (var mediaStorageDir = new Java.IO.File(directory, subdir))
             {
                 if (!mediaStorageDir.Exists())
                 {
@@ -523,7 +523,7 @@ namespace Plugin.Media
                     if (!saveToAlbum)
                     {
                         // Ensure this media doesn't show up in gallery apps
-                        using (Java.IO.File nomedia = new Java.IO.File(mediaStorageDir, ".nomedia"))
+                        using (var nomedia = new Java.IO.File(mediaStorageDir, ".nomedia"))
                             nomedia.CreateNewFile();
                     }
                 }
@@ -556,7 +556,7 @@ namespace Plugin.Media
                         }
                         else
                         {
-                            int column = cursor.GetColumnIndex(MediaStore.MediaColumns.Data);
+                            var column = cursor.GetColumnIndex(MediaStore.MediaColumns.Data);
                             string contentPath = null;
 
                             if (column != -1)
@@ -582,8 +582,8 @@ namespace Plugin.Media
 
 								try
                                 {
-                                    using (Stream input = context.ContentResolver.OpenInputStream(uri))
-                                        using (Stream output = File.Create(outputPath.Path))
+                                    using (var input = context.ContentResolver.OpenInputStream(uri))
+                                        using (var output = File.Create(outputPath.Path))
                                             input.CopyTo(output);
 
                                     contentPath = outputPath.Path;
@@ -616,10 +616,8 @@ namespace Plugin.Media
             return tcs.Task;
         }
 
-        private static string GetLocalPath(Uri uri)
-        {
-            return new System.Uri(uri.ToString()).LocalPath;
-        }
+        private static string GetLocalPath(Uri uri) =>  new System.Uri(uri.ToString()).LocalPath;
+        
 
         private static Task<T> TaskFromResult<T>(T result)
         {
@@ -628,16 +626,21 @@ namespace Plugin.Media
             return tcs.Task;
         }
 
-        private static void OnMediaPicked(MediaPickedEventArgs e)
-        {
-            MediaPicked?.Invoke(null, e);
-        }
+        private static void OnMediaPicked(MediaPickedEventArgs e) =>
+			MediaPicked?.Invoke(null, e);
+        
 
-        public void OnScanCompleted(string path, Uri uri)
-        {
-            Console.WriteLine("scan complete: " + path);
-        }
-
+		/// <summary>
+		/// Scan completed
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="uri"></param>
+        public void OnScanCompleted(string path, Uri uri) =>
+			Console.WriteLine("scan complete: " + path);
+        
+		/// <summary>
+		/// On Destroy
+		/// </summary>
         protected override void OnDestroy()
         {
             if(!completed)
