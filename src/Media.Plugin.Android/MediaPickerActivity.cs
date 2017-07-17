@@ -277,7 +277,6 @@ namespace Plugin.Media
 
             if (action != Intent.ActionPick)
             {
-
                 originalPath = path.Path;
 
 
@@ -300,17 +299,7 @@ namespace Plugin.Media
             {
                 if (clipData != null)
                 {
-                    taskPaths = Task.Run(() =>
-                    {
-                        List<string> tasks = new List<string>();
-                        for (var i = 0; i < clipData.ItemCount; i++)
-                        {
-                            var item = clipData.GetItemAt(i);
-                            pathFuture = GetFileForUriAsync(context, item.Uri, isPhoto, false);
-                            tasks.Add(pathFuture.Result);
-                        }
-                        return tasks;
-                    });
+                    taskPaths = GetMultipleImagesFromGallery(context, pathFuture, clipData, isPhoto);
                 }
                 else
                 {
@@ -319,8 +308,14 @@ namespace Plugin.Media
                     pathFuture = GetFileForUriAsync(context, path, isPhoto, false);
                 }
             }
+            else if (clipData != null)
+            {
+				taskPaths = GetMultipleImagesFromGallery(context, pathFuture, clipData, isPhoto);
+			}
             else
+            {
                 pathFuture = TaskFromResult<string>(null);
+            }
 
             if (pathFuture != null)
             {
@@ -356,6 +351,23 @@ namespace Plugin.Media
             
             return Task.Run(() => new MediaPickedEventArgs(requestCode, new MediaFileNotFoundException(originalPath)));
         }
+
+        private static Task<List<string>> GetMultipleImagesFromGallery(Context context, Task<string> pathFuture, ClipData clipData, bool isPhoto)
+        {
+			Task<List<string>> taskPaths = Task.Run(() =>
+			{
+				List<string> tasks = new List<string>();
+				for (var i = 0; i < clipData.ItemCount; i++)
+				{
+					var item = clipData.GetItemAt(i);
+					pathFuture = GetFileForUriAsync(context, item.Uri, isPhoto, false);
+					tasks.Add(pathFuture.Result);
+				}
+				return tasks;
+			});
+
+            return taskPaths;
+		}
 
         bool completed;
         /// <summary>
