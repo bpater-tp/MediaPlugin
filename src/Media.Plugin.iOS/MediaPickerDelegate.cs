@@ -336,6 +336,10 @@ namespace Plugin.Media
                 }
             }
 
+            if (options.RotateImage)
+            {
+                image = image.RotateImage();
+            }
 
 			NSDictionary meta = null;
             try
@@ -444,9 +448,6 @@ namespace Plugin.Media
 	            var cgImageMetadata = new CGMutableImageMetadata();
 	            var destinationOptions = new CGImageDestinationOptions();
 
-                if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
-                    destinationOptions.Dictionary[ImageIO.CGImageProperties.Orientation] = meta[ImageIO.CGImageProperties.Orientation];
-				
                 if (meta.ContainsKey(ImageIO.CGImageProperties.DPIWidth))
 					destinationOptions.Dictionary[ImageIO.CGImageProperties.DPIWidth] = meta[ImageIO.CGImageProperties.DPIWidth];
 
@@ -456,12 +457,9 @@ namespace Plugin.Media
 
 				if (meta.ContainsKey(ImageIO.CGImageProperties.ExifDictionary))
 	            {
-
 					destinationOptions.ExifDictionary =
                                           new CGImagePropertiesExif(meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary);
-
 				}
-
 
                 if (meta.ContainsKey(ImageIO.CGImageProperties.TIFFDictionary))
 	            {
@@ -483,6 +481,17 @@ namespace Plugin.Media
 	                destinationOptions.IptcDictionary =
 	                    new CGImagePropertiesIptc(meta[ImageIO.CGImageProperties.IPTCDictionary] as NSDictionary);
 	            }
+				if (options.RotateImage)
+				{
+					if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
+						destinationOptions.Dictionary[ImageIO.CGImageProperties.Orientation] = new NSString(UIImageOrientation.Up.ToString());
+					destinationOptions.TiffDictionary.Orientation = CoreImage.CIImageOrientation.TopLeft;
+				}
+				else
+				{
+					if (meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
+						destinationOptions.Dictionary[ImageIO.CGImageProperties.Orientation] = meta[ImageIO.CGImageProperties.Orientation];
+				}
 	            destination.AddImageAndMetadata(cgImageFromJpeg, cgImageMetadata, destinationOptions);
 	            var success = destination.Close();
 	            if (success)
