@@ -308,7 +308,7 @@ namespace Plugin.Media
                     var images = new List<MediaFile>();
                     foreach (var asset in args.Assets)
                     {
-                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full));
+                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options.RotateImage);
                         images.Add(new MediaFile(path, () => File.OpenRead(path)));
                     }
                     return images;
@@ -340,7 +340,7 @@ namespace Plugin.Media
             });
         }
 
-        private static string StorePickedImage(PHAsset asset, int quality, float scale)
+        private static string StorePickedImage(PHAsset asset, int quality, float scale, bool rotate)
         {
             var imageManager = PHImageManager.DefaultManager;
             var requestOptions = new PHImageRequestOptions
@@ -366,13 +366,17 @@ namespace Plugin.Media
                 var fullimage = CIImage.FromData(data);
                 var image = UIImage.LoadFromData(data);
                 var scaledImage = image.ScaleImage(scale);
-                SaveTempImage(fullimage, scaledImage, path, quality);
+                if (rotate)
+                {
+                    scaledImage = scaledImage.RotateImage();
+                }
+                SaveTempImage(fullimage, scaledImage, path, quality, rotate);
             });
 
             return path;
         }
 
-        private static void SaveTempImage(CIImage fullimage, UIImage image, string outputFilename, int quality)
+        private static void SaveTempImage(CIImage fullimage, UIImage image, string outputFilename, int quality, bool rotate)
         {
             var imageData = image.AsJPEG(quality);
             var dataProvider = new CGDataProvider(imageData);
@@ -381,11 +385,6 @@ namespace Plugin.Media
             var destination = CGImageDestination.Create(imageWithExif, UTType.JPEG, 1);
             var cgImageMetadata = new CGMutableImageMetadata();
             var options = new CGImageDestinationOptions();
-            if (fullimage.Properties.Orientation != null)
-            {
-                options.Dictionary[ImageIO.CGImageProperties.Orientation] =
-                    new NSString(image.Orientation.ToString());
-            }
             if (fullimage.Properties.DPIWidthF != null)
             {
                 options.Dictionary[ImageIO.CGImageProperties.DPIWidth] =
@@ -401,6 +400,17 @@ namespace Plugin.Media
             options.GpsDictionary = fullimage.Properties?.Gps ?? new CGImagePropertiesGps();
             options.JfifDictionary = fullimage.Properties?.Jfif ?? new CGImagePropertiesJfif();
             options.IptcDictionary = fullimage.Properties?.Iptc ?? new CGImagePropertiesIptc();
+            if (rotate) {
+                options.Dictionary[ImageIO.CGImageProperties.Orientation] =
+                           new NSString(UIImageOrientation.Up.ToString());
+                options.TiffDictionary.Orientation = CIImageOrientation.TopLeft;
+            } else {
+                if (fullimage.Properties.Orientation != null)
+                {
+                    options.Dictionary[ImageIO.CGImageProperties.Orientation] =
+                               new NSString(image.Orientation.ToString());
+                }
+            }
             destination.AddImageAndMetadata(cgImageFromJpeg, cgImageMetadata, options);
             var success = destination.Close();
             if (success)
