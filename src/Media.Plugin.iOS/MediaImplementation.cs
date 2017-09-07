@@ -300,6 +300,17 @@ namespace Plugin.Media
                 MediaTypes = new[] {PHAssetMediaType.Image},
                 ColsInPortrait = colsInPortrait,
                 ColsInLandscape = colsInLandscape,
+                CustomSmartCollections = new[] {
+                    PHAssetCollectionSubtype.AlbumRegular,
+                    PHAssetCollectionSubtype.AlbumImported,
+                    PHAssetCollectionSubtype.SmartAlbumGeneric,
+                    PHAssetCollectionSubtype.SmartAlbumLivePhotos,
+                    PHAssetCollectionSubtype.SmartAlbumPanoramas,
+                    PHAssetCollectionSubtype.SmartAlbumRecentlyAdded,
+                    PHAssetCollectionSubtype.SmartAlbumUserLibrary,
+                    PHAssetCollectionSubtype.AlbumCloudShared,
+                    PHAssetCollectionSubtype.SmartAlbumFavorites,
+                },
             };
             picker.FinishedPickingAssets += (sender, args) =>
             {
@@ -333,7 +344,17 @@ namespace Plugin.Media
                 if (t != null)
                 {
                     t.Wait();
-                    return t.Result?.Result;
+                    try
+                    {
+                        return t.Result?.Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        if(ex.InnerException != null)
+                        {
+                            throw ex.InnerException;
+                        }
+                    }
                 }
 
                 return null;
@@ -346,15 +367,20 @@ namespace Plugin.Media
             var requestOptions = new PHImageRequestOptions
             {
                 Synchronous = true,
-                NetworkAccessAllowed = false,
+                NetworkAccessAllowed = true,
                 DeliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat,
             };
             var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string path = null;
             imageManager.RequestImageData(asset, requestOptions, (data, dataUti, orientation, info) =>
             {
-                var url = info["PHImageFileURLKey"] as NSUrl;
-                if (url != null)
+                NSError error = (NSError)info["PHImageErrorKey"];
+                if (error != null) {
+                    var description = error.LocalizedDescription;
+                    var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
+                    throw new Exception($"{description}. {reason}");
+                }
+                if (info["PHImageFileURLKey"] is NSUrl url)
                 {
                     path = Path.Combine(targetDir, url.LastPathComponent);
                 }
