@@ -54,13 +54,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GMImagePicker.Xamarin, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\GMImagePicker.Xamarin.1.0.1\lib\Xamarin.iOS10\GMImagePicker.Xamarin.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="GMImagePicker.Xamarin">
+      <HintPath>..\packages\GMImagePicker.Xamarin.1.0.2\lib\Xamarin.iOS10\GMImagePicker.Xamarin.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Media.Plugin.iOS.csproj" />
