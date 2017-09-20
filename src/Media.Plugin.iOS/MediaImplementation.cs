@@ -430,14 +430,11 @@ namespace Plugin.Media
                 options.Dictionary[ImageIO.CGImageProperties.Orientation] =
                            new NSString(UIImageOrientation.Up.ToString());
                 var tiffDict = new CGImagePropertiesTiff();
-                tiffDict.Orientation = CIImageOrientation.TopLeft;
-                tiffDict.Software = options.TiffDictionary.Software;
-                tiffDict.XResolution = options.TiffDictionary.XResolution;
-                tiffDict.YResolution = options.TiffDictionary.YResolution;
                 foreach(KeyValuePair<NSObject, NSObject> x in options.TiffDictionary.Dictionary)
                 {
                     tiffDict.Dictionary.SetValueForKey(x.Value, x.Key as NSString);
                 }
+                tiffDict.Dictionary.SetValueForKey(new NSNumber(1), new NSString("Orientation"));
                 options.TiffDictionary = tiffDict;
             } else {
                 if (fullimage.Properties.Orientation != null)
