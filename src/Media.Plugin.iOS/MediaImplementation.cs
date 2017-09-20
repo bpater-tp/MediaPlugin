@@ -429,7 +429,16 @@ namespace Plugin.Media
             if (rotate) {
                 options.Dictionary[ImageIO.CGImageProperties.Orientation] =
                            new NSString(UIImageOrientation.Up.ToString());
-                options.TiffDictionary.Orientation = CIImageOrientation.TopLeft;
+                var tiffDict = new CGImagePropertiesTiff();
+                tiffDict.Orientation = CIImageOrientation.TopLeft;
+                tiffDict.Software = options.TiffDictionary.Software;
+                tiffDict.XResolution = options.TiffDictionary.XResolution;
+                tiffDict.YResolution = options.TiffDictionary.YResolution;
+                foreach(KeyValuePair<NSObject, NSObject> x in options.TiffDictionary.Dictionary)
+                {
+                    tiffDict.Dictionary.SetValueForKey(x.Value, x.Key as NSString);
+                }
+                options.TiffDictionary = tiffDict;
             } else {
                 if (fullimage.Properties.Orientation != null)
                 {
