@@ -311,6 +311,8 @@ namespace Plugin.Media
                     PHAssetCollectionSubtype.AlbumCloudShared,
                     PHAssetCollectionSubtype.SmartAlbumFavorites,
                 },
+                ShowCameraButton = true,
+                AllowsEditingCameraImages = true,
             };
             picker.FinishedPickingAssets += (sender, args) =>
             {
