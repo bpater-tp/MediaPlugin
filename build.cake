@@ -1,7 +1,7 @@
 #addin "Cake.FileHelpers"
 
 var TARGET = Argument ("target", Argument ("t", "Default"));
-var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "3.1.7");
+var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "4.0.0");
 
 var libraries = new Dictionary<string, string> {
  	{ "./src/Media.sln", "Any" },
@@ -45,7 +45,11 @@ var BuildAction = new Action<Dictionary<string, string>> (solutions =>
                 // Mac is easy ;)
 				NuGetRestore (sln.Key);
 
-				DotNetBuild (sln.Key, c => c.Configuration = "Release");
+                MSBuild (sln.Key, c => 
+                { 
+                    c.Configuration = "Release";
+                    c.MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86;
+                });
 			}
 		}
 	}
