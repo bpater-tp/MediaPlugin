@@ -1,9 +1,6 @@
 using System;
-<<<<<<< HEAD
 using System.Collections.Generic;
 using System.IO;
-=======
->>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
 using System.Threading.Tasks;
 using Android.Content;
 using Plugin.Media.Abstractions;

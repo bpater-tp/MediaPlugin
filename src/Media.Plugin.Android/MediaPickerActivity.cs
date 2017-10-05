@@ -14,11 +14,8 @@ using Uri = Android.Net.Uri;
 using Plugin.Media.Abstractions;
 using Android.Content.PM;
 using System.Globalization;
-<<<<<<< HEAD
 using System.Linq;
-=======
 using Android.Support.V4.Content;
->>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
 
 namespace Plugin.Media
 {
@@ -80,10 +77,7 @@ namespace Plugin.Media
             outState.PutBoolean(ExtraSaveToAlbum, saveToAlbum);
             outState.PutBoolean(ExtraTasked, tasked);
             outState.PutInt(ExtraFront, front);
-<<<<<<< HEAD
             outState.PutBoolean(ExtraMultiple, multiple);
-=======
->>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
 
             if (path != null)
                 outState.PutString(ExtraPath, path.Path);
@@ -121,10 +115,7 @@ namespace Plugin.Media
             {
                 pickIntent = new Intent(action);
                 if (action == Intent.ActionPick)
-<<<<<<< HEAD
                 {
-=======
->>>>>>> 044bd8b... Cleanup Project and prepare 3.0 beta
                     pickIntent.SetType(type);
                     pickIntent.PutExtra(Intent.ExtraAllowMultiple, b.GetBoolean(ExtraMultiple));
                 }
