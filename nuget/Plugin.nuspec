@@ -62,8 +62,5 @@
      <!--Xamarin.iOS-->
      <file src="src\Media.Plugin.iOS\bin\iPhone\Release\Plugin.Media.*" target="lib\Xamarin.iOS10" />
      
-     <!--UWP-->
-     <file src="src\Media.Plugin.UWP\bin\Release\Plugin.Media.*" target="lib\UAP10" />
-     
    </files>
 </package>
