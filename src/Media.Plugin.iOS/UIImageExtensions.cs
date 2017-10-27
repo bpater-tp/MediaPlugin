@@ -118,7 +118,7 @@ namespace Plugin.Media
             }
             using (CGImage image = sourceImage.CGImage)
             {
-                CGImageAlphaInfo alpha = image.AlphaInfo == CGImageAlphaInfo.None ? CGImageAlphaInfo.NoneSkipLast : image.AlphaInfo;
+	            var alpha = image.AlphaInfo == CGImageAlphaInfo.None ? CGBitmapFlags.None: CGBitmapFlags.PremultipliedLast;
                 CGColorSpace color = CGColorSpace.CreateDeviceRGB();
                 var bitmap = new CGBitmapContext(IntPtr.Zero, (int)width, (int)height, image.BitsPerComponent, image.BytesPerRow, color, alpha);
                 bitmap.DrawImage(new CGRect(0, 0, (int)width, (int)height), image);
