@@ -366,11 +366,18 @@ namespace Plugin.Media
                     var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
                     throw new Exception($"{description}. {reason}");
                 }
-                if (info["PHImageFileURLKey"] is NSUrl url && !url.ToString().Contains((NSString)"Mutations"))
+                if (info["PHImageFileURLKey"] is NSUrl url)
                 {
-                    path = Path.Combine(targetDir, url.LastPathComponent);
+                    NSError err;
+                    var regexp = new NSRegularExpression((NSString)"(.+)DCIM/(\\d+)APPLE/IMG_(\\d+)", NSRegularExpressionOptions.CaseInsensitive, out err);
+                    var match = regexp.FindFirstMatch((NSString)url.ToString(), new NSMatchingOptions(), new NSRange(0, url.ToString().Length));
+                    if (match != null && match.NumberOfRanges > 0) {
+                        var range = match.RangeAtIndex(match.NumberOfRanges-1);
+                        var number = url.ToString().Substring((int)range.Location, (int) range.Length);
+                        path = Path.Combine(targetDir, $"IMG_{number}.JPG");
+                    }
                 }
-                else
+                if (path == null)
                 {
                     var parts = asset.LocalIdentifier.Split('/');
                     path = Path.Combine(targetDir, $"{parts[0]}.jpg");
