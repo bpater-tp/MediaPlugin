@@ -366,14 +366,14 @@ namespace Plugin.Media
                     var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
                     throw new Exception($"{description}. {reason}");
                 }
-                if (info["PHImageFileURLKey"] is NSUrl url)
+                if (info["PHImageFileURLKey"] is NSUrl url && !url.ToString().Contains((NSString)"Mutations"))
                 {
                     path = Path.Combine(targetDir, url.LastPathComponent);
                 }
                 else
                 {
                     var parts = asset.LocalIdentifier.Split('/');
-                    path = Path.Combine(targetDir, parts[0], ".jpg");
+                    path = Path.Combine(targetDir, $"{parts[0]}.jpg");
                 }
                 var fullimage = CIImage.FromData(data);
                 var image = UIImage.LoadFromData(data);
