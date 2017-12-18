@@ -13,6 +13,7 @@ using GMImagePicker;
 using ImageIO;
 using MobileCoreServices;
 using Photos;
+using System.Globalization;
 
 namespace Plugin.Media
 {
@@ -305,8 +306,14 @@ namespace Plugin.Media
                     var images = new List<MediaFile>();
                     foreach (var asset in args.Assets)
                     {
-                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options.RotateImage);
-                        images.Add(new MediaFile(path, () => File.OpenRead(path)));
+                        var tempMedia = new MediaFile(null, () => null);
+                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options.RotateImage, tempMedia);
+                        var media = new MediaFile(path, () => File.OpenRead(path));
+                        media.MediaTakenAt = tempMedia.MediaTakenAt;
+                        media.Orientation = tempMedia.Orientation;
+                        media.Latitude = tempMedia.Latitude;
+                        media.Longitude = tempMedia.Longitude;
+                        images.Add(media);
                     }
                     return images;
                 });
@@ -347,7 +354,7 @@ namespace Plugin.Media
             });
         }
 
-        private static string StorePickedImage(PHAsset asset, int quality, float scale, bool rotate)
+        private static string StorePickedImage(PHAsset asset, int quality, float scale, bool rotate, MediaFile tempMedia)
         {
             var imageManager = PHImageManager.DefaultManager;
             var requestOptions = new PHImageRequestOptions
@@ -378,6 +385,13 @@ namespace Plugin.Media
                     scaledImage = scaledImage.RotateImage();
                 }
                 SaveTempImage(fullimage, scaledImage, path, quality, rotate);
+                string dateString = fullimage.Properties.Exif.Dictionary.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal).ToString();
+                tempMedia.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+                int.TryParse(fullimage.Properties?.Orientation.ToString(), out tempMedia.Orientation);
+                tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude ?? 0.0;
+                tempMedia.LatitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLatitudeRef).ToString() ?? string.Empty;
+                tempMedia.Longitude = fullimage.Properties?.Gps?.Longitude ?? 0.0;
+                tempMedia.LongitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLongitudeRef).ToString() ?? string.Empty;
             });
 
             return path;

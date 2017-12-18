@@ -41,7 +41,7 @@ namespace MediaTest.iOS
 
                 if (test == null)
                     return;
-                
+                Console.WriteLine($"{test.MediaTakenAt}\n{test.Orientation}\n{test.Latitude}{test.LatitudeRef} {test.Longitude}{test.LongitudeRef}\n");
 
                 var stream = test.GetStream();
                 using (var data = NSData.FromStream(stream))
@@ -63,6 +63,7 @@ namespace MediaTest.iOS
 
                 foreach (var t in test) {
                     Console.WriteLine(t.Path);
+                    Console.WriteLine($"{t.MediaTakenAt}\n{t.Orientation}\n{t.Latitude}{t.LatitudeRef} {t.Longitude}{t.LongitudeRef}\n");
                 }
                 //new UIAlertView("Success", mediafile.Path, null, "OK").Show();
 

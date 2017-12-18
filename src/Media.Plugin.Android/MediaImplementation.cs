@@ -14,6 +14,7 @@ using Plugin.CurrentActivity;
 using System.Collections.Generic;
 using System.Linq;
 using Android.Support.Media;
+using System.Globalization;
 
 namespace Plugin.Media
 {
@@ -101,6 +102,7 @@ namespace Plugin.Media
                     {
                         originalMetadata.SaveAttributes();
                     }
+                    UpdateMetadata(media, originalMetadata);
                 }
                 catch (Exception ex)
                 {
@@ -210,6 +212,7 @@ namespace Plugin.Media
                 {
                     exif.SaveAttributes();
                 }
+                UpdateMetadata(media, exif);
             }
             catch(Exception ex)
             {
@@ -832,6 +835,16 @@ namespace Plugin.Media
             }
         }
 
+        private void UpdateMetadata(MediaFile media, ExifInterface exif)
+        {
+            var dateString = exif.GetAttribute(ExifInterface.TagDatetime);
+            media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+            media.Orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, ExifInterface.OrientationUndefined);
+            media.Latitude = exif.GetAttributeDouble(ExifInterface.TagGpsLatitude, 0.0);
+            media.LatitudeRef = exif.GetAttribute(ExifInterface.TagGpsLatitudeRef);
+            media.Longitude = exif.GetAttributeDouble(ExifInterface.TagGpsLongitude, 0.0);
+            media.LongitudeRef = exif.GetAttribute(ExifInterface.TagGpsLongitudeRef);
+        }
     }
 
 

@@ -9,6 +9,12 @@ namespace Plugin.Media.Abstractions
     /// </summary>
     public sealed class MediaFile : IDisposable
     {
+        public int Orientation;
+        public DateTime MediaTakenAt;
+        public double Latitude;
+        public string LatitudeRef;
+        public double Longitude;
+        public string LongitudeRef;
 
 		/// <summary>
 		/// Constructor

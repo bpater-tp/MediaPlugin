@@ -382,7 +382,31 @@ namespace Plugin.Media
 
             }
 
-            return new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
+            var fullimage = image.CIImage;
+            var media = new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
+            var exif = meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary;
+            var gps = meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary;
+            string dateString = exif.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal).ToString();
+            media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+            int.TryParse(meta.ValueForKey(ImageIO.CGImageProperties.Orientation).ToString(), out media.Orientation);
+            NSObject obj = new NSObject();
+            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitude, out obj) ?? false)
+            {
+                media.Latitude = ((NSNumber)obj).Int32Value;
+            }
+            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitudeRef, out obj) ?? false)
+            {
+                media.LatitudeRef = obj.ToString();
+            }
+            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitude, out obj) ?? false)
+            {
+                media.Longitude = ((NSNumber)obj).Int32Value;
+            }
+            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitudeRef, out obj) ?? false)
+            {
+                media.LongitudeRef = obj.ToString();
+            }
+            return media;
         }
 
         private static NSDictionary SetGpsLocation(NSDictionary meta, Location location)
