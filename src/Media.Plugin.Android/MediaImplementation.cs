@@ -83,7 +83,6 @@ namespace Plugin.Media
                 {
                     bool imageChanged = false;
                     var originalMetadata = new ExifInterface(media.Path);
-
                     if (options.RotateImage)
                     {
                         imageChanged = await FixOrientationAndResizeAsync(media.Path, options, originalMetadata);
@@ -840,10 +839,33 @@ namespace Plugin.Media
             var dateString = exif.GetAttribute(ExifInterface.TagDatetime);
             media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
             media.Orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, ExifInterface.OrientationUndefined);
-            media.Latitude = exif.GetAttributeDouble(ExifInterface.TagGpsLatitude, 0.0);
+            var latString = exif.GetAttribute(ExifInterface.TagGpsLatitude);
+            media.Latitude = ParseRational(latString);
             media.LatitudeRef = exif.GetAttribute(ExifInterface.TagGpsLatitudeRef);
-            media.Longitude = exif.GetAttributeDouble(ExifInterface.TagGpsLongitude, 0.0);
+            var longString = exif.GetAttribute(ExifInterface.TagGpsLongitude);
+            media.Longitude = ParseRational(longString);
             media.LongitudeRef = exif.GetAttribute(ExifInterface.TagGpsLongitudeRef);
+        }
+
+        private double ParseRational(string rat)
+        {
+            double result = 0.0;
+
+            try
+            {
+                var parts = rat.Split(',');
+                var degParts = parts[0].Split('/');
+                var degrees = Double.Parse(degParts[0]) / Double.Parse(degParts[1]);
+                var minParts = parts[1].Split('/');
+                var minutes = Double.Parse(minParts[0]) / Double.Parse(minParts[1]);
+                var secParts = parts[2].Split('/');
+                var seconds = Double.Parse(secParts[0]) / Double.Parse(secParts[1]);
+                result = degrees + (minutes / 60) + (seconds / 3600);
+            } catch (Exception)
+            {
+            }
+
+            return result;
         }
     }
 
