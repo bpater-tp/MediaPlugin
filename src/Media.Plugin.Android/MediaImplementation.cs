@@ -72,8 +72,9 @@ namespace Plugin.Media
                 options = new PickMediaOptions();
 
             //check to see if we picked a file, and if so then try to fix orientation and resize
-            foreach (var media in mediaList)
+            for (int i=0; i<mediaList.Count; i++)
             {
+                var media = mediaList[i];
                 if (string.IsNullOrWhiteSpace(media?.Path))
                 {
                     continue;
@@ -101,7 +102,7 @@ namespace Plugin.Media
                     {
                         originalMetadata.SaveAttributes();
                     }
-                    UpdateMetadata(media, originalMetadata);
+                    UpdateMetadata(ref media, originalMetadata);
                 }
                 catch (Exception ex)
                 {
@@ -211,7 +212,7 @@ namespace Plugin.Media
                 {
                     exif.SaveAttributes();
                 }
-                UpdateMetadata(media, exif);
+                UpdateMetadata(ref media, exif);
             }
             catch(Exception ex)
             {
@@ -834,7 +835,7 @@ namespace Plugin.Media
             }
         }
 
-        private void UpdateMetadata(MediaFile media, ExifInterface exif)
+        private void UpdateMetadata(ref MediaFile media, ExifInterface exif)
         {
             var dateString = exif.GetAttribute(ExifInterface.TagDatetime);
             media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
