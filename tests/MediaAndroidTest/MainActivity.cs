@@ -53,6 +53,7 @@ namespace MediaAndroidTest
                     });
                     if (file == null)
                         return;
+                    Console.WriteLine($"{file.MediaTakenAt}\n{file.Orientation}\n{file.Latitude}{file.LatitudeRef} {file.Longitude}{file.LongitudeRef}\n");
                     var path = file.Path;
                     Toast.MakeText(this, path, ToastLength.Long).Show();
                     System.Diagnostics.Debug.WriteLine(path);
@@ -80,6 +81,7 @@ namespace MediaAndroidTest
                       if (files == null)
                           return;
                       var file = files[0];
+                      Console.WriteLine($"{file.MediaTakenAt}\n{file.Orientation}\n{file.Latitude}{file.LatitudeRef} {file.Longitude}{file.LongitudeRef}\n");
                       var path = file.Path;
                       Toast.MakeText(this, path, ToastLength.Long).Show();
                       System.Diagnostics.Debug.WriteLine(path);
