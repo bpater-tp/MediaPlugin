@@ -312,7 +312,9 @@ namespace Plugin.Media
                         media.MediaTakenAt = tempMedia.MediaTakenAt;
                         media.Orientation = tempMedia.Orientation;
                         media.Latitude = tempMedia.Latitude;
+                        media.LatitudeRef = tempMedia.LatitudeRef;
                         media.Longitude = tempMedia.Longitude;
+                        media.LongitudeRef = tempMedia.LongitudeRef;
                         images.Add(media);
                     }
                     return images;
