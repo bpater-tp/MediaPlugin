@@ -243,6 +243,7 @@ namespace Plugin.Media
                 }
 
                 Interlocked.Exchange(ref pickerDelegate, null);
+	            picker.Dispose();
                 return t;
             }).Unwrap();
         }
@@ -341,6 +342,7 @@ namespace Plugin.Media
             return tcs.Task.ContinueWith(t =>
             {
                 Interlocked.Exchange(ref _pickerDelegateCount, 1);
+	            picker.Dispose();
                 if (t != null)
                 {
                     t.Wait();

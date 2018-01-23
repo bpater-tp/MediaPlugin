@@ -33,11 +33,23 @@ namespace Plugin.Media
             }
         }
 
-        /// <summary>
-        /// Gets result of picker
-        /// </summary>
-        /// <returns></returns>
-        public Task<MediaFile> GetResultAsync() =>
-            ((MediaPickerDelegate)Delegate).Task;
-    }
+		/// <summary>
+		/// Gets result of picker
+		/// </summary>
+		/// <returns></returns>
+		public Task<MediaFile> GetResultAsync() =>
+			((MediaPickerDelegate)Delegate).Task;
+
+		bool disposed;
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if(disposing && !disposed)
+			{
+				disposed = true;
+				Delegate?.Dispose();
+				Delegate = null;
+			}
+		}
+	}
 }
