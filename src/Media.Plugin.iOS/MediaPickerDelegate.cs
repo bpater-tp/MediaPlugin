@@ -392,7 +392,7 @@ namespace Plugin.Media
             NSObject obj = new NSObject();
             if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitude, out obj) ?? false)
             {
-                media.Latitude = ((NSNumber)obj).Int32Value;
+                media.Latitude = ((NSNumber)obj).FloatValue;
             }
             if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitudeRef, out obj) ?? false)
             {
@@ -400,7 +400,7 @@ namespace Plugin.Media
             }
             if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitude, out obj) ?? false)
             {
-                media.Longitude = ((NSNumber)obj).Int32Value;
+                media.Longitude = ((NSNumber)obj).FloatValue;
             }
             if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitudeRef, out obj) ?? false)
             {
