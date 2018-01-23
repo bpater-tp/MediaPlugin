@@ -24,10 +24,20 @@ namespace MediaTest.iOS
             TakeVideo.Enabled = CrossMedia.Current.IsTakeVideoSupported;
             PickVideo.Enabled = CrossMedia.Current.IsPickVideoSupported;
 
+            var fakeLocation = new Location {
+                Altitude = 100,
+                Direction = 10,
+                HorizontalAccuracy = 1.0,
+                Latitude = 53.31254,
+                Longitude = 14.23423,
+                Speed = 4,
+                Timestamp = new DateTime()
+            };
+
             TakePhoto.TouchUpInside += async (sender, args) =>
             {
                 Func<object> func = CreateOverlay;
-				var test = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
+                var test = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
                 {
                     Name = "test1.jpg",
                     SaveToAlbum = AlbumSwitch.On,
@@ -36,7 +46,8 @@ namespace MediaTest.iOS
                     AllowCropping = CroppingSwitch.On,
                     CompressionQuality = (int)SliderQuality.Value,
                     Directory = "Sample",
-                    DefaultCamera = FrontSwitch.On ? Plugin.Media.Abstractions.CameraDevice.Front : Plugin.Media.Abstractions.CameraDevice.Rear
+                    DefaultCamera = FrontSwitch.On ? Plugin.Media.Abstractions.CameraDevice.Front : Plugin.Media.Abstractions.CameraDevice.Rear,
+                    Location = fakeLocation,
                 });
 
                 if (test == null)
