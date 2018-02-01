@@ -1,4 +1,18 @@
 ## Changelog
+### [3.1.4]
+* Fix for #452: Large images on iPhone X don't save sometimes at 100% (thanks @christophedelanghe)
+
+### [3.1.3]
+* Remove need for Android Target versions (always use File Provider via #442 and @ddobrev)
+* Enhancments to Android picking front or rare camera (via @WebDucer)
+
+
+### [3.1.0]
+* Fixes for rotations on iOS (return proper exif)
+* Remove permission pop up on pick video/photo on iOS 11+
+* Better checks on disposing of controllers
+* Tizen Support
+
 ### [3.0.2]
 * iOS: Fix Lat/Long saving
 * Android: Fixup issue with url sharing #300 especially with mobileiron
