@@ -193,6 +193,7 @@ namespace Plugin.Media
             {
                 bool imageChanged = false;
                 var exif = new ExifInterface(media.Path);
+                exif.SetAttribute(ExifInterface.TagDatetime, DateTime.Now.ToString("yyyy:MM:dd HH:mm:ss"));
                 if (options.RotateImage)
                 {
                     imageChanged = await FixOrientationAndResizeAsync(media.Path, options, exif);

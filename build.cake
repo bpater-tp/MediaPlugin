@@ -1,7 +1,7 @@
 #addin "Cake.FileHelpers"
 
 var TARGET = Argument ("target", Argument ("t", "Default"));
-var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "4.1.4");
+var version = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "4.1.5");
 
 var libraries = new Dictionary<string, string> {
  	{ "./src/Media.sln", "Any" },
