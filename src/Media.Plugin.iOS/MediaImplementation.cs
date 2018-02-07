@@ -394,8 +394,15 @@ namespace Plugin.Media
                     scaledImage = scaledImage.RotateImage();
                 }
                 SaveTempImage(fullimage, scaledImage, path, quality, rotate);
-                string dateString = fullimage.Properties.Exif.Dictionary.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal).ToString();
-                tempMedia.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+                string dateString = fullimage.Properties.Exif?.Dictionary?.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal)?.ToString();
+                if (dateString != null)
+                {
+                    tempMedia.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    tempMedia.MediaTakenAt = null;
+                }
                 int.TryParse(fullimage.Properties?.Orientation.ToString(), out tempMedia.Orientation);
                 tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude ?? 0.0;
                 tempMedia.LatitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLatitudeRef).ToString() ?? string.Empty;

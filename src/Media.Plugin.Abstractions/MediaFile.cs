@@ -10,7 +10,7 @@ namespace Plugin.Media.Abstractions
     public sealed class MediaFile : IDisposable
     {
         public int Orientation;
-        public DateTime MediaTakenAt;
+        public DateTime? MediaTakenAt;
         public double Latitude;
         public string LatitudeRef;
         public double Longitude;

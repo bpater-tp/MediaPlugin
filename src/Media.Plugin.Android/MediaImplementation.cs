@@ -839,7 +839,11 @@ namespace Plugin.Media
         private void UpdateMetadata(ref MediaFile media, ExifInterface exif)
         {
             var dateString = exif.GetAttribute(ExifInterface.TagDatetime);
-            media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+            if (dateString != null) {
+                media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+            } else {
+                media.MediaTakenAt = null;
+            }
             media.Orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, ExifInterface.OrientationUndefined);
             var latString = exif.GetAttribute(ExifInterface.TagGpsLatitude);
             media.Latitude = ParseRational(latString);
