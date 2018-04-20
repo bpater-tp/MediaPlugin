@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\tests\packages\Xamarin.Build.Download.0.4.10\build\Xamarin.Build.Download.props" Condition="Exists('..\..\tests\packages\Xamarin.Build.Download.0.4.10\build\Xamarin.Build.Download.props')" />
   <Import Project="..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.props" Condition="Exists('..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -17,7 +18,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
-    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -50,35 +51,44 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="Xamarin.Android.Support.Annotations">
-      <HintPath>..\packages\Xamarin.Android.Support.Annotations.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Compat">
-      <HintPath>..\packages\Xamarin.Android.Support.Compat.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Compat.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Core.UI">
-      <HintPath>..\packages\Xamarin.Android.Support.Core.UI.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Core.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Core.Utils">
-      <HintPath>..\packages\Xamarin.Android.Support.Core.Utils.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Core.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Exif">
-      <HintPath>..\packages\Xamarin.Android.Support.Exif.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Exif.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Media.Compat">
-      <HintPath>..\packages\Xamarin.Android.Support.Media.Compat.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Media.Compat.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.Fragment">
-      <HintPath>..\packages\Xamarin.Android.Support.Fragment.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Fragment.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.v4">
-      <HintPath>..\packages\Xamarin.Android.Support.v4.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.v4.dll</HintPath>
-    </Reference>
     <Reference Include="Plugin.Permissions.Abstractions">
       <HintPath>..\..\tests\packages\Plugin.Permissions.2.2.1\lib\MonoAndroid10\Plugin.Permissions.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.Permissions">
       <HintPath>..\..\tests\packages\Plugin.Permissions.2.2.1\lib\MonoAndroid10\Plugin.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Annotations">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Annotations.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Arch.Core.Common">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Arch.Core.Common.1.0.0\lib\MonoAndroid80\Xamarin.Android.Arch.Core.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Arch.Lifecycle.Common">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Common.1.0.3\lib\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Arch.Lifecycle.Runtime">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Runtime.1.0.3\lib\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Compat">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Compat.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Compat.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Core.UI">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Core.UI.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Core.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Core.Utils">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Core.Utils.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Core.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Exif">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Exif.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Exif.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Fragment">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Fragment.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Fragment.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Media.Compat">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.Media.Compat.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.Media.Compat.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v4">
+      <HintPath>..\..\tests\packages\Xamarin.Android.Support.v4.27.0.2\lib\MonoAndroid81\Xamarin.Android.Support.v4.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -131,4 +141,16 @@
   <Import Project="..\packages\Xamarin.Android.Support.Fragment.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.Fragment.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Fragment.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.Fragment.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v4.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v4.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v4.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v4.targets')" />
   <Import Project="..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.targets" Condition="Exists('..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Arch.Core.Common.1.0.0\build\MonoAndroid80\Xamarin.Android.Arch.Core.Common.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Arch.Core.Common.1.0.0\build\MonoAndroid80\Xamarin.Android.Arch.Core.Common.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Common.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Common.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Common.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Common.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Runtime.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Runtime.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Arch.Lifecycle.Runtime.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Runtime.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Compat.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Compat.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Compat.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Compat.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Core.UI.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Core.UI.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Core.UI.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Core.UI.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Core.Utils.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Core.Utils.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Core.Utils.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Core.Utils.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Exif.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Exif.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Exif.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Exif.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Fragment.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Fragment.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Fragment.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Fragment.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.Media.Compat.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Media.Compat.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.Media.Compat.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Media.Compat.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets" Condition="Exists('..\..\tests\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets')" />
+  <Import Project="..\..\tests\packages\Xamarin.Build.Download.0.4.10\build\Xamarin.Build.Download.targets" Condition="Exists('..\..\tests\packages\Xamarin.Build.Download.0.4.10\build\Xamarin.Build.Download.targets')" />
 </Project>
