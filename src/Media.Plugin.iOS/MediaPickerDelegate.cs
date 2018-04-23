@@ -361,7 +361,12 @@ namespace Plugin.Media
                 savedImage = SaveImageWithMetadata(image, quality, meta, path);
 
             if(!savedImage)
-                image.AsJPEG(quality).Save(path, true);
+            {
+	            var imageData = GetImageWithQuality(quality, image);
+
+	            imageData.Save(path, true);
+	            imageData.Dispose();
+            }
             
 
             string aPath = null;
@@ -417,7 +422,24 @@ namespace Plugin.Media
             return media;
         }
 
-        private static NSDictionary SetGpsLocation(NSDictionary meta, Location location)
+	    private static NSData GetImageWithQuality(float quality, UIImage image)
+	    {
+		    var finalQuality = quality;
+		    var imageData = image.AsJPEG(finalQuality);
+
+		    //continue to move down quality , rare instances
+		    while (imageData == null && finalQuality > 0)
+		    {
+			    finalQuality -= 0.05f;
+			    imageData = image.AsJPEG(finalQuality);
+		    }
+
+		    if (imageData == null)
+			    throw new NullReferenceException("Unable to convert image to jpeg, please ensure file exists or lower quality level");
+		    return imageData;
+	    }
+
+	    private static NSDictionary SetGpsLocation(NSDictionary meta, Location location)
         {
             var newMeta = new NSMutableDictionary();
             newMeta.SetValuesForKeysWithDictionary(meta);
@@ -442,8 +464,8 @@ namespace Plugin.Media
         {
             try
             {
-              
-	            var imageData = image.AsJPEG(quality);
+
+	            var imageData = GetImageWithQuality(quality, image);
 	            var dataProvider = new CGDataProvider(imageData);
 	            var cgImageFromJpeg = CGImage.FromJPEG(dataProvider, null, false, CGColorRenderingIntent.Default);
 	            var imageWithExif = new NSMutableData();
@@ -601,105 +623,110 @@ namespace Plugin.Media
             return false;
         }
 
-        private static UIDeviceOrientation GetDeviceOrientation(UIInterfaceOrientation self)
-        {
-            switch (self)
-            {
-                case UIInterfaceOrientation.LandscapeLeft:
-                    return UIDeviceOrientation.LandscapeLeft;
-                case UIInterfaceOrientation.LandscapeRight:
-                    return UIDeviceOrientation.LandscapeRight;
-                case UIInterfaceOrientation.Portrait:
-                    return UIDeviceOrientation.Portrait;
-                case UIInterfaceOrientation.PortraitUpsideDown:
-                    return UIDeviceOrientation.PortraitUpsideDown;
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
+	    private static UIDeviceOrientation GetDeviceOrientation(UIInterfaceOrientation self)
+	    {
+		    switch (self)
+		    {
+			    case UIInterfaceOrientation.LandscapeLeft:
+				    return UIDeviceOrientation.LandscapeLeft;
+			    case UIInterfaceOrientation.LandscapeRight:
+				    return UIDeviceOrientation.LandscapeRight;
+			    case UIInterfaceOrientation.Portrait:
+				    return UIDeviceOrientation.Portrait;
+			    case UIInterfaceOrientation.PortraitUpsideDown:
+				    return UIDeviceOrientation.PortraitUpsideDown;
+			    default:
+				    throw new InvalidOperationException();
+		    }
+	    }
 
-				private UIImage RotateImage(UIImage image) {
-						UIImage imageToReturn = null;
-						if (image.Orientation == UIImageOrientation.Up) 
-						{
-								imageToReturn = image;
-						}
-						else 
-						{
-								CGAffineTransform transform = CGAffineTransform.MakeIdentity();
+	    private UIImage RotateImage(UIImage image)
+	    {
+		    UIImage imageToReturn = null;
+		    if (image.Orientation == UIImageOrientation.Up)
+		    {
+			    imageToReturn = image;
+		    }
+		    else
+		    {
+			    CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 
-								switch (image.Orientation) 
-								{
-										case UIImageOrientation.Down:
-										case UIImageOrientation.DownMirrored:
-												transform.Rotate((float)Math.PI);
-												transform.Translate(image.Size.Width, image.Size.Height);
-												break;
+			    switch (image.Orientation)
+			    {
+				    case UIImageOrientation.Down:
+				    case UIImageOrientation.DownMirrored:
+					    transform.Rotate((float) Math.PI);
+					    transform.Translate(image.Size.Width, image.Size.Height);
+					    break;
 
-										case UIImageOrientation.Left:
-										case UIImageOrientation.LeftMirrored:
-												transform.Rotate((float)Math.PI / 2);
-												transform.Translate(image.Size.Width, 0);
-												break;
+				    case UIImageOrientation.Left:
+				    case UIImageOrientation.LeftMirrored:
+					    transform.Rotate((float) Math.PI / 2);
+					    transform.Translate(image.Size.Width, 0);
+					    break;
 
-										case UIImageOrientation.Right:
-										case UIImageOrientation.RightMirrored:
-												transform.Rotate(-(float)Math.PI / 2);
-												transform.Translate(0, image.Size.Height);
-												break;
-										case UIImageOrientation.Up:
-										case UIImageOrientation.UpMirrored:
-												break;
-								}
+				    case UIImageOrientation.Right:
+				    case UIImageOrientation.RightMirrored:
+					    transform.Rotate(-(float) Math.PI / 2);
+					    transform.Translate(0, image.Size.Height);
+					    break;
+				    case UIImageOrientation.Up:
+				    case UIImageOrientation.UpMirrored:
+					    break;
+			    }
 
-								switch (image.Orientation) 
-								{
-										case UIImageOrientation.UpMirrored:
-										case UIImageOrientation.DownMirrored:
-												transform.Translate(image.Size.Width, 0);
-												transform.Scale(-1, 1);
-												break;
+			    switch (image.Orientation)
+			    {
+				    case UIImageOrientation.UpMirrored:
+				    case UIImageOrientation.DownMirrored:
+					    transform.Translate(image.Size.Width, 0);
+					    transform.Scale(-1, 1);
+					    break;
 
-										case UIImageOrientation.LeftMirrored:
-										case UIImageOrientation.RightMirrored:
-												transform.Translate(image.Size.Height, 0);
-												transform.Scale(-1, 1);
-												break;
-										case UIImageOrientation.Up:
-										case UIImageOrientation.Down:
-										case UIImageOrientation.Left:
-										case UIImageOrientation.Right:
-												break;
-								}
+				    case UIImageOrientation.LeftMirrored:
+				    case UIImageOrientation.RightMirrored:
+					    transform.Translate(image.Size.Height, 0);
+					    transform.Scale(-1, 1);
+					    break;
+				    case UIImageOrientation.Up:
+				    case UIImageOrientation.Down:
+				    case UIImageOrientation.Left:
+				    case UIImageOrientation.Right:
+					    break;
+			    }
 
-								using (var context = new CGBitmapContext(IntPtr.Zero,
-																												(int)image.Size.Width,
-																												(int)image.Size.Height,
-																												image.CGImage.BitsPerComponent,
-																												image.CGImage.BytesPerRow,
-																												image.CGImage.ColorSpace,
-																												image.CGImage.BitmapInfo)) 
-								{
-										context.ConcatCTM(transform);
-										switch (image.Orientation) {
-												case UIImageOrientation.Left:
-												case UIImageOrientation.LeftMirrored:
-												case UIImageOrientation.Right:
-												case UIImageOrientation.RightMirrored:
-														context.DrawImage(new RectangleF(PointF.Empty, new SizeF((float)image.Size.Height, (float)image.Size.Width)), image.CGImage);
-														break;
-												default:
-														context.DrawImage(new RectangleF(PointF.Empty, new SizeF((float)image.Size.Width, (float)image.Size.Height)), image.CGImage);
-														break;
-										}
+			    using (var context = new CGBitmapContext(IntPtr.Zero,
+				    (int) image.Size.Width,
+				    (int) image.Size.Height,
+				    image.CGImage.BitsPerComponent,
+				    image.CGImage.BytesPerRow,
+				    image.CGImage.ColorSpace,
+				    image.CGImage.BitmapInfo))
+			    {
+				    context.ConcatCTM(transform);
+				    switch (image.Orientation)
+				    {
+					    case UIImageOrientation.Left:
+					    case UIImageOrientation.LeftMirrored:
+					    case UIImageOrientation.Right:
+					    case UIImageOrientation.RightMirrored:
+						    context.DrawImage(
+							    new RectangleF(PointF.Empty, new SizeF((float) image.Size.Height, (float) image.Size.Width)), image.CGImage);
+						    break;
+					    default:
+						    context.DrawImage(
+							    new RectangleF(PointF.Empty, new SizeF((float) image.Size.Width, (float) image.Size.Height)), image.CGImage);
+						    break;
+				    }
 
-										using (var imageRef = context.ToImage()) {
-												imageToReturn = new UIImage(imageRef);
-										}
-								}
-						}
+				    using (var imageRef = context.ToImage())
+				    {
+					    imageToReturn = new UIImage(imageRef);
+				    }
+			    }
+		    }
 
-						return imageToReturn;
-				}
+		    return imageToReturn;
+	    }
     }
 }
