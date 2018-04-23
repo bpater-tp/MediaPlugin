@@ -67,6 +67,8 @@ namespace Plugin.Media
 
             Dismiss(picker, () =>
             {
+	            if (mediaFile == null)
+		            tcs.SetException(new FileNotFoundException());
                 tcs.TrySetResult(mediaFile);
             });
         }
@@ -255,13 +257,15 @@ namespace Plugin.Media
         private async Task<MediaFile> GetPictureMediaFile(NSDictionary info)
         {
             var image = (UIImage)info[UIImagePickerController.EditedImage] ?? (UIImage)info[UIImagePickerController.OriginalImage];
+	        if (image == null)
+		        return null;
 
-						// If rotate image option, then rotate the image to the original orientation it was taken
-						// instead of the orientation apple saves it to storage as with the orientation as metadata.
-						if (options.RotateImage) 
-						{
-								image = RotateImage(image);
-						}
+			// If rotate image option, then rotate the image to the original orientation it was taken
+			// instead of the orientation apple saves it to storage as with the orientation as metadata.
+			if (options.RotateImage) 
+			{
+					image = RotateImage(image);
+			}
 
             var path = GetOutputPath(MediaImplementation.TypeImage,
                 options.Directory ?? ((IsCaptured) ? string.Empty : "temp"),
