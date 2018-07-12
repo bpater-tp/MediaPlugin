@@ -8,7 +8,7 @@ using Plugin.CurrentActivity;
 namespace MediaAndroidTest
 {
 	//You can specify additional application information in this attribute
-    [Application]
+	[Application(LargeHeap = true)]
     public class MainApplication : Application, Application.IActivityLifecycleCallbacks
     {
         public MainApplication(IntPtr handle, JniHandleOwnership transer)
