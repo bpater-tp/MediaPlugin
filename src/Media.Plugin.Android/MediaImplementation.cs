@@ -84,6 +84,17 @@ namespace Plugin.Media
                 {
                     bool imageChanged = false;
                     var originalMetadata = new ExifInterface(media.Path);
+					var imageDimensions = GetImageFileDimenssions(media.Path);
+					var maxSize = OpenGlInfo.MaxTextureSize();
+					if (maxSize > 0)
+					{
+						var scalingPercent = CalculatePercent(options.PhotoSize, options.CustomPhotoSize);
+						if (imageDimensions.OutWidth * scalingPercent > maxSize || imageDimensions.OutHeight * scalingPercent > maxSize)
+						{
+							options.PhotoSize = PhotoSize.MaxWidthHeight;
+							options.MaxWidthHeight = maxSize;
+						}
+					}
                     if (options.RotateImage)
                     {
                         imageChanged = await FixOrientationAndResizeAsync(media.Path, options, originalMetadata);
@@ -192,6 +203,17 @@ namespace Plugin.Media
             try
             {
                 bool imageChanged = false;
+				var imageDimensions = GetImageFileDimenssions(media.Path);
+				var maxSize = OpenGlInfo.MaxTextureSize();
+				if (maxSize > 0)
+				{
+					var scalingPercent = CalculatePercent(options.PhotoSize, options.CustomPhotoSize);
+					if (imageDimensions.OutWidth * scalingPercent > maxSize || imageDimensions.OutHeight * scalingPercent > maxSize)
+					{
+						options.PhotoSize = PhotoSize.MaxWidthHeight;
+						options.MaxWidthHeight = maxSize;
+					}
+				}
                 var exif = new ExifInterface(media.Path);
                 exif.SetAttribute(ExifInterface.TagDatetime, DateTime.Now.ToString("yyyy:MM:dd HH:mm:ss"));
                 if (options.RotateImage)
@@ -519,31 +541,10 @@ namespace Plugin.Media
                         if (rotation == 0 && mediaOptions.PhotoSize == PhotoSize.Full && mediaOptions.CompressionQuality == 100)
                             return false;
 
-                        var percent = 1.0f;
-                        switch (mediaOptions.PhotoSize)
-                        {
-                            case PhotoSize.Large:
-                                percent = .75f;
-                                break;
-                            case PhotoSize.Medium:
-                                percent = .5f;
-                                break;
-                            case PhotoSize.Small:
-                                percent = .25f;
-                                break;
-                            case PhotoSize.Custom:
-                                percent = (float)mediaOptions.CustomPhotoSize / 100f;
-                                break;
-                        }
+                        var percent = CalculatePercent(mediaOptions.PhotoSize, mediaOptions.CustomPhotoSize);
 
                         //First decode to just get dimensions
-                        var options = new BitmapFactory.Options
-                        {
-                            InJustDecodeBounds = true
-                        };
-
-                        //already on background task
-                        BitmapFactory.DecodeFile(filePath, options);
+                        var options = GetImageFileDimenssions(filePath);
 
                         if (mediaOptions.PhotoSize == PhotoSize.MaxWidthHeight && mediaOptions.MaxWidthHeight.HasValue)
                         {
@@ -688,32 +689,10 @@ namespace Plugin.Media
                         if (photoSize == PhotoSize.Full)
                             return false;
 
-                        var percent = 1.0f;
-                        switch (photoSize)
-                        {
-                            case PhotoSize.Large:
-                                percent = .75f;
-                                break;
-                            case PhotoSize.Medium:
-                                percent = .5f;
-                                break;
-                            case PhotoSize.Small:
-                                percent = .25f;
-                                break;
-                            case PhotoSize.Custom:
-                                percent = (float)customPhotoSize / 100f;
-                                break;
-                        }
-
+                        var percent = CalculatePercent(photoSize, customPhotoSize);
 
                         //First decode to just get dimensions
-                        var options = new BitmapFactory.Options
-                        {
-                            InJustDecodeBounds = true
-                        };
-
-                        //already on background task
-                        BitmapFactory.DecodeFile(filePath, options);
+                        var options = GetImageFileDimenssions(filePath);
 
                         var finalWidth = (int)(options.OutWidth * percent);
                         var finalHeight = (int)(options.OutHeight * percent);
@@ -767,7 +746,20 @@ namespace Plugin.Media
             }
         }
 
-        private static float CalculatePercent(PhotoSize photoSize, int customPhotoSize)
+		private static BitmapFactory.Options GetImageFileDimenssions(string filePath)
+		{
+			//First decode to just get dimensions
+			var options = new BitmapFactory.Options
+			{
+				InJustDecodeBounds = true
+			};
+
+			//already on background task
+			BitmapFactory.DecodeFile(filePath, options);
+			return options;
+		}
+
+		private static float CalculatePercent(PhotoSize photoSize, int customPhotoSize)
         {
             var percent = 1.0f;
             switch (photoSize)
@@ -873,7 +865,7 @@ namespace Plugin.Media
 
             return result;
         }
-    }
+	}
 
 
 }
