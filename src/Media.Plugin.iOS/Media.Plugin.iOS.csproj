@@ -53,7 +53,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="GMImagePicker.Xamarin">
-      <HintPath>..\..\tests\packages\GMImagePicker.Xamarin.2.1.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
+      <HintPath>..\packages\GMImagePicker.Xamarin.2.2.2\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Media.Plugin.Abstractions\Media.Plugin.Abstractions.csproj">
-      <Project>{FBEF1E96-BBB6-43B8-9C56-2C01088C4D48}</Project>
+      <Project>{0E3EFBDE-5210-47D7-9CBF-D5130091A361}</Project>
       <Name>Media.Plugin.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>
