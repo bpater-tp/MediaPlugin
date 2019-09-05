@@ -35,7 +35,7 @@
            <dependency id="Xamarin.Android.Support.Core.Utils" version="27.0.2"/>
          </group>
          <group targetFramework="Xamarin.iOS10">
-             <dependency id="GMImagePicker.Xamarin" version="2.1.0"/>
+             <dependency id="GMImagePicker.Xamarin" version="2.3.4"/>
          </group>
          <group targetFramework="Xamarin.Mac20">
          </group>
