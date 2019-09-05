@@ -365,52 +365,78 @@ namespace Plugin.Media
 
         private static string StorePickedImage(PHAsset asset, int quality, float scale, bool rotate, MediaFile tempMedia)
         {
+			var tcs = new TaskCompletionSource<string>();
+			var task = tcs.Task;
             var imageManager = PHImageManager.DefaultManager;
-            var requestOptions = new PHImageRequestOptions
+            using (var requestOptions = new PHImageRequestOptions
             {
                 Synchronous = true,
                 NetworkAccessAllowed = true,
                 DeliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat,
-            };
-            var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            string path = null;
-            imageManager.RequestImageData(asset, requestOptions, (data, dataUti, orientation, info) =>
+            })
             {
-                NSError error = (NSError)info["PHImageErrorKey"];
-                if (error != null) {
-                    var description = error.LocalizedDescription;
-                    var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
-                    throw new Exception($"{description}. {reason}");
-                }
-                var resources = PHAssetResource.GetAssetResources(asset);
-                var orgFilename = resources[0].OriginalFilename;
-                orgFilename = orgFilename.EndsWith(".JPG", StringComparison.OrdinalIgnoreCase) ? orgFilename : $"{orgFilename}.JPG";
-                path = Path.Combine(targetDir, orgFilename);
-                var fullimage = CIImage.FromData(data);
-                var image = UIImage.LoadFromData(data);
-                var scaledImage = image.ScaleImage(scale);
-                if (rotate)
+                imageManager.RequestImageDataAndOrientation(asset, requestOptions, (data, dataUti, orientation, info) =>
                 {
-                    scaledImage = scaledImage.RotateImage();
-                }
-                SaveTempImage(fullimage, scaledImage, path, quality, rotate);
-                string dateString = fullimage.Properties.Exif?.Dictionary?.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal)?.ToString();
-                if (dateString != null)
-                {
-                    tempMedia.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
-                }
-                else
-                {
-                    tempMedia.MediaTakenAt = null;
-                }
-                int.TryParse(fullimage.Properties?.Orientation.ToString(), out tempMedia.Orientation);
-                tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude ?? 0.0;
-                tempMedia.LatitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLatitudeRef).ToString() ?? string.Empty;
-                tempMedia.Longitude = fullimage.Properties?.Gps?.Longitude ?? 0.0;
-                tempMedia.LongitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLongitudeRef).ToString() ?? string.Empty;
-            });
+	                Task.Factory.StartNew(() =>
+	                {
+		                StoreImageData(asset, quality, scale, rotate, tempMedia, info, data, tcs);
+	                });
+                });
+            }
 
-            return path;
+            return task.Result;
+        }
+
+        private static void StoreImageData(PHAsset asset, int quality, float scale, bool rotate, MediaFile tempMedia,
+	        NSDictionary info, NSData data, TaskCompletionSource<string> tcs)
+        {
+	        var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+	        try
+	        {
+		        var error = (NSError) info["PHImageErrorKey"];
+		        if (error != null)
+		        {
+			        var description = error.LocalizedDescription;
+			        var reason = error.UserInfo.ValueForKey((NSString) "NSUnderlyingError");
+			        throw new Exception($"{description}. {reason}");
+		        }
+
+		        var resources = PHAssetResource.GetAssetResources(asset);
+		        var orgFilename = resources[0].OriginalFilename;
+		        orgFilename = orgFilename.EndsWith(".JPG", StringComparison.OrdinalIgnoreCase)
+			        ? orgFilename
+			        : $"{orgFilename}.JPG";
+		        var path = Path.Combine(targetDir, orgFilename);
+		        var fullimage = CIImage.FromData(data);
+		        var image = UIImage.LoadFromData(data);
+		        var scaledImage = image.ScaleImage(scale);
+		        if (rotate)
+		        {
+			        scaledImage = scaledImage.RotateImage();
+		        }
+
+		        SaveTempImage(fullimage, scaledImage, path, quality, rotate);
+		        var dateString = fullimage.Properties.Exif?.Dictionary?.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal)?.ToString();
+		        if (dateString != null)
+		        {
+			        tempMedia.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+		        }
+		        else
+		        {
+			        tempMedia.MediaTakenAt = null;
+		        }
+
+		        int.TryParse(fullimage.Properties?.Orientation.ToString(), out tempMedia.Orientation);
+		        tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude ?? 0.0;
+		        tempMedia.LatitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLatitudeRef).ToString() ?? string.Empty;
+		        tempMedia.Longitude = fullimage.Properties?.Gps?.Longitude ?? 0.0;
+		        tempMedia.LongitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLongitudeRef).ToString() ?? string.Empty;
+		        tcs.TrySetResult(path);
+	        }
+	        catch (Exception ex)
+	        {
+		        tcs.TrySetException(ex);
+	        }
         }
 
         private static void SaveTempImage(CIImage fullimage, UIImage image, string outputFilename, int quality, bool rotate)
