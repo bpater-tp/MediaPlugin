@@ -375,7 +375,7 @@ namespace Plugin.Media
                 DeliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat,
             })
             {
-                imageManager.RequestImageDataAndOrientation(asset, requestOptions, (data, dataUti, orientation, info) =>
+                imageManager.RequestImageData(asset, requestOptions, (data, dataUti, orientation, info) =>
                 {
 	                Task.Factory.StartNew(() =>
 	                {
