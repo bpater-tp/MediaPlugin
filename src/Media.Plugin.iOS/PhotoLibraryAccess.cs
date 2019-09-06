@@ -28,7 +28,7 @@ namespace Plugin.Media
                 DeliveryMode = PHImageRequestOptionsDeliveryMode.HighQualityFormat,
             })
             {
-                imageManager.RequestImageDataAndOrientation(image, requestOptions, (data, dataUti, orientation, info) =>
+                imageManager.RequestImageData(image, requestOptions, (data, dataUti, orientation, info) =>
 			    {
 			        try
 			        {
