@@ -28,6 +28,7 @@ namespace MediaAndroidTest
 
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
+            Xamarin.Essentials.Platform.Init(this, bundle);
 
             // Get our button from the layout resource,
             // and attach an event to it
@@ -138,9 +139,11 @@ namespace MediaAndroidTest
 
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
         {
-            Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

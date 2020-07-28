@@ -46,10 +46,16 @@ namespace MediaAndroidTest
 			global::Plugin.Media.Resource.Attribute.layout_keyline = global::MediaAndroidTest.Resource.Attribute.layout_keyline;
 			global::Plugin.Media.Resource.Attribute.statusBarBackground = global::MediaAndroidTest.Resource.Attribute.statusBarBackground;
 			global::Plugin.Media.Resource.Attribute.ttcIndex = global::MediaAndroidTest.Resource.Attribute.ttcIndex;
+			global::Plugin.Media.Resource.Color.browser_actions_bg_grey = global::MediaAndroidTest.Resource.Color.browser_actions_bg_grey;
+			global::Plugin.Media.Resource.Color.browser_actions_divider_color = global::MediaAndroidTest.Resource.Color.browser_actions_divider_color;
+			global::Plugin.Media.Resource.Color.browser_actions_text_color = global::MediaAndroidTest.Resource.Color.browser_actions_text_color;
+			global::Plugin.Media.Resource.Color.browser_actions_title_color = global::MediaAndroidTest.Resource.Color.browser_actions_title_color;
 			global::Plugin.Media.Resource.Color.notification_action_color_filter = global::MediaAndroidTest.Resource.Color.notification_action_color_filter;
 			global::Plugin.Media.Resource.Color.notification_icon_bg_color = global::MediaAndroidTest.Resource.Color.notification_icon_bg_color;
 			global::Plugin.Media.Resource.Color.ripple_material_light = global::MediaAndroidTest.Resource.Color.ripple_material_light;
 			global::Plugin.Media.Resource.Color.secondary_text_default_material_light = global::MediaAndroidTest.Resource.Color.secondary_text_default_material_light;
+			global::Plugin.Media.Resource.Dimension.browser_actions_context_menu_max_width = global::MediaAndroidTest.Resource.Dimension.browser_actions_context_menu_max_width;
+			global::Plugin.Media.Resource.Dimension.browser_actions_context_menu_min_padding = global::MediaAndroidTest.Resource.Dimension.browser_actions_context_menu_min_padding;
 			global::Plugin.Media.Resource.Dimension.compat_button_inset_horizontal_material = global::MediaAndroidTest.Resource.Dimension.compat_button_inset_horizontal_material;
 			global::Plugin.Media.Resource.Dimension.compat_button_inset_vertical_material = global::MediaAndroidTest.Resource.Dimension.compat_button_inset_vertical_material;
 			global::Plugin.Media.Resource.Dimension.compat_button_padding_horizontal_material = global::MediaAndroidTest.Resource.Dimension.compat_button_padding_horizontal_material;
@@ -93,6 +99,11 @@ namespace MediaAndroidTest
 			global::Plugin.Media.Resource.Id.async = global::MediaAndroidTest.Resource.Id.async;
 			global::Plugin.Media.Resource.Id.blocking = global::MediaAndroidTest.Resource.Id.blocking;
 			global::Plugin.Media.Resource.Id.bottom = global::MediaAndroidTest.Resource.Id.bottom;
+			global::Plugin.Media.Resource.Id.browser_actions_header_text = global::MediaAndroidTest.Resource.Id.browser_actions_header_text;
+			global::Plugin.Media.Resource.Id.browser_actions_menu_items = global::MediaAndroidTest.Resource.Id.browser_actions_menu_items;
+			global::Plugin.Media.Resource.Id.browser_actions_menu_item_icon = global::MediaAndroidTest.Resource.Id.browser_actions_menu_item_icon;
+			global::Plugin.Media.Resource.Id.browser_actions_menu_item_text = global::MediaAndroidTest.Resource.Id.browser_actions_menu_item_text;
+			global::Plugin.Media.Resource.Id.browser_actions_menu_view = global::MediaAndroidTest.Resource.Id.browser_actions_menu_view;
 			global::Plugin.Media.Resource.Id.center = global::MediaAndroidTest.Resource.Id.center;
 			global::Plugin.Media.Resource.Id.center_horizontal = global::MediaAndroidTest.Resource.Id.center_horizontal;
 			global::Plugin.Media.Resource.Id.center_vertical = global::MediaAndroidTest.Resource.Id.center_vertical;
@@ -129,6 +140,8 @@ namespace MediaAndroidTest
 			global::Plugin.Media.Resource.Id.title = global::MediaAndroidTest.Resource.Id.title;
 			global::Plugin.Media.Resource.Id.top = global::MediaAndroidTest.Resource.Id.top;
 			global::Plugin.Media.Resource.Integer.status_bar_notification_info_maxnum = global::MediaAndroidTest.Resource.Integer.status_bar_notification_info_maxnum;
+			global::Plugin.Media.Resource.Layout.browser_actions_context_menu_page = global::MediaAndroidTest.Resource.Layout.browser_actions_context_menu_page;
+			global::Plugin.Media.Resource.Layout.browser_actions_context_menu_row = global::MediaAndroidTest.Resource.Layout.browser_actions_context_menu_row;
 			global::Plugin.Media.Resource.Layout.notification_action = global::MediaAndroidTest.Resource.Layout.notification_action;
 			global::Plugin.Media.Resource.Layout.notification_action_tombstone = global::MediaAndroidTest.Resource.Layout.notification_action_tombstone;
 			global::Plugin.Media.Resource.Layout.notification_template_custom_big = global::MediaAndroidTest.Resource.Layout.notification_template_custom_big;
@@ -194,6 +207,188 @@ namespace MediaAndroidTest
 			global::Plugin.Media.Resource.Styleable.GradientColor_android_tileMode = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_tileMode;
 			global::Plugin.Media.Resource.Styleable.GradientColor_android_type = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_type;
 			global::Plugin.Media.Resource.Xml.xamarin_essentials_fileprovider_file_paths = global::MediaAndroidTest.Resource.Xml.xamarin_essentials_fileprovider_file_paths;
+			global::Xamarin.Essentials.Resource.Attribute.alpha = global::MediaAndroidTest.Resource.Attribute.alpha;
+			global::Xamarin.Essentials.Resource.Attribute.coordinatorLayoutStyle = global::MediaAndroidTest.Resource.Attribute.coordinatorLayoutStyle;
+			global::Xamarin.Essentials.Resource.Attribute.font = global::MediaAndroidTest.Resource.Attribute.font;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderAuthority = global::MediaAndroidTest.Resource.Attribute.fontProviderAuthority;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderCerts = global::MediaAndroidTest.Resource.Attribute.fontProviderCerts;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderFetchStrategy = global::MediaAndroidTest.Resource.Attribute.fontProviderFetchStrategy;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderFetchTimeout = global::MediaAndroidTest.Resource.Attribute.fontProviderFetchTimeout;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderPackage = global::MediaAndroidTest.Resource.Attribute.fontProviderPackage;
+			global::Xamarin.Essentials.Resource.Attribute.fontProviderQuery = global::MediaAndroidTest.Resource.Attribute.fontProviderQuery;
+			global::Xamarin.Essentials.Resource.Attribute.fontStyle = global::MediaAndroidTest.Resource.Attribute.fontStyle;
+			global::Xamarin.Essentials.Resource.Attribute.fontVariationSettings = global::MediaAndroidTest.Resource.Attribute.fontVariationSettings;
+			global::Xamarin.Essentials.Resource.Attribute.fontWeight = global::MediaAndroidTest.Resource.Attribute.fontWeight;
+			global::Xamarin.Essentials.Resource.Attribute.keylines = global::MediaAndroidTest.Resource.Attribute.keylines;
+			global::Xamarin.Essentials.Resource.Attribute.layout_anchor = global::MediaAndroidTest.Resource.Attribute.layout_anchor;
+			global::Xamarin.Essentials.Resource.Attribute.layout_anchorGravity = global::MediaAndroidTest.Resource.Attribute.layout_anchorGravity;
+			global::Xamarin.Essentials.Resource.Attribute.layout_behavior = global::MediaAndroidTest.Resource.Attribute.layout_behavior;
+			global::Xamarin.Essentials.Resource.Attribute.layout_dodgeInsetEdges = global::MediaAndroidTest.Resource.Attribute.layout_dodgeInsetEdges;
+			global::Xamarin.Essentials.Resource.Attribute.layout_insetEdge = global::MediaAndroidTest.Resource.Attribute.layout_insetEdge;
+			global::Xamarin.Essentials.Resource.Attribute.layout_keyline = global::MediaAndroidTest.Resource.Attribute.layout_keyline;
+			global::Xamarin.Essentials.Resource.Attribute.statusBarBackground = global::MediaAndroidTest.Resource.Attribute.statusBarBackground;
+			global::Xamarin.Essentials.Resource.Attribute.ttcIndex = global::MediaAndroidTest.Resource.Attribute.ttcIndex;
+			global::Xamarin.Essentials.Resource.Color.browser_actions_bg_grey = global::MediaAndroidTest.Resource.Color.browser_actions_bg_grey;
+			global::Xamarin.Essentials.Resource.Color.browser_actions_divider_color = global::MediaAndroidTest.Resource.Color.browser_actions_divider_color;
+			global::Xamarin.Essentials.Resource.Color.browser_actions_text_color = global::MediaAndroidTest.Resource.Color.browser_actions_text_color;
+			global::Xamarin.Essentials.Resource.Color.browser_actions_title_color = global::MediaAndroidTest.Resource.Color.browser_actions_title_color;
+			global::Xamarin.Essentials.Resource.Color.notification_action_color_filter = global::MediaAndroidTest.Resource.Color.notification_action_color_filter;
+			global::Xamarin.Essentials.Resource.Color.notification_icon_bg_color = global::MediaAndroidTest.Resource.Color.notification_icon_bg_color;
+			global::Xamarin.Essentials.Resource.Color.ripple_material_light = global::MediaAndroidTest.Resource.Color.ripple_material_light;
+			global::Xamarin.Essentials.Resource.Color.secondary_text_default_material_light = global::MediaAndroidTest.Resource.Color.secondary_text_default_material_light;
+			global::Xamarin.Essentials.Resource.Dimension.browser_actions_context_menu_max_width = global::MediaAndroidTest.Resource.Dimension.browser_actions_context_menu_max_width;
+			global::Xamarin.Essentials.Resource.Dimension.browser_actions_context_menu_min_padding = global::MediaAndroidTest.Resource.Dimension.browser_actions_context_menu_min_padding;
+			global::Xamarin.Essentials.Resource.Dimension.compat_button_inset_horizontal_material = global::MediaAndroidTest.Resource.Dimension.compat_button_inset_horizontal_material;
+			global::Xamarin.Essentials.Resource.Dimension.compat_button_inset_vertical_material = global::MediaAndroidTest.Resource.Dimension.compat_button_inset_vertical_material;
+			global::Xamarin.Essentials.Resource.Dimension.compat_button_padding_horizontal_material = global::MediaAndroidTest.Resource.Dimension.compat_button_padding_horizontal_material;
+			global::Xamarin.Essentials.Resource.Dimension.compat_button_padding_vertical_material = global::MediaAndroidTest.Resource.Dimension.compat_button_padding_vertical_material;
+			global::Xamarin.Essentials.Resource.Dimension.compat_control_corner_material = global::MediaAndroidTest.Resource.Dimension.compat_control_corner_material;
+			global::Xamarin.Essentials.Resource.Dimension.compat_notification_large_icon_max_height = global::MediaAndroidTest.Resource.Dimension.compat_notification_large_icon_max_height;
+			global::Xamarin.Essentials.Resource.Dimension.compat_notification_large_icon_max_width = global::MediaAndroidTest.Resource.Dimension.compat_notification_large_icon_max_width;
+			global::Xamarin.Essentials.Resource.Dimension.notification_action_icon_size = global::MediaAndroidTest.Resource.Dimension.notification_action_icon_size;
+			global::Xamarin.Essentials.Resource.Dimension.notification_action_text_size = global::MediaAndroidTest.Resource.Dimension.notification_action_text_size;
+			global::Xamarin.Essentials.Resource.Dimension.notification_big_circle_margin = global::MediaAndroidTest.Resource.Dimension.notification_big_circle_margin;
+			global::Xamarin.Essentials.Resource.Dimension.notification_content_margin_start = global::MediaAndroidTest.Resource.Dimension.notification_content_margin_start;
+			global::Xamarin.Essentials.Resource.Dimension.notification_large_icon_height = global::MediaAndroidTest.Resource.Dimension.notification_large_icon_height;
+			global::Xamarin.Essentials.Resource.Dimension.notification_large_icon_width = global::MediaAndroidTest.Resource.Dimension.notification_large_icon_width;
+			global::Xamarin.Essentials.Resource.Dimension.notification_main_column_padding_top = global::MediaAndroidTest.Resource.Dimension.notification_main_column_padding_top;
+			global::Xamarin.Essentials.Resource.Dimension.notification_media_narrow_margin = global::MediaAndroidTest.Resource.Dimension.notification_media_narrow_margin;
+			global::Xamarin.Essentials.Resource.Dimension.notification_right_icon_size = global::MediaAndroidTest.Resource.Dimension.notification_right_icon_size;
+			global::Xamarin.Essentials.Resource.Dimension.notification_right_side_padding_top = global::MediaAndroidTest.Resource.Dimension.notification_right_side_padding_top;
+			global::Xamarin.Essentials.Resource.Dimension.notification_small_icon_background_padding = global::MediaAndroidTest.Resource.Dimension.notification_small_icon_background_padding;
+			global::Xamarin.Essentials.Resource.Dimension.notification_small_icon_size_as_large = global::MediaAndroidTest.Resource.Dimension.notification_small_icon_size_as_large;
+			global::Xamarin.Essentials.Resource.Dimension.notification_subtext_size = global::MediaAndroidTest.Resource.Dimension.notification_subtext_size;
+			global::Xamarin.Essentials.Resource.Dimension.notification_top_pad = global::MediaAndroidTest.Resource.Dimension.notification_top_pad;
+			global::Xamarin.Essentials.Resource.Dimension.notification_top_pad_large_text = global::MediaAndroidTest.Resource.Dimension.notification_top_pad_large_text;
+			global::Xamarin.Essentials.Resource.Drawable.notification_action_background = global::MediaAndroidTest.Resource.Drawable.notification_action_background;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg = global::MediaAndroidTest.Resource.Drawable.notification_bg;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg_low = global::MediaAndroidTest.Resource.Drawable.notification_bg_low;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg_low_normal = global::MediaAndroidTest.Resource.Drawable.notification_bg_low_normal;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg_low_pressed = global::MediaAndroidTest.Resource.Drawable.notification_bg_low_pressed;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg_normal = global::MediaAndroidTest.Resource.Drawable.notification_bg_normal;
+			global::Xamarin.Essentials.Resource.Drawable.notification_bg_normal_pressed = global::MediaAndroidTest.Resource.Drawable.notification_bg_normal_pressed;
+			global::Xamarin.Essentials.Resource.Drawable.notification_icon_background = global::MediaAndroidTest.Resource.Drawable.notification_icon_background;
+			global::Xamarin.Essentials.Resource.Drawable.notification_template_icon_bg = global::MediaAndroidTest.Resource.Drawable.notification_template_icon_bg;
+			global::Xamarin.Essentials.Resource.Drawable.notification_template_icon_low_bg = global::MediaAndroidTest.Resource.Drawable.notification_template_icon_low_bg;
+			global::Xamarin.Essentials.Resource.Drawable.notification_tile_bg = global::MediaAndroidTest.Resource.Drawable.notification_tile_bg;
+			global::Xamarin.Essentials.Resource.Drawable.notify_panel_notification_icon_bg = global::MediaAndroidTest.Resource.Drawable.notify_panel_notification_icon_bg;
+			global::Xamarin.Essentials.Resource.Id.actions = global::MediaAndroidTest.Resource.Id.actions;
+			global::Xamarin.Essentials.Resource.Id.action_container = global::MediaAndroidTest.Resource.Id.action_container;
+			global::Xamarin.Essentials.Resource.Id.action_divider = global::MediaAndroidTest.Resource.Id.action_divider;
+			global::Xamarin.Essentials.Resource.Id.action_image = global::MediaAndroidTest.Resource.Id.action_image;
+			global::Xamarin.Essentials.Resource.Id.action_text = global::MediaAndroidTest.Resource.Id.action_text;
+			global::Xamarin.Essentials.Resource.Id.all = global::MediaAndroidTest.Resource.Id.all;
+			global::Xamarin.Essentials.Resource.Id.async = global::MediaAndroidTest.Resource.Id.async;
+			global::Xamarin.Essentials.Resource.Id.blocking = global::MediaAndroidTest.Resource.Id.blocking;
+			global::Xamarin.Essentials.Resource.Id.bottom = global::MediaAndroidTest.Resource.Id.bottom;
+			global::Xamarin.Essentials.Resource.Id.browser_actions_header_text = global::MediaAndroidTest.Resource.Id.browser_actions_header_text;
+			global::Xamarin.Essentials.Resource.Id.browser_actions_menu_items = global::MediaAndroidTest.Resource.Id.browser_actions_menu_items;
+			global::Xamarin.Essentials.Resource.Id.browser_actions_menu_item_icon = global::MediaAndroidTest.Resource.Id.browser_actions_menu_item_icon;
+			global::Xamarin.Essentials.Resource.Id.browser_actions_menu_item_text = global::MediaAndroidTest.Resource.Id.browser_actions_menu_item_text;
+			global::Xamarin.Essentials.Resource.Id.browser_actions_menu_view = global::MediaAndroidTest.Resource.Id.browser_actions_menu_view;
+			global::Xamarin.Essentials.Resource.Id.center = global::MediaAndroidTest.Resource.Id.center;
+			global::Xamarin.Essentials.Resource.Id.center_horizontal = global::MediaAndroidTest.Resource.Id.center_horizontal;
+			global::Xamarin.Essentials.Resource.Id.center_vertical = global::MediaAndroidTest.Resource.Id.center_vertical;
+			global::Xamarin.Essentials.Resource.Id.chronometer = global::MediaAndroidTest.Resource.Id.chronometer;
+			global::Xamarin.Essentials.Resource.Id.clip_horizontal = global::MediaAndroidTest.Resource.Id.clip_horizontal;
+			global::Xamarin.Essentials.Resource.Id.clip_vertical = global::MediaAndroidTest.Resource.Id.clip_vertical;
+			global::Xamarin.Essentials.Resource.Id.end = global::MediaAndroidTest.Resource.Id.end;
+			global::Xamarin.Essentials.Resource.Id.fill = global::MediaAndroidTest.Resource.Id.fill;
+			global::Xamarin.Essentials.Resource.Id.fill_horizontal = global::MediaAndroidTest.Resource.Id.fill_horizontal;
+			global::Xamarin.Essentials.Resource.Id.fill_vertical = global::MediaAndroidTest.Resource.Id.fill_vertical;
+			global::Xamarin.Essentials.Resource.Id.forever = global::MediaAndroidTest.Resource.Id.forever;
+			global::Xamarin.Essentials.Resource.Id.icon = global::MediaAndroidTest.Resource.Id.icon;
+			global::Xamarin.Essentials.Resource.Id.icon_group = global::MediaAndroidTest.Resource.Id.icon_group;
+			global::Xamarin.Essentials.Resource.Id.info = global::MediaAndroidTest.Resource.Id.info;
+			global::Xamarin.Essentials.Resource.Id.italic = global::MediaAndroidTest.Resource.Id.italic;
+			global::Xamarin.Essentials.Resource.Id.left = global::MediaAndroidTest.Resource.Id.left;
+			global::Xamarin.Essentials.Resource.Id.line1 = global::MediaAndroidTest.Resource.Id.line1;
+			global::Xamarin.Essentials.Resource.Id.line3 = global::MediaAndroidTest.Resource.Id.line3;
+			global::Xamarin.Essentials.Resource.Id.none = global::MediaAndroidTest.Resource.Id.none;
+			global::Xamarin.Essentials.Resource.Id.normal = global::MediaAndroidTest.Resource.Id.normal;
+			global::Xamarin.Essentials.Resource.Id.notification_background = global::MediaAndroidTest.Resource.Id.notification_background;
+			global::Xamarin.Essentials.Resource.Id.notification_main_column = global::MediaAndroidTest.Resource.Id.notification_main_column;
+			global::Xamarin.Essentials.Resource.Id.notification_main_column_container = global::MediaAndroidTest.Resource.Id.notification_main_column_container;
+			global::Xamarin.Essentials.Resource.Id.right = global::MediaAndroidTest.Resource.Id.right;
+			global::Xamarin.Essentials.Resource.Id.right_icon = global::MediaAndroidTest.Resource.Id.right_icon;
+			global::Xamarin.Essentials.Resource.Id.right_side = global::MediaAndroidTest.Resource.Id.right_side;
+			global::Xamarin.Essentials.Resource.Id.start = global::MediaAndroidTest.Resource.Id.start;
+			global::Xamarin.Essentials.Resource.Id.tag_transition_group = global::MediaAndroidTest.Resource.Id.tag_transition_group;
+			global::Xamarin.Essentials.Resource.Id.tag_unhandled_key_event_manager = global::MediaAndroidTest.Resource.Id.tag_unhandled_key_event_manager;
+			global::Xamarin.Essentials.Resource.Id.tag_unhandled_key_listeners = global::MediaAndroidTest.Resource.Id.tag_unhandled_key_listeners;
+			global::Xamarin.Essentials.Resource.Id.text = global::MediaAndroidTest.Resource.Id.text;
+			global::Xamarin.Essentials.Resource.Id.text2 = global::MediaAndroidTest.Resource.Id.text2;
+			global::Xamarin.Essentials.Resource.Id.time = global::MediaAndroidTest.Resource.Id.time;
+			global::Xamarin.Essentials.Resource.Id.title = global::MediaAndroidTest.Resource.Id.title;
+			global::Xamarin.Essentials.Resource.Id.top = global::MediaAndroidTest.Resource.Id.top;
+			global::Xamarin.Essentials.Resource.Integer.status_bar_notification_info_maxnum = global::MediaAndroidTest.Resource.Integer.status_bar_notification_info_maxnum;
+			global::Xamarin.Essentials.Resource.Layout.browser_actions_context_menu_page = global::MediaAndroidTest.Resource.Layout.browser_actions_context_menu_page;
+			global::Xamarin.Essentials.Resource.Layout.browser_actions_context_menu_row = global::MediaAndroidTest.Resource.Layout.browser_actions_context_menu_row;
+			global::Xamarin.Essentials.Resource.Layout.notification_action = global::MediaAndroidTest.Resource.Layout.notification_action;
+			global::Xamarin.Essentials.Resource.Layout.notification_action_tombstone = global::MediaAndroidTest.Resource.Layout.notification_action_tombstone;
+			global::Xamarin.Essentials.Resource.Layout.notification_template_custom_big = global::MediaAndroidTest.Resource.Layout.notification_template_custom_big;
+			global::Xamarin.Essentials.Resource.Layout.notification_template_icon_group = global::MediaAndroidTest.Resource.Layout.notification_template_icon_group;
+			global::Xamarin.Essentials.Resource.Layout.notification_template_part_chronometer = global::MediaAndroidTest.Resource.Layout.notification_template_part_chronometer;
+			global::Xamarin.Essentials.Resource.Layout.notification_template_part_time = global::MediaAndroidTest.Resource.Layout.notification_template_part_time;
+			global::Xamarin.Essentials.Resource.String.status_bar_notification_info_overflow = global::MediaAndroidTest.Resource.String.status_bar_notification_info_overflow;
+			global::Xamarin.Essentials.Resource.Style.TextAppearance_Compat_Notification = global::MediaAndroidTest.Resource.Style.TextAppearance_Compat_Notification;
+			global::Xamarin.Essentials.Resource.Style.TextAppearance_Compat_Notification_Info = global::MediaAndroidTest.Resource.Style.TextAppearance_Compat_Notification_Info;
+			global::Xamarin.Essentials.Resource.Style.TextAppearance_Compat_Notification_Line2 = global::MediaAndroidTest.Resource.Style.TextAppearance_Compat_Notification_Line2;
+			global::Xamarin.Essentials.Resource.Style.TextAppearance_Compat_Notification_Time = global::MediaAndroidTest.Resource.Style.TextAppearance_Compat_Notification_Time;
+			global::Xamarin.Essentials.Resource.Style.TextAppearance_Compat_Notification_Title = global::MediaAndroidTest.Resource.Style.TextAppearance_Compat_Notification_Title;
+			global::Xamarin.Essentials.Resource.Style.Widget_Compat_NotificationActionContainer = global::MediaAndroidTest.Resource.Style.Widget_Compat_NotificationActionContainer;
+			global::Xamarin.Essentials.Resource.Style.Widget_Compat_NotificationActionText = global::MediaAndroidTest.Resource.Style.Widget_Compat_NotificationActionText;
+			global::Xamarin.Essentials.Resource.Style.Widget_Support_CoordinatorLayout = global::MediaAndroidTest.Resource.Style.Widget_Support_CoordinatorLayout;
+			global::Xamarin.Essentials.Resource.Styleable.ColorStateListItem = global::MediaAndroidTest.Resource.Styleable.ColorStateListItem;
+			global::Xamarin.Essentials.Resource.Styleable.ColorStateListItem_alpha = global::MediaAndroidTest.Resource.Styleable.ColorStateListItem_alpha;
+			global::Xamarin.Essentials.Resource.Styleable.ColorStateListItem_android_alpha = global::MediaAndroidTest.Resource.Styleable.ColorStateListItem_android_alpha;
+			global::Xamarin.Essentials.Resource.Styleable.ColorStateListItem_android_color = global::MediaAndroidTest.Resource.Styleable.ColorStateListItem_android_color;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_keylines = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_keylines;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_android_layout_gravity = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_android_layout_gravity;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_anchor = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_anchor;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_anchorGravity = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_anchorGravity;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_behavior = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_behavior;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_dodgeInsetEdges = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_dodgeInsetEdges;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_insetEdge = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_insetEdge;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_Layout_layout_keyline = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_Layout_layout_keyline;
+			global::Xamarin.Essentials.Resource.Styleable.CoordinatorLayout_statusBarBackground = global::MediaAndroidTest.Resource.Styleable.CoordinatorLayout_statusBarBackground;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily = global::MediaAndroidTest.Resource.Styleable.FontFamily;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_android_font = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_android_font;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_android_fontStyle = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_android_fontStyle;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_android_fontVariationSettings = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_android_fontVariationSettings;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_android_fontWeight = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_android_fontWeight;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_android_ttcIndex = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_android_ttcIndex;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_font = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_font;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_fontStyle = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_fontStyle;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_fontVariationSettings = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_fontVariationSettings;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_fontWeight = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_fontWeight;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamilyFont_ttcIndex = global::MediaAndroidTest.Resource.Styleable.FontFamilyFont_ttcIndex;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderAuthority = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderAuthority;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderCerts = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderCerts;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderFetchStrategy = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderFetchStrategy;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderFetchTimeout = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderFetchTimeout;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderPackage = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderPackage;
+			global::Xamarin.Essentials.Resource.Styleable.FontFamily_fontProviderQuery = global::MediaAndroidTest.Resource.Styleable.FontFamily_fontProviderQuery;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor = global::MediaAndroidTest.Resource.Styleable.GradientColor;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColorItem = global::MediaAndroidTest.Resource.Styleable.GradientColorItem;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColorItem_android_color = global::MediaAndroidTest.Resource.Styleable.GradientColorItem_android_color;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColorItem_android_offset = global::MediaAndroidTest.Resource.Styleable.GradientColorItem_android_offset;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_centerColor = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_centerColor;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_centerX = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_centerX;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_centerY = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_centerY;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_endColor = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_endColor;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_endX = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_endX;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_endY = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_endY;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_gradientRadius = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_gradientRadius;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_startColor = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_startColor;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_startX = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_startX;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_startY = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_startY;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_tileMode = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_tileMode;
+			global::Xamarin.Essentials.Resource.Styleable.GradientColor_android_type = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_type;
+			global::Xamarin.Essentials.Resource.Xml.xamarin_essentials_fileprovider_file_paths = global::MediaAndroidTest.Resource.Xml.xamarin_essentials_fileprovider_file_paths;
 		}
 		
 		public partial class Attribute
@@ -276,16 +471,28 @@ namespace MediaAndroidTest
 		{
 			
 			// aapt resource value: 0x7F020000
-			public const int notification_action_color_filter = 2130837504;
+			public const int browser_actions_bg_grey = 2130837504;
 			
 			// aapt resource value: 0x7F020001
-			public const int notification_icon_bg_color = 2130837505;
+			public const int browser_actions_divider_color = 2130837505;
 			
 			// aapt resource value: 0x7F020002
-			public const int ripple_material_light = 2130837506;
+			public const int browser_actions_text_color = 2130837506;
 			
 			// aapt resource value: 0x7F020003
-			public const int secondary_text_default_material_light = 2130837507;
+			public const int browser_actions_title_color = 2130837507;
+			
+			// aapt resource value: 0x7F020004
+			public const int notification_action_color_filter = 2130837508;
+			
+			// aapt resource value: 0x7F020005
+			public const int notification_icon_bg_color = 2130837509;
+			
+			// aapt resource value: 0x7F020006
+			public const int ripple_material_light = 2130837510;
+			
+			// aapt resource value: 0x7F020007
+			public const int secondary_text_default_material_light = 2130837511;
 			
 			static Color()
 			{
@@ -301,70 +508,76 @@ namespace MediaAndroidTest
 		{
 			
 			// aapt resource value: 0x7F030000
-			public const int compat_button_inset_horizontal_material = 2130903040;
+			public const int browser_actions_context_menu_max_width = 2130903040;
 			
 			// aapt resource value: 0x7F030001
-			public const int compat_button_inset_vertical_material = 2130903041;
+			public const int browser_actions_context_menu_min_padding = 2130903041;
 			
 			// aapt resource value: 0x7F030002
-			public const int compat_button_padding_horizontal_material = 2130903042;
+			public const int compat_button_inset_horizontal_material = 2130903042;
 			
 			// aapt resource value: 0x7F030003
-			public const int compat_button_padding_vertical_material = 2130903043;
+			public const int compat_button_inset_vertical_material = 2130903043;
 			
 			// aapt resource value: 0x7F030004
-			public const int compat_control_corner_material = 2130903044;
+			public const int compat_button_padding_horizontal_material = 2130903044;
 			
 			// aapt resource value: 0x7F030005
-			public const int compat_notification_large_icon_max_height = 2130903045;
+			public const int compat_button_padding_vertical_material = 2130903045;
 			
 			// aapt resource value: 0x7F030006
-			public const int compat_notification_large_icon_max_width = 2130903046;
+			public const int compat_control_corner_material = 2130903046;
 			
 			// aapt resource value: 0x7F030007
-			public const int notification_action_icon_size = 2130903047;
+			public const int compat_notification_large_icon_max_height = 2130903047;
 			
 			// aapt resource value: 0x7F030008
-			public const int notification_action_text_size = 2130903048;
+			public const int compat_notification_large_icon_max_width = 2130903048;
 			
 			// aapt resource value: 0x7F030009
-			public const int notification_big_circle_margin = 2130903049;
+			public const int notification_action_icon_size = 2130903049;
 			
 			// aapt resource value: 0x7F03000A
-			public const int notification_content_margin_start = 2130903050;
+			public const int notification_action_text_size = 2130903050;
 			
 			// aapt resource value: 0x7F03000B
-			public const int notification_large_icon_height = 2130903051;
+			public const int notification_big_circle_margin = 2130903051;
 			
 			// aapt resource value: 0x7F03000C
-			public const int notification_large_icon_width = 2130903052;
+			public const int notification_content_margin_start = 2130903052;
 			
 			// aapt resource value: 0x7F03000D
-			public const int notification_main_column_padding_top = 2130903053;
+			public const int notification_large_icon_height = 2130903053;
 			
 			// aapt resource value: 0x7F03000E
-			public const int notification_media_narrow_margin = 2130903054;
+			public const int notification_large_icon_width = 2130903054;
 			
 			// aapt resource value: 0x7F03000F
-			public const int notification_right_icon_size = 2130903055;
+			public const int notification_main_column_padding_top = 2130903055;
 			
 			// aapt resource value: 0x7F030010
-			public const int notification_right_side_padding_top = 2130903056;
+			public const int notification_media_narrow_margin = 2130903056;
 			
 			// aapt resource value: 0x7F030011
-			public const int notification_small_icon_background_padding = 2130903057;
+			public const int notification_right_icon_size = 2130903057;
 			
 			// aapt resource value: 0x7F030012
-			public const int notification_small_icon_size_as_large = 2130903058;
+			public const int notification_right_side_padding_top = 2130903058;
 			
 			// aapt resource value: 0x7F030013
-			public const int notification_subtext_size = 2130903059;
+			public const int notification_small_icon_background_padding = 2130903059;
 			
 			// aapt resource value: 0x7F030014
-			public const int notification_top_pad = 2130903060;
+			public const int notification_small_icon_size_as_large = 2130903060;
 			
 			// aapt resource value: 0x7F030015
-			public const int notification_top_pad_large_text = 2130903061;
+			public const int notification_subtext_size = 2130903061;
+			
+			// aapt resource value: 0x7F030016
+			public const int notification_top_pad = 2130903062;
+			
+			// aapt resource value: 0x7F030017
+			public const int notification_top_pad_large_text = 2130903063;
 			
 			static Dimension()
 			{
@@ -459,130 +672,145 @@ namespace MediaAndroidTest
 			public const int bottom = 2131034121;
 			
 			// aapt resource value: 0x7F05000A
-			public const int button1 = 2131034122;
-			
-			// aapt resource value: 0x7F05000B
-			public const int button2 = 2131034123;
-			
-			// aapt resource value: 0x7F05000C
-			public const int button3 = 2131034124;
+			public const int browser_actions_header_text = 2131034122;
 			
 			// aapt resource value: 0x7F05000D
-			public const int center = 2131034125;
+			public const int browser_actions_menu_items = 2131034125;
+			
+			// aapt resource value: 0x7F05000B
+			public const int browser_actions_menu_item_icon = 2131034123;
+			
+			// aapt resource value: 0x7F05000C
+			public const int browser_actions_menu_item_text = 2131034124;
 			
 			// aapt resource value: 0x7F05000E
-			public const int center_horizontal = 2131034126;
+			public const int browser_actions_menu_view = 2131034126;
 			
 			// aapt resource value: 0x7F05000F
-			public const int center_vertical = 2131034127;
+			public const int button1 = 2131034127;
 			
 			// aapt resource value: 0x7F050010
-			public const int chronometer = 2131034128;
+			public const int button2 = 2131034128;
 			
 			// aapt resource value: 0x7F050011
-			public const int clip_horizontal = 2131034129;
+			public const int button3 = 2131034129;
 			
 			// aapt resource value: 0x7F050012
-			public const int clip_vertical = 2131034130;
+			public const int center = 2131034130;
 			
 			// aapt resource value: 0x7F050013
-			public const int end = 2131034131;
+			public const int center_horizontal = 2131034131;
 			
 			// aapt resource value: 0x7F050014
-			public const int fill = 2131034132;
+			public const int center_vertical = 2131034132;
 			
 			// aapt resource value: 0x7F050015
-			public const int fill_horizontal = 2131034133;
+			public const int chronometer = 2131034133;
 			
 			// aapt resource value: 0x7F050016
-			public const int fill_vertical = 2131034134;
+			public const int clip_horizontal = 2131034134;
 			
 			// aapt resource value: 0x7F050017
-			public const int forever = 2131034135;
+			public const int clip_vertical = 2131034135;
 			
 			// aapt resource value: 0x7F050018
-			public const int icon = 2131034136;
+			public const int end = 2131034136;
 			
 			// aapt resource value: 0x7F050019
-			public const int icon_group = 2131034137;
+			public const int fill = 2131034137;
 			
 			// aapt resource value: 0x7F05001A
-			public const int imageView1 = 2131034138;
+			public const int fill_horizontal = 2131034138;
 			
 			// aapt resource value: 0x7F05001B
-			public const int info = 2131034139;
+			public const int fill_vertical = 2131034139;
 			
 			// aapt resource value: 0x7F05001C
-			public const int italic = 2131034140;
+			public const int forever = 2131034140;
 			
 			// aapt resource value: 0x7F05001D
-			public const int left = 2131034141;
+			public const int icon = 2131034141;
 			
 			// aapt resource value: 0x7F05001E
-			public const int line1 = 2131034142;
+			public const int icon_group = 2131034142;
 			
 			// aapt resource value: 0x7F05001F
-			public const int line3 = 2131034143;
+			public const int imageView1 = 2131034143;
+			
+			// aapt resource value: 0x7F050020
+			public const int info = 2131034144;
+			
+			// aapt resource value: 0x7F050021
+			public const int italic = 2131034145;
+			
+			// aapt resource value: 0x7F050022
+			public const int left = 2131034146;
+			
+			// aapt resource value: 0x7F050023
+			public const int line1 = 2131034147;
+			
+			// aapt resource value: 0x7F050024
+			public const int line3 = 2131034148;
 			
 			// aapt resource value: 0x7F050000
 			public const int MyButton = 2131034112;
 			
-			// aapt resource value: 0x7F050020
-			public const int none = 2131034144;
-			
-			// aapt resource value: 0x7F050021
-			public const int normal = 2131034145;
-			
-			// aapt resource value: 0x7F050022
-			public const int notification_background = 2131034146;
-			
-			// aapt resource value: 0x7F050023
-			public const int notification_main_column = 2131034147;
-			
-			// aapt resource value: 0x7F050024
-			public const int notification_main_column_container = 2131034148;
-			
 			// aapt resource value: 0x7F050025
-			public const int right = 2131034149;
+			public const int none = 2131034149;
 			
 			// aapt resource value: 0x7F050026
-			public const int right_icon = 2131034150;
+			public const int normal = 2131034150;
 			
 			// aapt resource value: 0x7F050027
-			public const int right_side = 2131034151;
+			public const int notification_background = 2131034151;
 			
 			// aapt resource value: 0x7F050028
-			public const int start = 2131034152;
+			public const int notification_main_column = 2131034152;
 			
 			// aapt resource value: 0x7F050029
-			public const int switch_save_album = 2131034153;
+			public const int notification_main_column_container = 2131034153;
 			
 			// aapt resource value: 0x7F05002A
-			public const int switch_size = 2131034154;
+			public const int right = 2131034154;
 			
 			// aapt resource value: 0x7F05002B
-			public const int tag_transition_group = 2131034155;
+			public const int right_icon = 2131034155;
 			
 			// aapt resource value: 0x7F05002C
-			public const int tag_unhandled_key_event_manager = 2131034156;
+			public const int right_side = 2131034156;
 			
 			// aapt resource value: 0x7F05002D
-			public const int tag_unhandled_key_listeners = 2131034157;
+			public const int start = 2131034157;
 			
 			// aapt resource value: 0x7F05002E
-			public const int text = 2131034158;
+			public const int switch_save_album = 2131034158;
 			
 			// aapt resource value: 0x7F05002F
-			public const int text2 = 2131034159;
+			public const int switch_size = 2131034159;
 			
 			// aapt resource value: 0x7F050030
-			public const int time = 2131034160;
+			public const int tag_transition_group = 2131034160;
 			
 			// aapt resource value: 0x7F050031
-			public const int title = 2131034161;
+			public const int tag_unhandled_key_event_manager = 2131034161;
 			
 			// aapt resource value: 0x7F050032
-			public const int top = 2131034162;
+			public const int tag_unhandled_key_listeners = 2131034162;
+			
+			// aapt resource value: 0x7F050033
+			public const int text = 2131034163;
+			
+			// aapt resource value: 0x7F050034
+			public const int text2 = 2131034164;
+			
+			// aapt resource value: 0x7F050035
+			public const int time = 2131034165;
+			
+			// aapt resource value: 0x7F050036
+			public const int title = 2131034166;
+			
+			// aapt resource value: 0x7F050037
+			public const int top = 2131034167;
 			
 			static Id()
 			{
@@ -614,25 +842,31 @@ namespace MediaAndroidTest
 		{
 			
 			// aapt resource value: 0x7F070000
-			public const int Main = 2131165184;
+			public const int browser_actions_context_menu_page = 2131165184;
 			
 			// aapt resource value: 0x7F070001
-			public const int notification_action = 2131165185;
+			public const int browser_actions_context_menu_row = 2131165185;
 			
 			// aapt resource value: 0x7F070002
-			public const int notification_action_tombstone = 2131165186;
+			public const int Main = 2131165186;
 			
 			// aapt resource value: 0x7F070003
-			public const int notification_template_custom_big = 2131165187;
+			public const int notification_action = 2131165187;
 			
 			// aapt resource value: 0x7F070004
-			public const int notification_template_icon_group = 2131165188;
+			public const int notification_action_tombstone = 2131165188;
 			
 			// aapt resource value: 0x7F070005
-			public const int notification_template_part_chronometer = 2131165189;
+			public const int notification_template_custom_big = 2131165189;
 			
 			// aapt resource value: 0x7F070006
-			public const int notification_template_part_time = 2131165190;
+			public const int notification_template_icon_group = 2131165190;
+			
+			// aapt resource value: 0x7F070007
+			public const int notification_template_part_chronometer = 2131165191;
+			
+			// aapt resource value: 0x7F070008
+			public const int notification_template_part_time = 2131165192;
 			
 			static Layout()
 			{
