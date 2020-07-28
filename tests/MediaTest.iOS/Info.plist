@@ -45,5 +45,9 @@
 		<string>pl</string>
 		<string>de</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to microphone.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs access to save photos</string>
 </dict>
 </plist>

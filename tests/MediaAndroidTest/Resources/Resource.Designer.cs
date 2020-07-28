@@ -193,6 +193,7 @@ namespace MediaAndroidTest
 			global::Plugin.Media.Resource.Styleable.GradientColor_android_startY = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_startY;
 			global::Plugin.Media.Resource.Styleable.GradientColor_android_tileMode = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_tileMode;
 			global::Plugin.Media.Resource.Styleable.GradientColor_android_type = global::MediaAndroidTest.Resource.Styleable.GradientColor_android_type;
+			global::Plugin.Media.Resource.Xml.xamarin_essentials_fileprovider_file_paths = global::MediaAndroidTest.Resource.Xml.xamarin_essentials_fileprovider_file_paths;
 		}
 		
 		public partial class Attribute
@@ -909,6 +910,9 @@ namespace MediaAndroidTest
 			
 			// aapt resource value: 0x7F0B0000
 			public const int file_paths = 2131427328;
+			
+			// aapt resource value: 0x7F0B0001
+			public const int xamarin_essentials_fileprovider_file_paths = 2131427329;
 			
 			static Xml()
 			{
