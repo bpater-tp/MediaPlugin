@@ -53,7 +53,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="GMImagePicker.Xamarin">
-      <HintPath>..\packages\GMImagePicker.Xamarin.2.3.4\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
+      <HintPath>..\packages\GMImagePicker.Xamarin.2.4.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
