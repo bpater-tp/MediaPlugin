@@ -14,6 +14,8 @@ using ImageIO;
 using MobileCoreServices;
 using Photos;
 using System.Globalization;
+using Permissions = Xamarin.Essentials.Permissions;
+using PermissionStatus = Xamarin.Essentials.PermissionStatus;
 
 namespace Plugin.Media
 {
@@ -74,14 +76,15 @@ namespace Plugin.Media
         /// Picks a photo from the default gallery
         /// </summary>
         /// <returns>Media file or null if canceled</returns>
-        public Task<List<MediaFile>> PickPhotoAsync(PickMediaOptions options = null)
+        public async Task<List<MediaFile>> PickPhotoAsync(PickMediaOptions options = null)
         {
             if (!IsPickPhotoSupported)
                 throw new NotSupportedException();
 
-            CheckPhotoUsageDescription();
+            CheckUsageDescription(photoDescription);
+			await CheckPermissions(nameof(Permissions.Photos));
 
-            return PickMultiplePhotos(options);
+            return await PickMultiplePhotos(options);
         }
  
 
@@ -90,18 +93,26 @@ namespace Plugin.Media
         /// </summary>
         /// <param name="options">Camera Media Options</param>
         /// <returns>Media file of photo or null if canceled</returns>
-        public Task<MediaFile> TakePhotoAsync(StoreCameraMediaOptions options)
+        public async Task<MediaFile> TakePhotoAsync(StoreCameraMediaOptions options)
         {
             if (!IsTakePhotoSupported)
                 throw new NotSupportedException();
             if (!IsCameraAvailable)
                 throw new NotSupportedException();
 
-            CheckCameraUsageDescription();
+            CheckUsageDescription(cameraDescription);
+			if (options.SaveToAlbum)
+				CheckUsageDescription(photoAddDescription);
 
-            VerifyCameraOptions(options);
+			VerifyCameraOptions(options);
 
-            return GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeImage, options);
+			var permissionsToCheck = new List<string> { nameof(Permissions.Camera) };
+			if (options.SaveToAlbum)
+				permissionsToCheck.Add(nameof(Permissions.Photos));
+
+			await CheckPermissions(permissionsToCheck.ToArray());
+
+            return await GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeImage, options);
         }
      
 
@@ -116,7 +127,8 @@ namespace Plugin.Media
 
             var backgroundTask = UIApplication.SharedApplication.BeginBackgroundTask(() => { });
 
-            CheckPhotoUsageDescription();
+            CheckUsageDescription(photoDescription);
+            await CheckPermissions(nameof(Permissions.Photos));
 
             var media = await GetMediaAsync(UIImagePickerControllerSourceType.PhotoLibrary, TypeMovie);
 
@@ -131,18 +143,28 @@ namespace Plugin.Media
         /// </summary>
         /// <param name="options">Video Media Options</param>
         /// <returns>Media file of new video or null if canceled</returns>
-        public Task<MediaFile> TakeVideoAsync(StoreVideoOptions options)
+        public async Task<MediaFile> TakeVideoAsync(StoreVideoOptions options)
         {
             if (!IsTakeVideoSupported)
                 throw new NotSupportedException();
             if (!IsCameraAvailable)
                 throw new NotSupportedException();
 
-            CheckCameraUsageDescription();
+            CheckUsageDescription(cameraDescription, microphoneDescription);
+            if (options.SaveToAlbum)
+                CheckUsageDescription(photoAddDescription);
 
             VerifyCameraOptions(options);
 
-            return GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeMovie, options);
+            var permissionsToCheck = new List<string> { nameof(Permissions.Camera), nameof(Permissions.Microphone) };
+            if (options.SaveToAlbum)
+                permissionsToCheck.Add(nameof(Permissions.Photos));
+
+            await CheckPermissions(permissionsToCheck.ToArray());
+
+            VerifyCameraOptions(options);
+
+            return await GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeMovie, options);
         }
 
         private UIPopoverController popover;
@@ -156,7 +178,7 @@ namespace Plugin.Media
         /// </summary>
         public const string TypeMovie = "public.movie";
 
-        private void VerifyOptions(StoreMediaOptions options)
+        void VerifyOptions(StoreMediaOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
@@ -164,7 +186,7 @@ namespace Plugin.Media
                 throw new ArgumentException("options.Directory must be a relative path", "options");
         }
 
-        private void VerifyCameraOptions(StoreCameraMediaOptions options)
+        void VerifyCameraOptions(StoreCameraMediaOptions options)
         {
             VerifyOptions(options);
             if (!Enum.IsDefined(typeof(CameraDevice), options.DefaultCamera))
@@ -196,7 +218,7 @@ namespace Plugin.Media
                 }
                 else if (mediaType == TypeMovie)
                 {
-                    StoreVideoOptions voptions = (StoreVideoOptions)options;
+                    var voptions = (StoreVideoOptions)options;
 
                     picker.CameraCaptureMode = UIImagePickerControllerCameraCaptureMode.Video;
                     picker.VideoQuality = GetQuailty(voptions.Quality);
@@ -212,7 +234,7 @@ namespace Plugin.Media
 			
 			var viewController = FindRootViewController();
 
-            MediaPickerDelegate ndelegate = new MediaPickerDelegate(viewController, sourceType, options);
+            var ndelegate = new MediaPickerDelegate(viewController, sourceType, options);
             var od = Interlocked.CompareExchange(ref pickerDelegate, ndelegate, null);
             if (od != null)
                 throw new InvalidOperationException("Only one operation can be active at at time");
@@ -251,7 +273,7 @@ namespace Plugin.Media
         private static UIViewController FindRootViewController()
         {
             UIViewController viewController = null;
-            UIWindow window = UIApplication.SharedApplication.KeyWindow;
+            var window = UIApplication.SharedApplication.KeyWindow;
             if (window == null)
                 throw new InvalidOperationException("There's no current active window");
 
@@ -530,26 +552,79 @@ namespace Plugin.Media
             }
         }
 
-
-        void CheckCameraUsageDescription()
+        static async Task CheckPermissions(params string[] permissions)
         {
-            var info = NSBundle.MainBundle.InfoDictionary;
-
-            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            //See which ones we need to request.
+            var permissionsToRequest = new List<string>();
+            foreach (var permission in permissions)
             {
-                if (!info.ContainsKey(new NSString("NSCameraUsageDescription")))
-                    throw new UnauthorizedAccessException("On iOS 10 and higher you must set NSCameraUsageDescription in your Info.plist file to enable Authorization Requests for Camera access!");
+                var permissionStatus = PermissionStatus.Unknown;
+                switch (permission)
+                {
+                    case nameof(Permissions.Camera):
+                        permissionStatus = await Permissions.CheckStatusAsync<Permissions.Camera>();
+                        break;
+                    case nameof(Permissions.Photos):
+                        permissionStatus = await Permissions.CheckStatusAsync<Permissions.Photos>();
+                        break;
+                    case nameof(Permissions.Microphone):
+                        permissionStatus = await Permissions.CheckStatusAsync<Permissions.Microphone>();
+                        break;
+                }
+
+                if (permissionStatus != PermissionStatus.Granted)
+                    permissionsToRequest.Add(permission);
             }
+
+            //Nothing to request, Awesome!
+            if (permissionsToRequest.Count == 0)
+                return;
+
+            var results = new Dictionary<string, PermissionStatus>();
+            foreach (var permission in permissions)
+            {
+                switch (permission)
+                {
+                    case nameof(Permissions.Camera):
+                        results.Add(permission, await Permissions.RequestAsync<Permissions.Camera>());
+                        break;
+                    case nameof(Permissions.Photos):
+                        results.Add(permission, await Permissions.RequestAsync<Permissions.Photos>());
+                        break;
+                    case nameof(Permissions.Microphone):
+                        results.Add(permission, await Permissions.RequestAsync<Permissions.Microphone>());
+                        break;
+                }
+            }
+
+            //check for anything not granted, if none, Awesome!
+            var notGranted = results.Where(r => r.Value != PermissionStatus.Granted);
+            if (notGranted.Count() == 0)
+                return;
+
+            //Gunna need those permissions :(
+            var missingPermissions = string.Join(", ", notGranted.Select(r => r.Key).ToArray());
+            throw new UnauthorizedAccessException($"{missingPermissions} permission(s) are required.");
+
         }
 
-        void CheckPhotoUsageDescription()
+        const string cameraDescription = "NSCameraUsageDescription";
+        const string photoDescription = "NSPhotoLibraryUsageDescription";
+        const string photoAddDescription = "NSPhotoLibraryAddUsageDescription";
+        const string microphoneDescription = "NSMicrophoneUsageDescription";
+        void CheckUsageDescription(params string[] descriptionNames)
         {
-            var info = NSBundle.MainBundle.InfoDictionary;
-
-            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            foreach (var description in descriptionNames)
             {
-                if (!info.ContainsKey(new NSString("NSPhotoLibraryUsageDescription")))
-                    throw new UnauthorizedAccessException("On iOS 10 and higher you must set NSPhotoLibraryUsageDescription in your Info.plist file to enable Authorization Requests for Photo Library access!");
+
+                var info = NSBundle.MainBundle.InfoDictionary;
+
+                if (!UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+                    return;
+
+                if (!info.ContainsKey(new NSString(description)))
+                    throw new UnauthorizedAccessException($"On iOS 10 and higher you must set {description} in your Info.plist file to enable Authorization Requests for access!");
+
             }
         }
     }

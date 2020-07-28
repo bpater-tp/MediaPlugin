@@ -30,37 +30,64 @@ namespace Plugin.Media
 			public static int alpha = 2130771968;
 			
 			// aapt resource value: 0x7F010001
-			public static int font = 2130771969;
+			public static int coordinatorLayoutStyle = 2130771969;
 			
 			// aapt resource value: 0x7F010002
-			public static int fontProviderAuthority = 2130771970;
+			public static int font = 2130771970;
 			
 			// aapt resource value: 0x7F010003
-			public static int fontProviderCerts = 2130771971;
+			public static int fontProviderAuthority = 2130771971;
 			
 			// aapt resource value: 0x7F010004
-			public static int fontProviderFetchStrategy = 2130771972;
+			public static int fontProviderCerts = 2130771972;
 			
 			// aapt resource value: 0x7F010005
-			public static int fontProviderFetchTimeout = 2130771973;
+			public static int fontProviderFetchStrategy = 2130771973;
 			
 			// aapt resource value: 0x7F010006
-			public static int fontProviderPackage = 2130771974;
+			public static int fontProviderFetchTimeout = 2130771974;
 			
 			// aapt resource value: 0x7F010007
-			public static int fontProviderQuery = 2130771975;
+			public static int fontProviderPackage = 2130771975;
 			
 			// aapt resource value: 0x7F010008
-			public static int fontStyle = 2130771976;
+			public static int fontProviderQuery = 2130771976;
 			
 			// aapt resource value: 0x7F010009
-			public static int fontVariationSettings = 2130771977;
+			public static int fontStyle = 2130771977;
 			
 			// aapt resource value: 0x7F01000A
-			public static int fontWeight = 2130771978;
+			public static int fontVariationSettings = 2130771978;
 			
 			// aapt resource value: 0x7F01000B
-			public static int ttcIndex = 2130771979;
+			public static int fontWeight = 2130771979;
+			
+			// aapt resource value: 0x7F01000C
+			public static int keylines = 2130771980;
+			
+			// aapt resource value: 0x7F01000D
+			public static int layout_anchor = 2130771981;
+			
+			// aapt resource value: 0x7F01000E
+			public static int layout_anchorGravity = 2130771982;
+			
+			// aapt resource value: 0x7F01000F
+			public static int layout_behavior = 2130771983;
+			
+			// aapt resource value: 0x7F010010
+			public static int layout_dodgeInsetEdges = 2130771984;
+			
+			// aapt resource value: 0x7F010011
+			public static int layout_insetEdge = 2130771985;
+			
+			// aapt resource value: 0x7F010012
+			public static int layout_keyline = 2130771986;
+			
+			// aapt resource value: 0x7F010013
+			public static int statusBarBackground = 2130771987;
+			
+			// aapt resource value: 0x7F010014
+			public static int ttcIndex = 2130771988;
 			
 			static Attribute()
 			{
@@ -76,16 +103,28 @@ namespace Plugin.Media
 		{
 			
 			// aapt resource value: 0x7F020000
-			public static int notification_action_color_filter = 2130837504;
+			public static int browser_actions_bg_grey = 2130837504;
 			
 			// aapt resource value: 0x7F020001
-			public static int notification_icon_bg_color = 2130837505;
+			public static int browser_actions_divider_color = 2130837505;
 			
 			// aapt resource value: 0x7F020002
-			public static int ripple_material_light = 2130837506;
+			public static int browser_actions_text_color = 2130837506;
 			
 			// aapt resource value: 0x7F020003
-			public static int secondary_text_default_material_light = 2130837507;
+			public static int browser_actions_title_color = 2130837507;
+			
+			// aapt resource value: 0x7F020004
+			public static int notification_action_color_filter = 2130837508;
+			
+			// aapt resource value: 0x7F020005
+			public static int notification_icon_bg_color = 2130837509;
+			
+			// aapt resource value: 0x7F020006
+			public static int ripple_material_light = 2130837510;
+			
+			// aapt resource value: 0x7F020007
+			public static int secondary_text_default_material_light = 2130837511;
 			
 			static Color()
 			{
@@ -101,70 +140,76 @@ namespace Plugin.Media
 		{
 			
 			// aapt resource value: 0x7F030000
-			public static int compat_button_inset_horizontal_material = 2130903040;
+			public static int browser_actions_context_menu_max_width = 2130903040;
 			
 			// aapt resource value: 0x7F030001
-			public static int compat_button_inset_vertical_material = 2130903041;
+			public static int browser_actions_context_menu_min_padding = 2130903041;
 			
 			// aapt resource value: 0x7F030002
-			public static int compat_button_padding_horizontal_material = 2130903042;
+			public static int compat_button_inset_horizontal_material = 2130903042;
 			
 			// aapt resource value: 0x7F030003
-			public static int compat_button_padding_vertical_material = 2130903043;
+			public static int compat_button_inset_vertical_material = 2130903043;
 			
 			// aapt resource value: 0x7F030004
-			public static int compat_control_corner_material = 2130903044;
+			public static int compat_button_padding_horizontal_material = 2130903044;
 			
 			// aapt resource value: 0x7F030005
-			public static int compat_notification_large_icon_max_height = 2130903045;
+			public static int compat_button_padding_vertical_material = 2130903045;
 			
 			// aapt resource value: 0x7F030006
-			public static int compat_notification_large_icon_max_width = 2130903046;
+			public static int compat_control_corner_material = 2130903046;
 			
 			// aapt resource value: 0x7F030007
-			public static int notification_action_icon_size = 2130903047;
+			public static int compat_notification_large_icon_max_height = 2130903047;
 			
 			// aapt resource value: 0x7F030008
-			public static int notification_action_text_size = 2130903048;
+			public static int compat_notification_large_icon_max_width = 2130903048;
 			
 			// aapt resource value: 0x7F030009
-			public static int notification_big_circle_margin = 2130903049;
+			public static int notification_action_icon_size = 2130903049;
 			
 			// aapt resource value: 0x7F03000A
-			public static int notification_content_margin_start = 2130903050;
+			public static int notification_action_text_size = 2130903050;
 			
 			// aapt resource value: 0x7F03000B
-			public static int notification_large_icon_height = 2130903051;
+			public static int notification_big_circle_margin = 2130903051;
 			
 			// aapt resource value: 0x7F03000C
-			public static int notification_large_icon_width = 2130903052;
+			public static int notification_content_margin_start = 2130903052;
 			
 			// aapt resource value: 0x7F03000D
-			public static int notification_main_column_padding_top = 2130903053;
+			public static int notification_large_icon_height = 2130903053;
 			
 			// aapt resource value: 0x7F03000E
-			public static int notification_media_narrow_margin = 2130903054;
+			public static int notification_large_icon_width = 2130903054;
 			
 			// aapt resource value: 0x7F03000F
-			public static int notification_right_icon_size = 2130903055;
+			public static int notification_main_column_padding_top = 2130903055;
 			
 			// aapt resource value: 0x7F030010
-			public static int notification_right_side_padding_top = 2130903056;
+			public static int notification_media_narrow_margin = 2130903056;
 			
 			// aapt resource value: 0x7F030011
-			public static int notification_small_icon_background_padding = 2130903057;
+			public static int notification_right_icon_size = 2130903057;
 			
 			// aapt resource value: 0x7F030012
-			public static int notification_small_icon_size_as_large = 2130903058;
+			public static int notification_right_side_padding_top = 2130903058;
 			
 			// aapt resource value: 0x7F030013
-			public static int notification_subtext_size = 2130903059;
+			public static int notification_small_icon_background_padding = 2130903059;
 			
 			// aapt resource value: 0x7F030014
-			public static int notification_top_pad = 2130903060;
+			public static int notification_small_icon_size_as_large = 2130903060;
 			
 			// aapt resource value: 0x7F030015
-			public static int notification_top_pad_large_text = 2130903061;
+			public static int notification_subtext_size = 2130903061;
+			
+			// aapt resource value: 0x7F030016
+			public static int notification_top_pad = 2130903062;
+			
+			// aapt resource value: 0x7F030017
+			public static int notification_top_pad_large_text = 2130903063;
 			
 			static Dimension()
 			{
@@ -244,73 +289,136 @@ namespace Plugin.Media
 			public static int action_text = 2131034115;
 			
 			// aapt resource value: 0x7F050005
-			public static int async = 2131034117;
+			public static int all = 2131034117;
 			
 			// aapt resource value: 0x7F050006
-			public static int blocking = 2131034118;
+			public static int async = 2131034118;
 			
 			// aapt resource value: 0x7F050007
-			public static int chronometer = 2131034119;
+			public static int blocking = 2131034119;
 			
 			// aapt resource value: 0x7F050008
-			public static int forever = 2131034120;
+			public static int bottom = 2131034120;
 			
 			// aapt resource value: 0x7F050009
-			public static int icon = 2131034121;
-			
-			// aapt resource value: 0x7F05000A
-			public static int icon_group = 2131034122;
-			
-			// aapt resource value: 0x7F05000B
-			public static int info = 2131034123;
+			public static int browser_actions_header_text = 2131034121;
 			
 			// aapt resource value: 0x7F05000C
-			public static int italic = 2131034124;
+			public static int browser_actions_menu_items = 2131034124;
+			
+			// aapt resource value: 0x7F05000A
+			public static int browser_actions_menu_item_icon = 2131034122;
+			
+			// aapt resource value: 0x7F05000B
+			public static int browser_actions_menu_item_text = 2131034123;
 			
 			// aapt resource value: 0x7F05000D
-			public static int line1 = 2131034125;
+			public static int browser_actions_menu_view = 2131034125;
 			
 			// aapt resource value: 0x7F05000E
-			public static int line3 = 2131034126;
+			public static int center = 2131034126;
 			
 			// aapt resource value: 0x7F05000F
-			public static int normal = 2131034127;
+			public static int center_horizontal = 2131034127;
 			
 			// aapt resource value: 0x7F050010
-			public static int notification_background = 2131034128;
+			public static int center_vertical = 2131034128;
 			
 			// aapt resource value: 0x7F050011
-			public static int notification_main_column = 2131034129;
+			public static int chronometer = 2131034129;
 			
 			// aapt resource value: 0x7F050012
-			public static int notification_main_column_container = 2131034130;
+			public static int clip_horizontal = 2131034130;
 			
 			// aapt resource value: 0x7F050013
-			public static int right_icon = 2131034131;
+			public static int clip_vertical = 2131034131;
 			
 			// aapt resource value: 0x7F050014
-			public static int right_side = 2131034132;
+			public static int end = 2131034132;
 			
 			// aapt resource value: 0x7F050015
-			public static int tag_transition_group = 2131034133;
+			public static int fill = 2131034133;
 			
 			// aapt resource value: 0x7F050016
-			public static int tag_unhandled_key_event_manager = 2131034134;
+			public static int fill_horizontal = 2131034134;
 			
 			// aapt resource value: 0x7F050017
-			public static int tag_unhandled_key_listeners = 2131034135;
+			public static int fill_vertical = 2131034135;
 			
 			// aapt resource value: 0x7F050018
-			public static int text = 2131034136;
+			public static int forever = 2131034136;
 			
 			// aapt resource value: 0x7F050019
-			public static int text2 = 2131034137;
+			public static int icon = 2131034137;
 			
 			// aapt resource value: 0x7F05001A
-			public static int time = 2131034138;
+			public static int icon_group = 2131034138;
 			
 			// aapt resource value: 0x7F05001B
-			public static int title = 2131034139;
+			public static int info = 2131034139;
+			
+			// aapt resource value: 0x7F05001C
+			public static int italic = 2131034140;
+			
+			// aapt resource value: 0x7F05001D
+			public static int left = 2131034141;
+			
+			// aapt resource value: 0x7F05001E
+			public static int line1 = 2131034142;
+			
+			// aapt resource value: 0x7F05001F
+			public static int line3 = 2131034143;
+			
+			// aapt resource value: 0x7F050020
+			public static int none = 2131034144;
+			
+			// aapt resource value: 0x7F050021
+			public static int normal = 2131034145;
+			
+			// aapt resource value: 0x7F050022
+			public static int notification_background = 2131034146;
+			
+			// aapt resource value: 0x7F050023
+			public static int notification_main_column = 2131034147;
+			
+			// aapt resource value: 0x7F050024
+			public static int notification_main_column_container = 2131034148;
+			
+			// aapt resource value: 0x7F050025
+			public static int right = 2131034149;
+			
+			// aapt resource value: 0x7F050026
+			public static int right_icon = 2131034150;
+			
+			// aapt resource value: 0x7F050027
+			public static int right_side = 2131034151;
+			
+			// aapt resource value: 0x7F050028
+			public static int start = 2131034152;
+			
+			// aapt resource value: 0x7F050029
+			public static int tag_transition_group = 2131034153;
+			
+			// aapt resource value: 0x7F05002A
+			public static int tag_unhandled_key_event_manager = 2131034154;
+			
+			// aapt resource value: 0x7F05002B
+			public static int tag_unhandled_key_listeners = 2131034155;
+			
+			// aapt resource value: 0x7F05002C
+			public static int text = 2131034156;
+			
+			// aapt resource value: 0x7F05002D
+			public static int text2 = 2131034157;
+			
+			// aapt resource value: 0x7F05002E
+			public static int time = 2131034158;
+			
+			// aapt resource value: 0x7F05002F
+			public static int title = 2131034159;
+			
+			// aapt resource value: 0x7F050030
+			public static int top = 2131034160;
 			
 			static Id()
 			{
@@ -342,22 +450,28 @@ namespace Plugin.Media
 		{
 			
 			// aapt resource value: 0x7F070000
-			public static int notification_action = 2131165184;
+			public static int browser_actions_context_menu_page = 2131165184;
 			
 			// aapt resource value: 0x7F070001
-			public static int notification_action_tombstone = 2131165185;
+			public static int browser_actions_context_menu_row = 2131165185;
 			
 			// aapt resource value: 0x7F070002
-			public static int notification_template_custom_big = 2131165186;
+			public static int notification_action = 2131165186;
 			
 			// aapt resource value: 0x7F070003
-			public static int notification_template_icon_group = 2131165187;
+			public static int notification_action_tombstone = 2131165187;
 			
 			// aapt resource value: 0x7F070004
-			public static int notification_template_part_chronometer = 2131165188;
+			public static int notification_template_custom_big = 2131165188;
 			
 			// aapt resource value: 0x7F070005
-			public static int notification_template_part_time = 2131165189;
+			public static int notification_template_icon_group = 2131165189;
+			
+			// aapt resource value: 0x7F070006
+			public static int notification_template_part_chronometer = 2131165190;
+			
+			// aapt resource value: 0x7F070007
+			public static int notification_template_part_time = 2131165191;
 			
 			static Layout()
 			{
@@ -409,6 +523,9 @@ namespace Plugin.Media
 			// aapt resource value: 0x7F090006
 			public static int Widget_Compat_NotificationActionText = 2131296262;
 			
+			// aapt resource value: 0x7F090007
+			public static int Widget_Support_CoordinatorLayout = 2131296263;
+			
 			static Style()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -437,27 +554,69 @@ namespace Plugin.Media
 			// aapt resource value: 0
 			public static int ColorStateListItem_android_color = 0;
 			
-			// aapt resource value: { 0x7F010002,0x7F010003,0x7F010004,0x7F010005,0x7F010006,0x7F010007 }
+			// aapt resource value: { 0x7F01000C,0x7F010013 }
+			public static int[] CoordinatorLayout = new int[] {
+					2130771980,
+					2130771987};
+			
+			// aapt resource value: 0
+			public static int CoordinatorLayout_keylines = 0;
+			
+			// aapt resource value: { 0x10100B3,0x7F01000D,0x7F01000E,0x7F01000F,0x7F010010,0x7F010011,0x7F010012 }
+			public static int[] CoordinatorLayout_Layout = new int[] {
+					16842931,
+					2130771981,
+					2130771982,
+					2130771983,
+					2130771984,
+					2130771985,
+					2130771986};
+			
+			// aapt resource value: 0
+			public static int CoordinatorLayout_Layout_android_layout_gravity = 0;
+			
+			// aapt resource value: 1
+			public static int CoordinatorLayout_Layout_layout_anchor = 1;
+			
+			// aapt resource value: 2
+			public static int CoordinatorLayout_Layout_layout_anchorGravity = 2;
+			
+			// aapt resource value: 3
+			public static int CoordinatorLayout_Layout_layout_behavior = 3;
+			
+			// aapt resource value: 4
+			public static int CoordinatorLayout_Layout_layout_dodgeInsetEdges = 4;
+			
+			// aapt resource value: 5
+			public static int CoordinatorLayout_Layout_layout_insetEdge = 5;
+			
+			// aapt resource value: 6
+			public static int CoordinatorLayout_Layout_layout_keyline = 6;
+			
+			// aapt resource value: 1
+			public static int CoordinatorLayout_statusBarBackground = 1;
+			
+			// aapt resource value: { 0x7F010003,0x7F010004,0x7F010005,0x7F010006,0x7F010007,0x7F010008 }
 			public static int[] FontFamily = new int[] {
-					2130771970,
 					2130771971,
 					2130771972,
 					2130771973,
 					2130771974,
-					2130771975};
+					2130771975,
+					2130771976};
 			
-			// aapt resource value: { 0x1010532,0x1010533,0x101053F,0x101056F,0x1010570,0x7F010001,0x7F010008,0x7F010009,0x7F01000A,0x7F01000B }
+			// aapt resource value: { 0x1010532,0x1010533,0x101053F,0x101056F,0x1010570,0x7F010002,0x7F010009,0x7F01000A,0x7F01000B,0x7F010014 }
 			public static int[] FontFamilyFont = new int[] {
 					16844082,
 					16844083,
 					16844095,
 					16844143,
 					16844144,
-					2130771969,
-					2130771976,
+					2130771970,
 					2130771977,
 					2130771978,
-					2130771979};
+					2130771979,
+					2130771988};
 			
 			// aapt resource value: 0
 			public static int FontFamilyFont_android_font = 0;
@@ -575,6 +734,22 @@ namespace Plugin.Media
 			}
 			
 			private Styleable()
+			{
+			}
+		}
+		
+		public partial class Xml
+		{
+			
+			// aapt resource value: 0x7F0B0000
+			public static int xamarin_essentials_fileprovider_file_paths = 2131427328;
+			
+			static Xml()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Xml()
 			{
 			}
 		}

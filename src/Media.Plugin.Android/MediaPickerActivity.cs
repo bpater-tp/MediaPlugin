@@ -85,7 +85,7 @@ namespace Plugin.Media
             base.OnSaveInstanceState(outState);
         }
 
-		const string HuaweiManufacturer = "Huawei";
+		const string huaweiManufacturer = "Huawei";
 
         /// <summary>
         /// OnCreate
@@ -164,7 +164,7 @@ namespace Plugin.Media
 							catch (Java.Lang.IllegalArgumentException iae)
 							{
 								//Using a Huawei device on pre-N. Increased likelihood of failure...
-								if (HuaweiManufacturer.Equals(Build.Manufacturer, StringComparison.CurrentCultureIgnoreCase) && (int)Build.VERSION.SdkInt < 24)
+								if (huaweiManufacturer.Equals(Build.Manufacturer, StringComparison.CurrentCultureIgnoreCase) && (int)Build.VERSION.SdkInt < 24)
 								{
 									pickIntent.PutExtra(MediaStore.ExtraOutput, path);
 								}

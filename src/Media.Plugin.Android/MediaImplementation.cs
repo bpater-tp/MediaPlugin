@@ -7,21 +7,21 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Provider;
 using Plugin.Media.Abstractions;
-using Plugin.Permissions;
 using Android.Graphics;
 using System.Text.RegularExpressions;
-using Plugin.CurrentActivity;
 using System.Collections.Generic;
 using System.Linq;
 using Android.Support.Media;
 using System.Globalization;
+using Permissions = Xamarin.Essentials.Permissions;
+using PermissionStatus = Xamarin.Essentials.PermissionStatus;
 
 namespace Plugin.Media
 {
-    /// <summary>
-    /// Implementation for Feature
-    /// </summary>
-    [Android.Runtime.Preserve(AllMembers = true)]
+	/// <summary>
+	/// Implementation for Feature
+	/// </summary>
+	[Android.Runtime.Preserve(AllMembers = true)]
     public class MediaImplementation : IMedia
     {
         /// <summary>
@@ -271,41 +271,55 @@ namespace Plugin.Media
 
             bool checkCamera = HasPermissionInManifest(Android.Manifest.Permission.Camera);
 
-            var hasStoragePermission = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Storage);
-            var hasCameraPermission = Permissions.Abstractions.PermissionStatus.Granted;
-            if(checkCamera)
-                hasCameraPermission = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Camera);
+            var hasStoragePermission = await Permissions.CheckStatusAsync<StoragePermission>();
+            var hasCameraPermission = PermissionStatus.Granted;
+            if (checkCamera)
+                hasCameraPermission = await Permissions.CheckStatusAsync<Permissions.Camera>();
 
 
-            var permissions = new List<Permissions.Abstractions.Permission>();
+            var permissions = new List<string>();
+            var camera = nameof(Permissions.Camera);
+            var storage = nameof(StoragePermission);
 
-            if (hasCameraPermission != Permissions.Abstractions.PermissionStatus.Granted)
-                permissions.Add(Permissions.Abstractions.Permission.Camera);
+            if (hasCameraPermission != PermissionStatus.Granted)
+                permissions.Add(camera);
 
-            if(hasStoragePermission != Permissions.Abstractions.PermissionStatus.Granted)
-                permissions.Add(Permissions.Abstractions.Permission.Storage);
+            if(hasStoragePermission != PermissionStatus.Granted)
+                permissions.Add(storage);
 
             if (permissions.Count == 0) //good to go!
                 return true;
 
-            var results = await CrossPermissions.Current.RequestPermissionsAsync(permissions.ToArray());
-
-			if (results.ContainsKey(Permissions.Abstractions.Permission.Storage) &&
-					results[Permissions.Abstractions.Permission.Storage] != Permissions.Abstractions.PermissionStatus.Granted)
+            var results = new Dictionary<string, PermissionStatus>();
+            foreach (var permission in permissions)
 			{
-				Console.WriteLine("Storage permission Denied.");
-				return false;
+				switch (permission)
+				{
+                    case nameof(Permissions.Camera):
+                        results.Add(permission, await Permissions.RequestAsync<Permissions.Camera>());
+                        break;
+                    case nameof(StoragePermission):
+                        results.Add(permission, await Permissions.RequestAsync<StoragePermission>());
+                        break;
+				}
 			}
 
-			if (results.ContainsKey(Permissions.Abstractions.Permission.Camera) &&
-					results[Permissions.Abstractions.Permission.Camera] != Permissions.Abstractions.PermissionStatus.Granted)
+            if (results.ContainsKey(storage) &&
+                            results[storage] != PermissionStatus.Granted)
 			{
-				Console.WriteLine("Camera permission Denied.");
-				return false;
-			}
+                Console.WriteLine("Storage permission Denied.");
+                return false;
+            }
 
-			return true;
-		}
+            if (results.ContainsKey(camera) &&
+                            results[camera] != PermissionStatus.Granted)
+            {
+                Console.WriteLine("Camera permission Denied.");
+                return false;
+            }
+
+            return true;
+        }
 
         async Task<bool> RequestStoragePermission()
         {
@@ -313,13 +327,12 @@ namespace Plugin.Media
             if ((int)Build.VERSION.SdkInt < 23)
                 return true;
 
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permissions.Abstractions.Permission.Storage);
-            if (status != Permissions.Abstractions.PermissionStatus.Granted)
+            var status = await Permissions.CheckStatusAsync<StoragePermission>();
+            if (status != PermissionStatus.Granted)
             {
                 Console.WriteLine("Does not have storage permission granted, requesting.");
-                var results = await CrossPermissions.Current.RequestPermissionsAsync(Permissions.Abstractions.Permission.Storage);
-                if (results.ContainsKey(Permissions.Abstractions.Permission.Storage) &&
-                    results[Permissions.Abstractions.Permission.Storage] != Permissions.Abstractions.PermissionStatus.Granted)
+                var result = await Permissions.RequestAsync<StoragePermission>();
+                if (result != PermissionStatus.Granted)
                 {
                     Console.WriteLine("Storage permission Denied.");
                     return false;
@@ -338,12 +351,12 @@ namespace Plugin.Media
 					return requestedPermissions.Any(r => r.Equals(permission, StringComparison.InvariantCultureIgnoreCase));
 
 				//try to use current activity else application context
-				var permissionContext = CrossCurrentActivity.Current.Activity ?? Android.App.Application.Context;
+				var permissionContext = Xamarin.Essentials.Platform.CurrentActivity ?? Android.App.Application.Context;
 
 				if (context == null)
 				{
-                    System.Diagnostics.Debug.WriteLine("Unable to detect current Activity or App Context. Please ensure Plugin.CurrentActivity is installed in your Android project and your Application class is registering with Application.IActivityLifecycleCallbacks.");
-					return false;
+                    System.Diagnostics.Debug.WriteLine("Unable to detect current Activity or App Context. Please ensure Xamarin.Essentials is installed and initialized.");
+                    return false;
 				}
 
 				var info = context.PackageManager.GetPackageInfo(context.PackageName, Android.Content.PM.PackageInfoFlags.Permissions);
@@ -372,8 +385,8 @@ namespace Plugin.Media
 		}
 
 
-        const string IllegalCharacters = "[|\\?*<\":>/']";
-        private void VerifyOptions(StoreMediaOptions options)
+        const string illegalCharacters = "[|\\?*<\":>/']";
+        void VerifyOptions(StoreMediaOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
@@ -381,14 +394,14 @@ namespace Plugin.Media
                 throw new ArgumentException("options.Directory must be a relative path", "options");
 
             if(!string.IsNullOrWhiteSpace(options.Name))
-                options.Name = Regex.Replace(options.Name, IllegalCharacters, string.Empty).Replace(@"\", string.Empty);
+                options.Name = Regex.Replace(options.Name, illegalCharacters, string.Empty).Replace(@"\", string.Empty);
 
 
             if (!string.IsNullOrWhiteSpace(options.Directory))
-                options.Directory = Regex.Replace(options.Directory, IllegalCharacters, string.Empty).Replace(@"\", string.Empty);
+                options.Directory = Regex.Replace(options.Directory, illegalCharacters, string.Empty).Replace(@"\", string.Empty);
         }
 
-        private Intent CreateMediaIntent(int id, string type, string action, StoreMediaOptions options, bool tasked = true, bool multiple = true)
+        Intent CreateMediaIntent(int id, string type, string action, StoreMediaOptions options, bool tasked = true, bool multiple = true)
         {
             Intent pickerIntent = new Intent(this.context, typeof(MediaPickerActivity));
             pickerIntent.PutExtra(MediaPickerActivity.ExtraId, id);
@@ -430,7 +443,7 @@ namespace Plugin.Media
             return pickerIntent;
         }
 
-        private int GetRequestId()
+        int GetRequestId()
         {
             var id = requestId;
             if (requestId == int.MaxValue)
@@ -441,7 +454,7 @@ namespace Plugin.Media
             return id;
         }
 
-        private Task<List<MediaFile>> TakeMediaAsync(string type, string action, StoreMediaOptions options)
+        Task<List<MediaFile>> TakeMediaAsync(string type, string action, StoreMediaOptions options)
         {
             int id = GetRequestId();
 
@@ -836,7 +849,7 @@ namespace Plugin.Media
             }
         }
 
-        private void UpdateMetadata(ref MediaFile media, ExifInterface exif)
+        void UpdateMetadata(ref MediaFile media, ExifInterface exif)
         {
             var dateString = exif.GetAttribute(ExifInterface.TagDatetime);
             if (dateString != null) {
@@ -853,7 +866,7 @@ namespace Plugin.Media
             media.LongitudeRef = exif.GetAttribute(ExifInterface.TagGpsLongitudeRef);
         }
 
-        private double ParseRational(string rat)
+        double ParseRational(string rat)
         {
             double result = 0.0;
 
