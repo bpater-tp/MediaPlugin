@@ -335,7 +335,7 @@ namespace Plugin.Media
                     foreach (var asset in args.Assets)
                     {
                         var tempMedia = new MediaFile(null, () => null);
-                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options.RotateImage, tempMedia);
+                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options?.RotateImage ?? false, tempMedia);
                         var media = new MediaFile(path, () => File.OpenRead(path));
                         media.MediaTakenAt = tempMedia.MediaTakenAt;
                         media.Orientation = tempMedia.Orientation;
