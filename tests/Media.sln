@@ -20,13 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestsApps", "TestsApps", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaAndroidTest", "MediaAndroidTest\MediaAndroidTest.csproj", "{25ABD9E0-F2C6-4E86-9B9D-FED01E44E0FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Plugin.UWP", "..\src\Media.Plugin.UWP\Media.Plugin.UWP.csproj", "{04125CD7-F3B6-4960-B1BA-9F584384EBDF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaTest.iOS", "MediaTest.iOS\MediaTest.iOS.csproj", "{18EB9D77-ACEC-44B0-966E-C015FE303BDC}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Media.Plugin.Shared", "..\src\Media.Plugin.Shared\Media.Plugin.Shared.shproj", "{6847B0B7-91C1-4DF3-86BA-F2DD1EE2622F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaTest.UWP", "MediaTest.UWP\MediaTest.UWP.csproj", "{BF24653B-B561-4F53-A050-EDAB55AAAC26}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MediaTest.Shared", "MediaTest.Shared\MediaTest.Shared.shproj", "{99603C24-247B-4BE8-8642-0775F1DD095B}"
 EndProject
