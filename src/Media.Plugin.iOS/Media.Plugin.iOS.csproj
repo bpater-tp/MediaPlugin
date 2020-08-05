@@ -52,21 +52,21 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="GMImagePicker.Xamarin">
-      <HintPath>..\packages\GMImagePicker.Xamarin.2.4.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Essentials">
-      <HintPath>..\packages\Xamarin.Essentials.1.5.3.2\lib\xamarinios10\Xamarin.Essentials.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK-1.0" />
+    <Reference Include="Xamarin.Essentials">
+      <HintPath>..\..\tests\packages\Xamarin.Essentials.1.5.3.2\lib\xamarinios10\Xamarin.Essentials.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing.Common.dll" />
+    <Reference Include="GMImagePicker.Xamarin">
+      <HintPath>..\..\tests\packages\GMImagePicker.Xamarin.2.4.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Media.Plugin.iOS.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Media.Plugin.Abstractions\Media.Plugin.Abstractions.csproj">
-      <Project>{0E3EFBDE-5210-47D7-9CBF-D5130091A361}</Project>
+      <Project>{FBEF1E96-BBB6-43B8-9C56-2C01088C4D48}</Project>
       <Name>Media.Plugin.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>
