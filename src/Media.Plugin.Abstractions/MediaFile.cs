@@ -11,10 +11,10 @@ namespace Plugin.Media.Abstractions
     {
         public int Orientation;
         public DateTime? MediaTakenAt;
-        public double Latitude;
+        public double? Latitude;
         public string LatitudeRef;
-        public double Longitude;
-        public string LongitudeRef;
+        public double? Longitude;
+		public string LongitudeRef;
 
 		/// <summary>
 		/// Constructor

@@ -449,9 +449,9 @@ namespace Plugin.Media
 		        }
 
 		        int.TryParse(fullimage.Properties?.Orientation.ToString(), out tempMedia.Orientation);
-		        tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude ?? 0.0;
+		        tempMedia.Latitude = fullimage.Properties?.Gps?.Latitude;
 		        tempMedia.LatitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLatitudeRef).ToString() ?? string.Empty;
-		        tempMedia.Longitude = fullimage.Properties?.Gps?.Longitude ?? 0.0;
+		        tempMedia.Longitude = fullimage.Properties?.Gps?.Longitude;
 		        tempMedia.LongitudeRef = fullimage.Properties?.Gps?.Dictionary.ValueForKey(ImageIO.CGImageProperties.GPSLongitudeRef).ToString() ?? string.Empty;
 		        tcs.TrySetResult(path);
 	        }

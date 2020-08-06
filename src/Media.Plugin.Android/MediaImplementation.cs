@@ -804,9 +804,9 @@ namespace Plugin.Media
         void SetMissingMetadata(ExifInterface exif, Location location)
         {
             var exifPos = exif.GetLatLong();
-            if (exifPos == null && location != null)
+            if (exifPos == null && location != null && location.Latitude != null && location.Longitude != null)
             {
-                exif.SetLatLong(location.Latitude, location.Longitude);
+                exif.SetLatLong((double)location.Latitude, (double)location.Longitude);
             }
             if (string.IsNullOrEmpty(exif.GetAttribute(ExifInterface.TagDatetime)))
             {
@@ -866,9 +866,9 @@ namespace Plugin.Media
             media.LongitudeRef = exif.GetAttribute(ExifInterface.TagGpsLongitudeRef);
         }
 
-        double ParseRational(string rat)
+        double? ParseRational(string rat)
         {
-            double result = 0.0;
+            double? result = null;
 
             try
             {
