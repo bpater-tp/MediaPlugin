@@ -554,7 +554,23 @@ namespace Plugin.Media
                       options.Directory ?? ((IsCaptured) ? string.Empty : "temp"),
                       options.Name ?? Path.GetFileName(url.Path));
 
-            File.Move(url.Path, path);
+            try
+            {
+                File.Move(url.Path, path);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unable to move file, trying to copy. {ex.Message}");
+                try
+                {
+                    File.Copy(url.Path, path);
+                    File.Delete(url.Path);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Unable to copy/delete file, will be left around :( {ex.Message}");
+                }
+            }
 
             string aPath = null;
             if (source != UIImagePickerControllerSourceType.Camera)
