@@ -15,6 +15,7 @@ namespace Plugin.Media.Abstractions
         public string LatitudeRef;
         public double? Longitude;
 		public string LongitudeRef;
+        public double? Duration;
 
 		/// <summary>
 		/// Constructor
