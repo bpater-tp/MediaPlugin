@@ -24,10 +24,13 @@ namespace Plugin.Media
 	[Android.Runtime.Preserve(AllMembers = true)]
     public class MediaImplementation : IMedia
     {
-        /// <summary>
-        /// Implementation
-        /// </summary>
-        public MediaImplementation()
+		private readonly string[] mimeTypes = { "image/*, video/*" };
+		private readonly string[] mediaStoreTypes = { MediaStore.ActionImageCapture, MediaStore.ActionVideoCapture };
+
+		/// <summary>
+		/// Implementation
+		/// </summary>
+		public MediaImplementation()
         {
 
             this.context = Android.App.Application.Context;
@@ -64,7 +67,7 @@ namespace Plugin.Media
             {
                 return null;
             }
-            var mediaList = await TakeMediaAsync("image/*", Intent.ActionPick, null);
+            var mediaList = await TakeMediaAsync(new[] { "image/*" }, new[] { Intent.ActionPick }, null);
             if (mediaList == null)
                 return null;
 
@@ -131,7 +134,7 @@ namespace Plugin.Media
 
             VerifyOptions(options);
 
-            var mediaList = (await TakeMediaAsync("image/*", MediaStore.ActionImageCapture, options));
+            var mediaList = (await TakeMediaAsync(new[] { "image/*" }, new[] { MediaStore.ActionImageCapture }, options));
             if (mediaList == null)
                 return null;
 
@@ -235,7 +238,7 @@ namespace Plugin.Media
                 return null;
             }
 
-            return (await TakeMediaAsync("video/*", Intent.ActionPick, null)).First();
+            return (await TakeMediaAsync(new[] { "video/*" }, new[] { Intent.ActionPick }, null)).First();
         }
 
         /// <summary>
@@ -255,10 +258,24 @@ namespace Plugin.Media
 
             VerifyOptions(options);
 
-            return (await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options)).First();
+            return (await TakeMediaAsync(new[] { "video/*" }, new[] { MediaStore.ActionVideoCapture }, options)).First();
         }
 
-        private readonly Context context;
+		public async Task<List<MediaFile>> PickMediasAsync(PickMediaOptions options = null)
+		{
+			if (!(await RequestCameraPermissions()))
+			{
+				return null;
+			}
+
+			var mediaList = await TakeMediaAsync(mimeTypes, mediaStoreTypes, null);
+			if (mediaList == null)
+				return null;
+
+			return null;
+		}
+
+		private readonly Context context;
         private int requestId;
         private TaskCompletionSource<List<MediaFile>> completionSource;
 
@@ -401,13 +418,20 @@ namespace Plugin.Media
                 options.Directory = Regex.Replace(options.Directory, illegalCharacters, string.Empty).Replace(@"\", string.Empty);
         }
 
-        Intent CreateMediaIntent(int id, string type, string action, StoreMediaOptions options, bool tasked = true, bool multiple = true)
+        Intent CreateMediaIntent(int id, string[] types, string[] actions, StoreMediaOptions options, bool tasked = true, bool multiple = true)
         {
             Intent pickerIntent = new Intent(this.context, typeof(MediaPickerActivity));
             pickerIntent.PutExtra(MediaPickerActivity.ExtraId, id);
-            pickerIntent.PutExtra(MediaPickerActivity.ExtraType, type);
-            pickerIntent.PutExtra(MediaPickerActivity.ExtraAction, action);
-            pickerIntent.PutExtra(MediaPickerActivity.ExtraTasked, tasked);
+			foreach (var type in types)
+			{
+				pickerIntent.PutExtra(MediaPickerActivity.ExtraType, type);
+			}
+
+			foreach (var action in actions)
+			{
+				pickerIntent.PutExtra(MediaPickerActivity.ExtraAction, action);
+			}
+			pickerIntent.PutExtra(MediaPickerActivity.ExtraTasked, tasked);
             pickerIntent.PutExtra(MediaPickerActivity.ExtraMultiple, multiple);
             if (options != null)
             {
@@ -454,7 +478,7 @@ namespace Plugin.Media
             return id;
         }
 
-        Task<List<MediaFile>> TakeMediaAsync(string type, string action, StoreMediaOptions options)
+        Task<List<MediaFile>> TakeMediaAsync(string[] types, string[] actions, StoreMediaOptions options)
         {
             int id = GetRequestId();
 
@@ -462,7 +486,7 @@ namespace Plugin.Media
             if (Interlocked.CompareExchange(ref completionSource, ntcs, null) != null)
                 throw new InvalidOperationException("Only one operation can be active at a time");
 
-            context.StartActivity(CreateMediaIntent(id, type, action, options));
+            context.StartActivity(CreateMediaIntent(id, types, actions, options));
 
             EventHandler<MediaPickedEventArgs> handler = null;
             handler = (s, e) =>

@@ -627,5 +627,10 @@ namespace Plugin.Media
 
             }
         }
-    }
+
+		public Task<List<MediaFile>> PickMediasAsync(PickMediaOptions options = null)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

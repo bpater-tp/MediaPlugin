@@ -63,5 +63,11 @@ namespace Plugin.Media.Abstractions
         /// <returns>Media file of new video or null if canceled</returns>
         Task<MediaFile> TakeVideoAsync(StoreVideoOptions options);
 
+
+		/// <summary>
+		/// Picks a photo or video from the default gallery
+		/// </summary>
+		/// <returns>Media file or null if canceled</returns>
+		Task<List<MediaFile>> PickMediasAsync(PickMediaOptions options = null);
     }
 }
