@@ -581,8 +581,8 @@ namespace Plugin.Media
 									System.Diagnostics.Debug.WriteLine("Unable to get file path name, using new unique " + ex);
 								}
 
-
-								var outputPath = GetOutputMediaFile(context, "temp", fileName, isPhoto, false);
+                                var photo = uri.Path.ToLower().Contains("video/mp4") ? false : true;
+								var outputPath = GetOutputMediaFile(context, "temp", fileName, photo, false);
 
 								try
                                 {
