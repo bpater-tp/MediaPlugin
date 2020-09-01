@@ -353,6 +353,7 @@ namespace Plugin.Media
                                 media.LatitudeRef = tempMedia.LatitudeRef;
                                 media.Longitude = tempMedia.Longitude;
                                 media.LongitudeRef = tempMedia.LongitudeRef;
+                                media.Type = MediaType.Image;
                                 images.Add(media);
                                 break;
                             case PHAssetMediaType.Video:
@@ -360,6 +361,7 @@ namespace Plugin.Media
                                 media = new MediaFile(path, () => File.OpenRead(path));
                                 media.Duration = asset.Duration;
                                 media.MediaTakenAt = (DateTime?)asset.CreationDate;
+                                media.Type = MediaType.Video;
                                 images.Add(media);
                                 break;
                         }

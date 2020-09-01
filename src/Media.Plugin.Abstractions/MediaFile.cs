@@ -4,11 +4,17 @@ using System.IO;
 
 namespace Plugin.Media.Abstractions
 {
+    public enum MediaType
+	{
+        Image,
+        Video,
+	};
     /// <summary>
     /// Media file representations
     /// </summary>
     public sealed class MediaFile : IDisposable
     {
+        public MediaType Type;
         public int Orientation;
         public DateTime? MediaTakenAt;
         public double? Latitude;
