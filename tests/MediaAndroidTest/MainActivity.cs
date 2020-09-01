@@ -74,7 +74,7 @@ namespace MediaAndroidTest
               {
                   try
                   {
-                      var files = (await Plugin.Media.CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                      var files = (await Plugin.Media.CrossMedia.Current.PickMediaAsync(new Plugin.Media.Abstractions.PickMediaOptions
                       {
                           PhotoSize = switchSize.Checked ? Plugin.Media.Abstractions.PhotoSize.Medium : Plugin.Media.Abstractions.PhotoSize.Full,
                           RotateImage = true,
