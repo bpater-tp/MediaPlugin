@@ -66,6 +66,12 @@ namespace Plugin.Media
 				return null;
 			}
 			var mediaList = await TakeMediaAsync("image/*", Intent.ActionPick, null);
+			return await HandleMediaFiles(mediaList, options);
+		}
+
+
+		private async Task<List<MediaFile>> HandleMediaFiles(List<MediaFile> mediaList, PickMediaOptions options = null)
+		{
 			if (mediaList == null)
 				return null;
 
@@ -112,7 +118,6 @@ namespace Plugin.Media
 			}
 			return mediaList;
 		}
-
 
 		/// <summary>
 		/// Take a photo async with specified options
@@ -267,10 +272,7 @@ namespace Plugin.Media
 			}
 
 			var mediaList = await TakeMediaAsync(AllTypes, Intent.ActionPick, null);
-			if (mediaList == null)
-				return null;
-
-			return mediaList;
+			return await HandleMediaFiles(mediaList, options);
 		}
 
 		private readonly Context context;
