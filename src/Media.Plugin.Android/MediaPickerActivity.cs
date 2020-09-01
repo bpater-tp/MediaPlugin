@@ -332,9 +332,14 @@ namespace Plugin.Media
                     if (!fileList.Any())
                     {
                         return new MediaPickedEventArgs(requestCode, new MediaFileNotFoundException(originalPath));
-                    }                    
+                    }
 
-                    var mediaList = fileList.Select(mediafile => new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)).ToList();
+                    var mediaList = fileList.Select(mediafile =>
+                        new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)
+                        {
+                            Type = mediafile.ToLower().EndsWith("mp4") ? Abstractions.MediaType.Video : Abstractions.MediaType.Image
+                        }
+                    ).ToList();
                     return new MediaPickedEventArgs(requestCode, false, mediaList);
                 });
             }
