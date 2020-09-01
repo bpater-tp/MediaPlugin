@@ -270,7 +270,7 @@ namespace Plugin.Media
 			if (mediaList == null)
 				return null;
 
-			return null;
+			return mediaList;
 		}
 
 		private readonly Context context;
