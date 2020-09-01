@@ -29,7 +29,8 @@ namespace Plugin.Media
         internal const string ExtraPath = "path";
         internal const string ExtraLocation = "location";
         internal const string ExtraType = "type";
-        internal const string ExtraId = "id";
+		internal const string ExtraMimeTypes = "extra_mime_types";
+		internal const string ExtraId = "id";
         internal const string ExtraAction = "action";
         internal const string ExtraTasked = "tasked";
         internal const string ExtraSaveToAlbum = "album_save";

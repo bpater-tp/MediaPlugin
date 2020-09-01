@@ -24,6 +24,7 @@ namespace Plugin.Media
 	[Android.Runtime.Preserve(AllMembers = true)]
 	public class MediaImplementation : IMedia
 	{
+		private const string AllTypes = "*/*";
 		/// <summary>
 		/// Implementation
 		/// </summary>
@@ -265,7 +266,7 @@ namespace Plugin.Media
 				return null;
 			}
 
-			var mediaList = await TakeMediaAsync("image/* video/*", Intent.ActionPick, null);
+			var mediaList = await TakeMediaAsync(AllTypes, Intent.ActionPick, null);
 			if (mediaList == null)
 				return null;
 
@@ -420,6 +421,10 @@ namespace Plugin.Media
 			Intent pickerIntent = new Intent(this.context, typeof(MediaPickerActivity));
 			pickerIntent.PutExtra(MediaPickerActivity.ExtraId, id);
 			pickerIntent.PutExtra(MediaPickerActivity.ExtraType, type);
+			if(type == AllTypes)
+			{
+				pickerIntent.PutExtra(MediaPickerActivity.ExtraMimeTypes, "video/*, image/*");
+			}
 			pickerIntent.PutExtra(MediaPickerActivity.ExtraAction, action);
 			pickerIntent.PutExtra(MediaPickerActivity.ExtraTasked, tasked);
 			pickerIntent.PutExtra(MediaPickerActivity.ExtraMultiple, multiple);
