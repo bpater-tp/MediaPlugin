@@ -7,7 +7,7 @@ Please read through all of the setup directions below: https://github.com/jamesm
 Ported from [Xamarin.Mobile](http://www.github.com/xamarin/xamarin.mobile) to a cross platform API.
 
 ### Setup
-* Available on NuGet: http://www.nuget.org/packages/Xam.Plugin.Media [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Media.svg?label=NuGet)](https://www.nuget.org/packages/Xam.Plugin.Media/)
+* Available on NuGet: https://nexus.berlin.thinkproject.com/#browse/browse:nuget-tp:Xamarin.Media [![NuGet](https://img.shields.io/nuget/v/Xam.Plugin.Media.svg?label=NuGet)](https://nexus.berlin.thinkproject.com/#browse/browse:nuget-tp:Xamarin.Media)
 * Install into your PCL project and Client projects.
 * Please see the additional setup for each platforms permissions.
 

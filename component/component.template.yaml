@@ -12,12 +12,12 @@ icons:
 publisher-url: http://www.github.com/jamesmontemagno/MediaPlugin
 is_shell: true
 packages:
-  ios: Xam.Plugin.Media, Version={VERSION}
-  ios-unified: Xam.Plugin.Media, Version={VERSION}
-  android: Xam.Plugin.Media, Version={VERSION}
-  winphone-8.0: Xam.Plugin.Media, Version={VERSION}
-  winphone-8.1: Xam.Plugin.Media, Version={VERSION}
-  winuniversal-10.0: Xam.Plugin.Media, Version={VERSION}
+  ios: Xamarin.Media, Version={VERSION}
+  ios-unified: Xamarin.Media, Version={VERSION}
+  android: Xamarin.Media, Version={VERSION}
+  winphone-8.0: Xamarin.Media, Version={VERSION}
+  winphone-8.1: Xamarin.Media, Version={VERSION}
+  winuniversal-10.0: Xamarin.Media, Version={VERSION}
 summary: Easily access the media features of any device.
 details: Details.md
 getting-started: GettingStarted.md
@@ -33,16 +33,16 @@ samples:
     installNuGets:
       - project: VibrateSample
         packages: 
-          - Xam.Plugin.Media
+          - Xamarin.Media
       - project: MediaSample.iOS
         packages: 
-          - Xam.Plugin.Media
+          - Xamarin.Media
       - project: MediaSample.Droid
         packages: 
-          - Xam.Plugin.Media
+          - Xamarin.Media
       - project: MediaSample.WinPhone
         packages: 
-          - Xam.Plugin.Media
+          - Xamarin.Media
     no_build: true
     skip_docs: true  
 local-nuget-repo: ../Build/nuget
