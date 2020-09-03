@@ -16,6 +16,7 @@ using Photos;
 using System.Globalization;
 using Permissions = Xamarin.Essentials.Permissions;
 using PermissionStatus = Xamarin.Essentials.PermissionStatus;
+using AVFoundation;
 
 namespace Plugin.Media
 {
@@ -167,6 +168,12 @@ namespace Plugin.Media
             return await GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeMovie, options);
         }
 
+        public Task<List<MediaFile>> PickMediaAsync(PickMediaOptions options = null)
+            => PickMediaFiles(new[] { PHAssetMediaType.Image, PHAssetMediaType.Video }, options);
+
+        public Task<List<MediaFile>> PickMultiplePhotos(PickMediaOptions options = null)
+            => PickMediaFiles(new[] { PHAssetMediaType.Image }, options);
+
         private UIPopoverController popover;
         private UIImagePickerControllerDelegate pickerDelegate;
         /// <summary>
@@ -295,8 +302,8 @@ namespace Plugin.Media
             return viewController;
         }
 
-        public Task<List<MediaFile>> PickMultiplePhotos(PickMediaOptions options = null)
-        {
+		private Task<List<MediaFile>> PickMediaFiles(PHAssetMediaType[] pickTypes, PickMediaOptions options = null)
+		{
             var tcs = new TaskCompletionSource<Task<List<MediaFile>>>();
 
             var colsInPortrait = 3;
@@ -310,7 +317,7 @@ namespace Plugin.Media
             var picker = new GMImagePickerController
             {
                 Title = options?.Title ?? "Photos",
-                MediaTypes = new[] {PHAssetMediaType.Image},
+                MediaTypes = pickTypes,
                 ColsInPortrait = colsInPortrait,
                 ColsInLandscape = colsInLandscape,
                 CustomSmartCollections = new[] {
@@ -334,16 +341,30 @@ namespace Plugin.Media
                     var images = new List<MediaFile>();
                     foreach (var asset in args.Assets)
                     {
-                        var tempMedia = new MediaFile(null, () => null);
-                        var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options?.RotateImage ?? false, tempMedia);
-                        var media = new MediaFile(path, () => File.OpenRead(path));
-                        media.MediaTakenAt = tempMedia.MediaTakenAt;
-                        media.Orientation = tempMedia.Orientation;
-                        media.Latitude = tempMedia.Latitude;
-                        media.LatitudeRef = tempMedia.LatitudeRef;
-                        media.Longitude = tempMedia.Longitude;
-                        media.LongitudeRef = tempMedia.LongitudeRef;
-                        images.Add(media);
+                        switch (asset.MediaType)
+                        {
+                            case PHAssetMediaType.Image:
+                                var tempMedia = new MediaFile(null, () => null);
+                                var path = StorePickedImage(asset, options?.CompressionQuality ?? 90, GetScale(options?.PhotoSize ?? PhotoSize.Full), options?.RotateImage ?? false, tempMedia);
+                                var media = new MediaFile(path, () => File.OpenRead(path));
+                                media.MediaTakenAt = tempMedia.MediaTakenAt;
+                                media.Orientation = tempMedia.Orientation;
+                                media.Latitude = tempMedia.Latitude;
+                                media.LatitudeRef = tempMedia.LatitudeRef;
+                                media.Longitude = tempMedia.Longitude;
+                                media.LongitudeRef = tempMedia.LongitudeRef;
+                                media.Type = MediaType.Image;
+                                images.Add(media);
+                                break;
+                            case PHAssetMediaType.Video:
+                                path = StorePickedVideo(asset);
+                                media = new MediaFile(path, () => File.OpenRead(path));
+                                media.Duration = asset.Duration;
+                                media.MediaTakenAt = (DateTime?)asset.CreationDate;
+                                media.Type = MediaType.Video;
+                                images.Add(media);
+                                break;
+                        }
                     }
                     return images;
                 });
@@ -364,7 +385,7 @@ namespace Plugin.Media
             return tcs.Task.ContinueWith(t =>
             {
                 Interlocked.Exchange(ref _pickerDelegateCount, 1);
-	            picker.Dispose();
+                picker.Dispose();
                 if (t != null)
                 {
                     t.Wait();
@@ -374,7 +395,7 @@ namespace Plugin.Media
                     }
                     catch (Exception ex)
                     {
-                        if(ex.InnerException != null)
+                        if (ex.InnerException != null)
                         {
                             throw ex.InnerException;
                         }
@@ -383,6 +404,52 @@ namespace Plugin.Media
 
                 return null;
             });
+        }
+
+        private static string StorePickedVideo(PHAsset asset)
+        {
+            var tcs = new TaskCompletionSource<string>();
+            var task = tcs.Task;
+            var imageManager = PHImageManager.DefaultManager;
+            using (var requestOptions = new PHVideoRequestOptions
+            {
+                NetworkAccessAllowed = true,
+                DeliveryMode = PHVideoRequestOptionsDeliveryMode.MediumQualityFormat
+            })
+            {
+                imageManager.RequestExportSession(asset, requestOptions, AVAssetExportSession.PresetPassthrough, (exportSession, info) =>
+                {
+                    Task.Factory.StartNew(async () =>
+                    {
+                        var targetDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                        var error = (NSError)info["PHImageErrorKey"];
+                        if (error != null)
+                        {
+                            var description = error.LocalizedDescription;
+                            var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
+                            throw new Exception($"{description}. {reason}");
+                        }
+
+                        var resources = PHAssetResource.GetAssetResources(asset);
+                        var orgFilename = resources[0].OriginalFilename;
+                        var path = Path.Combine(targetDir, orgFilename);
+                        File.Delete(path);
+                        exportSession.OutputUrl = new NSUrl($"file://{path}");
+                        exportSession.OutputFileType = AVFileType.Mpeg4;
+                        await exportSession.ExportTaskAsync();
+                        if (exportSession.Status == AVAssetExportSessionStatus.Completed)
+						{
+                            tcs.TrySetResult(path);
+						}
+                        else
+						{
+                            tcs.SetException(new Exception(exportSession.Error.Description));
+						}
+                    });
+                });
+            }
+
+            return task.Result;
         }
 
         private static string StorePickedImage(PHAsset asset, int quality, float scale, bool rotate, MediaFile tempMedia)
@@ -627,5 +694,5 @@ namespace Plugin.Media
 
             }
         }
-    }
+	}
 }

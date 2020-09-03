@@ -63,7 +63,7 @@ namespace MediaTest.iOS
 
             PickPhoto.TouchUpInside += async (sender, args) =>
             {
-                var test = await CrossMedia.Current.PickPhotoAsync(
+                var test = await CrossMedia.Current.PickMediaAsync(
                     new Plugin.Media.Abstractions.PickMediaOptions
                     {
                         PhotoSize = SizeSwitch.On ? Plugin.Media.Abstractions.PhotoSize.Medium : Plugin.Media.Abstractions.PhotoSize.Full,

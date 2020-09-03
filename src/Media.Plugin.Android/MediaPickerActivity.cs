@@ -29,7 +29,8 @@ namespace Plugin.Media
         internal const string ExtraPath = "path";
         internal const string ExtraLocation = "location";
         internal const string ExtraType = "type";
-        internal const string ExtraId = "id";
+		internal const string ExtraMimeTypes = "extra_mime_types";
+		internal const string ExtraId = "id";
         internal const string ExtraAction = "action";
         internal const string ExtraTasked = "tasked";
         internal const string ExtraSaveToAlbum = "album_save";
@@ -331,9 +332,14 @@ namespace Plugin.Media
                     if (!fileList.Any())
                     {
                         return new MediaPickedEventArgs(requestCode, new MediaFileNotFoundException(originalPath));
-                    }                    
+                    }
 
-                    var mediaList = fileList.Select(mediafile => new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)).ToList();
+                    var mediaList = fileList.Select(mediafile =>
+                        new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)
+                        {
+                            Type = mediafile.ToLower().EndsWith("mp4") ? Abstractions.MediaType.Video : Abstractions.MediaType.Image
+                        }
+                    ).ToList();
                     return new MediaPickedEventArgs(requestCode, false, mediaList);
                 });
             }
@@ -575,8 +581,8 @@ namespace Plugin.Media
 									System.Diagnostics.Debug.WriteLine("Unable to get file path name, using new unique " + ex);
 								}
 
-
-								var outputPath = GetOutputMediaFile(context, "temp", fileName, isPhoto, false);
+                                var photo = uri.Path.ToLower().Contains("video") ? false : true;
+								var outputPath = GetOutputMediaFile(context, "temp", fileName, photo, false);
 
 								try
                                 {

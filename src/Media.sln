@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Plugin.iOS", "Media.Plugin.iOS\Media.Plugin.iOS.csproj", "{2882AEEB-D4CD-4EB9-8A6C-6653B33681F0}"
 EndProject
@@ -19,13 +19,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Media.Plugin.Shared", "Media.Plugin.Shared\Media.Plugin.Shared.shproj", "{6847B0B7-91C1-4DF3-86BA-F2DD1EE2622F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Plugin", "Media.Plugin\Media.Plugin.csproj", "{8FA0E4F3-3882-41C0-9824-B335DADED425}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Media.Plugin", "Media.Plugin\Media.Plugin.csproj", "{8FA0E4F3-3882-41C0-9824-B335DADED425}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Plugin.Abstractions", "Media.Plugin.Abstractions\Media.Plugin.Abstractions.csproj", "{0E3EFBDE-5210-47D7-9CBF-D5130091A361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Media.Plugin.Abstractions", "Media.Plugin.Abstractions\Media.Plugin.Abstractions.csproj", "{0E3EFBDE-5210-47D7-9CBF-D5130091A361}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Media.Plugin.Shared\Media.Plugin.Shared.projitems*{04125cd7-f3b6-4960-b1ba-9f584384ebdf}*SharedItemsImports = 4
 		Media.Plugin.Shared\Media.Plugin.Shared.projitems*{2882aeeb-d4cd-4eb9-8a6c-6653b33681f0}*SharedItemsImports = 4
 		Media.Plugin.Shared\Media.Plugin.Shared.projitems*{56a56f17-7de1-4ca1-9617-bf32e971ac84}*SharedItemsImports = 4
 		Media.Plugin.Shared\Media.Plugin.Shared.projitems*{6847b0b7-91c1-4df3-86ba-f2dd1ee2622f}*SharedItemsImports = 13
@@ -260,5 +259,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42860C9D-E249-4FB9-8C41-B246CE45CC8E}
 	EndGlobalSection
 EndGlobal
