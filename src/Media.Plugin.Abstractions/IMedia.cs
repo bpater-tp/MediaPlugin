@@ -69,5 +69,12 @@ namespace Plugin.Media.Abstractions
 		/// </summary>
 		/// <returns>Media file or null if canceled</returns>
 		Task<List<MediaFile>> PickMediaAsync(PickMediaOptions options = null);
+
+        /// <summary>
+		/// Opens camera interface with both picture and video means
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns>MediaFile object containing either image or video file reference</returns>
+        Task<MediaFile> TakeMediaAsync(StoreVideoOptions options);
     }
 }

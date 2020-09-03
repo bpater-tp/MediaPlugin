@@ -13,6 +13,7 @@ using System.Globalization;
 using ImageIO;
 using MobileCoreServices;
 using System.Drawing;
+using AVFoundation;
 
 namespace Plugin.Media
 {
@@ -596,7 +597,14 @@ namespace Plugin.Media
                 }
             }
 
-            return new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
+            var asset = AVAsset.FromUrl(new NSUrl($"file://{path}"));
+            var duration = asset.Duration.Seconds;
+
+            return new MediaFile(path, () => File.OpenRead(path), albumPath: aPath)
+            {
+                Type = MediaType.Video,
+                Duration = duration,
+            };
         }
 
         private static string GetUniquePath(string type, string path, string name)

@@ -168,6 +168,31 @@ namespace Plugin.Media
             return await GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeMovie, options);
         }
 
+        public async Task<MediaFile> TakeMediaAsync(StoreVideoOptions options)
+        {
+
+            if (!IsTakeVideoSupported)
+                throw new NotSupportedException();
+            if (!IsCameraAvailable)
+                throw new NotSupportedException();
+
+            CheckUsageDescription(cameraDescription, microphoneDescription);
+            if (options.SaveToAlbum)
+                CheckUsageDescription(photoAddDescription);
+
+            VerifyCameraOptions(options);
+
+            var permissionsToCheck = new List<string> { nameof(Permissions.Camera), nameof(Permissions.Microphone) };
+            if (options.SaveToAlbum)
+                permissionsToCheck.Add(nameof(Permissions.Photos));
+
+            await CheckPermissions(permissionsToCheck.ToArray());
+
+            VerifyCameraOptions(options);
+
+            return await GetMediaAsync(UIImagePickerControllerSourceType.Camera, TypeAll, options);
+        }
+
         public Task<List<MediaFile>> PickMediaAsync(PickMediaOptions options = null)
             => PickMediaFiles(new[] { PHAssetMediaType.Image, PHAssetMediaType.Video }, options);
 
@@ -184,6 +209,7 @@ namespace Plugin.Media
         /// movie type
         /// </summary>
         public const string TypeMovie = "public.movie";
+        public const string TypeAll = "all";
 
         void VerifyOptions(StoreMediaOptions options)
         {
@@ -236,6 +262,32 @@ namespace Plugin.Media
             return picker;
         }
 
+        private static MediaPickerController SetupCameraController(MediaPickerDelegate mpDelegate, StoreVideoOptions options)
+        {
+			var picker = new MediaPickerController(mpDelegate)
+			{
+				MediaTypes = new[] { TypeImage, TypeMovie },
+				SourceType = UIImagePickerControllerSourceType.Camera,
+
+				CameraDevice = GetUICameraDevice(options.DefaultCamera),
+                CameraCaptureMode = UIImagePickerControllerCameraCaptureMode.Photo,
+
+                AllowsEditing = options?.AllowCropping ?? false,
+                VideoQuality = GetQuailty(options.Quality),
+                VideoMaximumDuration = options.DesiredLength.TotalSeconds,
+            };
+
+			if (options.OverlayViewProvider != null)
+            {
+                var overlay = options.OverlayViewProvider();
+                if (overlay is UIView)
+                {
+                    picker.CameraOverlayView = overlay as UIView;
+                }
+            }
+            return picker;
+        }
+
         private Task<MediaFile> GetMediaAsync(UIImagePickerControllerSourceType sourceType, string mediaType, StoreCameraMediaOptions options = null)
         {
 			
@@ -246,7 +298,15 @@ namespace Plugin.Media
             if (od != null)
                 throw new InvalidOperationException("Only one operation can be active at at time");
 
-            var picker = SetupController(ndelegate, sourceType, mediaType, options);
+            MediaPickerController picker;
+            if (mediaType == TypeAll)
+			{
+				picker = SetupCameraController(ndelegate, (StoreVideoOptions)options);
+			}
+            else
+			{
+                picker = SetupController(ndelegate, sourceType, mediaType, options);
+            }
 
             if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad && sourceType == UIImagePickerControllerSourceType.PhotoLibrary)
             {
