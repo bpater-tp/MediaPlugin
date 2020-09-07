@@ -498,16 +498,17 @@ namespace Plugin.Media
 			if (Interlocked.CompareExchange(ref completionSource, ntcs, null) != null)
 				throw new InvalidOperationException("Only one operation can be active at a time");
 
-			Intent takePictureIntent = new Intent(MediaStore.ActionImageCapture);
-			Intent takeVideoIntent = new Intent(MediaStore.ActionVideoCapture);
-			Intent chooserIntent = new Intent(Intent.ActionChooser);
-			Intent contentSelectionIntent = new Intent(Intent.ActionGetContent);
+			var takePictureIntent = new Intent(MediaStore.ActionImageCapture);
+			var takeVideoIntent = new Intent(MediaStore.ActionVideoCapture);
+			var chooserIntent = new Intent(Intent.ActionChooser);
+			var contentSelectionIntent = new Intent(Intent.ActionGetContent);
 			contentSelectionIntent.AddCategory(Intent.CategoryOpenable);
-			contentSelectionIntent.SetType("*/*");
+			contentSelectionIntent.SetType("image/*");
 			var intentArray = new Intent[] { takePictureIntent, takeVideoIntent };
 			chooserIntent.PutExtra(Intent.ExtraIntent, contentSelectionIntent);
 			chooserIntent.PutExtra(Intent.ExtraTitle, "Choose an action");
 			chooserIntent.PutExtra(Intent.ExtraInitialIntents, intentArray);
+			chooserIntent.SetFlags(ActivityFlags.NewTask);
 			context.StartActivity(chooserIntent);
 
 //			context.StartActivity(CreateMediaIntent(id, type, actions, options));
