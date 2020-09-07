@@ -275,6 +275,21 @@ namespace Plugin.Media
 			return await HandleMediaFiles(mediaList, options);
 		}
 
+		public async Task<MediaFile> TakeMediaAsync(StoreVideoOptions options)
+		{
+			if (!IsCameraAvailable)
+				throw new NotSupportedException();
+
+			if (!(await RequestCameraPermissions()))
+			{
+				return null;
+			}
+
+			VerifyOptions(options);
+
+			return (await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options)).First();
+		}
+
 		private readonly Context context;
 		private int requestId;
 		private TaskCompletionSource<List<MediaFile>> completionSource;
@@ -483,7 +498,19 @@ namespace Plugin.Media
 			if (Interlocked.CompareExchange(ref completionSource, ntcs, null) != null)
 				throw new InvalidOperationException("Only one operation can be active at a time");
 
-			context.StartActivity(CreateMediaIntent(id, type, actions, options));
+			Intent takePictureIntent = new Intent(MediaStore.ActionImageCapture);
+			Intent takeVideoIntent = new Intent(MediaStore.ActionVideoCapture);
+			Intent chooserIntent = new Intent(Intent.ActionChooser);
+			Intent contentSelectionIntent = new Intent(Intent.ActionGetContent);
+			contentSelectionIntent.AddCategory(Intent.CategoryOpenable);
+			contentSelectionIntent.SetType("*/*");
+			var intentArray = new Intent[] { takePictureIntent, takeVideoIntent };
+			chooserIntent.PutExtra(Intent.ExtraIntent, contentSelectionIntent);
+			chooserIntent.PutExtra(Intent.ExtraTitle, "Choose an action");
+			chooserIntent.PutExtra(Intent.ExtraInitialIntents, intentArray);
+			context.StartActivity(chooserIntent);
+
+//			context.StartActivity(CreateMediaIntent(id, type, actions, options));
 
 			EventHandler<MediaPickedEventArgs> handler = null;
 			handler = (s, e) =>
