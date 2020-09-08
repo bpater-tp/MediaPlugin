@@ -912,7 +912,10 @@ namespace Plugin.Media
 
 			return result;
 		}
+
+		public Task<MediaFile> TakeMediaAsync(StoreVideoOptions options)
+		{
+			throw new NotImplementedException();
+		}
 	}
-
-
 }
