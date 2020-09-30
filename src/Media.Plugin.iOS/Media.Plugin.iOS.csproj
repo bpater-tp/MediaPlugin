@@ -60,7 +60,7 @@
     </Reference>
     <Reference Include="System.Drawing.Common.dll" />
     <Reference Include="GMImagePicker.Xamarin">
-      <HintPath>..\packages\GMImagePicker.Xamarin.2.4.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
+      <HintPath>..\packages\GMImagePicker.Xamarin.2.5.0\lib\xamarinios10\GMImagePicker.Xamarin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
