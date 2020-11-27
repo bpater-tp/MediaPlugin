@@ -390,6 +390,10 @@ namespace Plugin.Media
                     try
                     {
                         var library = new ALAssetsLibrary();
+                        if (options.RotateImage)
+                        {
+                            meta.SetValueForKey((NSNumber)0, ImageIO.CGImageProperties.Orientation);
+                        }
                         var albumSave = await library.WriteImageToSavedPhotosAlbumAsync(cgImage, meta);
                         aPath = albumSave.AbsoluteString;
                     }
