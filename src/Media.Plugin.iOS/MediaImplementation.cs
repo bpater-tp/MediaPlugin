@@ -108,8 +108,8 @@ namespace Plugin.Media
 			VerifyCameraOptions(options);
 
 			var permissionsToCheck = new List<string> { nameof(Permissions.Camera) };
-			if (options.SaveToAlbum)
-				permissionsToCheck.Add(nameof(Permissions.Photos));
+			//if (options.SaveToAlbum)
+			//	permissionsToCheck.Add(nameof(Permissions.Photos));
 
 			await CheckPermissions(permissionsToCheck.ToArray());
 
@@ -158,8 +158,8 @@ namespace Plugin.Media
             VerifyCameraOptions(options);
 
             var permissionsToCheck = new List<string> { nameof(Permissions.Camera), nameof(Permissions.Microphone) };
-            if (options.SaveToAlbum)
-                permissionsToCheck.Add(nameof(Permissions.Photos));
+            //if (options.SaveToAlbum)
+            //    permissionsToCheck.Add(nameof(Permissions.Photos));
 
             await CheckPermissions(permissionsToCheck.ToArray());
 
@@ -183,8 +183,8 @@ namespace Plugin.Media
             VerifyCameraOptions(options);
 
             var permissionsToCheck = new List<string> { nameof(Permissions.Camera), nameof(Permissions.Microphone) };
-            if (options.SaveToAlbum)
-                permissionsToCheck.Add(nameof(Permissions.Photos));
+            //if (options.SaveToAlbum)
+            //    permissionsToCheck.Add(nameof(Permissions.Photos));
 
             await CheckPermissions(permissionsToCheck.ToArray());
 
