@@ -209,6 +209,7 @@ namespace Plugin.Media
 		/// <returns>Media file of new video or null if canceled</returns>
 		public async Task<MediaFile> TakeVideoAsync(StoreVideoOptions options)
 		{
+			Console.WriteLine($"save: {options.SaveToAlbum}\nsize: {options.PhotoSize}\n");
 			if (!IsCameraAvailable)
 				throw new NotSupportedException();
 
@@ -227,6 +228,7 @@ namespace Plugin.Media
 			if (string.IsNullOrWhiteSpace(media?.Path))
 				return media;
 
+			media.Type = Abstractions.MediaType.Video;
 			if (options.SaveToAlbum)
 			{
 				SaveMediaToAlbum(options, media);
@@ -236,14 +238,38 @@ namespace Plugin.Media
 
 		private void SaveMediaToAlbum(StoreCameraMediaOptions options, MediaFile media)
 		{
+			var defImage = new Dictionary<string, string>
+			{
+				{"Title", MediaStore.Images.Media.InterfaceConsts.Title },
+				{"Description", MediaStore.Images.Media.InterfaceConsts.Description },
+				{"DateTaken", MediaStore.Images.Media.InterfaceConsts.DateTaken },
+				{"BucketId", MediaStore.Images.ImageColumns.BucketId },
+				{"BucketDisplayName", MediaStore.Images.ImageColumns.BucketDisplayName },
+			};
+			var defVideo = new Dictionary<string, string>
+			{
+				{"Title", MediaStore.Video.Media.InterfaceConsts.Title },
+				{"Description", MediaStore.Video.Media.InterfaceConsts.Description },
+				{"DateTaken", MediaStore.Video.Media.InterfaceConsts.DateTaken },
+				{"BucketId", MediaStore.Video.VideoColumns.BucketId },
+				{"BucketDisplayName", MediaStore.Video.VideoColumns.BucketDisplayName },
+			};
+			var definitions = new Dictionary<Abstractions.MediaType, Dictionary<string, string>>
+			{
+				{ Abstractions.MediaType.Image, defImage },
+				{ Abstractions.MediaType.Video, defVideo },
+			};
+
 			try
 			{
+				Console.WriteLine("saving to gallery");
 				var fileName = System.IO.Path.GetFileName(media.Path);
-				var publicUri =
-					MediaPickerActivity.GetOutputMediaFile(context, options.Directory ?? "temp", fileName, true, true);
-				using (System.IO.Stream input = File.OpenRead(media.Path))
-				using (System.IO.Stream output = File.Create(publicUri.Path))
-					input.CopyTo(output);
+				var publicUri = MediaPickerActivity.GetOutputMediaFile(context, options.Directory ?? "temp", fileName, true, true);
+				using (Stream input = File.OpenRead(media.Path))
+					using (Stream output = File.Create(publicUri.Path))
+					{
+						input.CopyTo(output);
+					}
 
 				media.AlbumPath = publicUri.Path;
 
@@ -254,17 +280,18 @@ namespace Plugin.Media
 					Android.Media.MediaScannerConnection.ScanFile(context, new[] {f.AbsolutePath}, null,
 						context as MediaPickerActivity);
 
-					ContentValues values = new ContentValues();
-					values.Put(MediaStore.Images.Media.InterfaceConsts.Title,
-						System.IO.Path.GetFileNameWithoutExtension(f.AbsolutePath));
-					values.Put(MediaStore.Images.Media.InterfaceConsts.Description, string.Empty);
-					values.Put(MediaStore.Images.Media.InterfaceConsts.DateTaken, Java.Lang.JavaSystem.CurrentTimeMillis());
-					values.Put(MediaStore.Images.ImageColumns.BucketId, f.ToString().ToLowerInvariant().GetHashCode());
-					values.Put(MediaStore.Images.ImageColumns.BucketDisplayName, f.Name.ToLowerInvariant());
+					var values = new ContentValues();
+					values.Put(definitions[media.Type]["Title"], System.IO.Path.GetFileNameWithoutExtension(f.AbsolutePath));
+					values.Put(definitions[media.Type]["Description"], string.Empty);
+					values.Put(definitions[media.Type]["DateTaken"], Java.Lang.JavaSystem.CurrentTimeMillis());
+					values.Put(definitions[media.Type]["BucketId"], f.ToString().ToLowerInvariant().GetHashCode());
+					values.Put(definitions[media.Type]["BucketDisplayName"], f.Name.ToLowerInvariant());
 					values.Put("_data", f.AbsolutePath);
 
 					var cr = context.ContentResolver;
-					cr.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+					cr.Insert(media.Type == Abstractions.MediaType.Image
+						? MediaStore.Images.Media.ExternalContentUri
+						: MediaStore.Video.Media.ExternalContentUri, values);
 				}
 				catch (Exception ex1)
 				{
