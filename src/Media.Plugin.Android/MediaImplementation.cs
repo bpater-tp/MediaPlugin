@@ -147,49 +147,7 @@ namespace Plugin.Media
 
 			if (options.SaveToAlbum)
 			{
-				try
-				{
-					var fileName = System.IO.Path.GetFileName(media.Path);
-					var publicUri = MediaPickerActivity.GetOutputMediaFile(context, options.Directory ?? "temp", fileName, true, true);
-					using (System.IO.Stream input = File.OpenRead(media.Path))
-					using (System.IO.Stream output = File.Create(publicUri.Path))
-						input.CopyTo(output);
-
-					media.AlbumPath = publicUri.Path;
-
-					var f = new Java.IO.File(publicUri.Path);
-
-					//MediaStore.Images.Media.InsertImage(context.ContentResolver,
-					//    f.AbsolutePath, f.Name, null);
-
-					try
-					{
-						Android.Media.MediaScannerConnection.ScanFile(context, new[] { f.AbsolutePath }, null, context as MediaPickerActivity);
-
-						ContentValues values = new ContentValues();
-						values.Put(MediaStore.Images.Media.InterfaceConsts.Title, System.IO.Path.GetFileNameWithoutExtension(f.AbsolutePath));
-						values.Put(MediaStore.Images.Media.InterfaceConsts.Description, string.Empty);
-						values.Put(MediaStore.Images.Media.InterfaceConsts.DateTaken, Java.Lang.JavaSystem.CurrentTimeMillis());
-						values.Put(MediaStore.Images.ImageColumns.BucketId, f.ToString().ToLowerInvariant().GetHashCode());
-						values.Put(MediaStore.Images.ImageColumns.BucketDisplayName, f.Name.ToLowerInvariant());
-						values.Put("_data", f.AbsolutePath);
-
-						var cr = context.ContentResolver;
-						cr.Insert(MediaStore.Images.Media.ExternalContentUri, values);
-					}
-					catch (Exception ex1)
-					{
-						Console.WriteLine("Unable to save to scan file: " + ex1);
-					}
-
-					var contentUri = Android.Net.Uri.FromFile(f);
-					var mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile, contentUri);
-					context.SendBroadcast(mediaScanIntent);
-				}
-				catch (Exception ex2)
-				{
-					Console.WriteLine("Unable to save to gallery: " + ex2);
-				}
+				SaveMediaToAlbum(options, media);
 			}
 
 			//check to see if we need to rotate if success
@@ -261,7 +219,66 @@ namespace Plugin.Media
 
 			VerifyOptions(options);
 
-			return (await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options)).First();
+			var mediaList =await TakeMediaAsync("video/*", MediaStore.ActionVideoCapture, options);
+			if (mediaList == null)
+				return null;
+
+			var media = mediaList.First();
+			if (string.IsNullOrWhiteSpace(media?.Path))
+				return media;
+
+			if (options.SaveToAlbum)
+			{
+				SaveMediaToAlbum(options, media);
+			}
+			return media;
+		}
+
+		private void SaveMediaToAlbum(StoreCameraMediaOptions options, MediaFile media)
+		{
+			try
+			{
+				var fileName = System.IO.Path.GetFileName(media.Path);
+				var publicUri =
+					MediaPickerActivity.GetOutputMediaFile(context, options.Directory ?? "temp", fileName, true, true);
+				using (System.IO.Stream input = File.OpenRead(media.Path))
+				using (System.IO.Stream output = File.Create(publicUri.Path))
+					input.CopyTo(output);
+
+				media.AlbumPath = publicUri.Path;
+
+				var f = new Java.IO.File(publicUri.Path);
+
+				try
+				{
+					Android.Media.MediaScannerConnection.ScanFile(context, new[] {f.AbsolutePath}, null,
+						context as MediaPickerActivity);
+
+					ContentValues values = new ContentValues();
+					values.Put(MediaStore.Images.Media.InterfaceConsts.Title,
+						System.IO.Path.GetFileNameWithoutExtension(f.AbsolutePath));
+					values.Put(MediaStore.Images.Media.InterfaceConsts.Description, string.Empty);
+					values.Put(MediaStore.Images.Media.InterfaceConsts.DateTaken, Java.Lang.JavaSystem.CurrentTimeMillis());
+					values.Put(MediaStore.Images.ImageColumns.BucketId, f.ToString().ToLowerInvariant().GetHashCode());
+					values.Put(MediaStore.Images.ImageColumns.BucketDisplayName, f.Name.ToLowerInvariant());
+					values.Put("_data", f.AbsolutePath);
+
+					var cr = context.ContentResolver;
+					cr.Insert(MediaStore.Images.Media.ExternalContentUri, values);
+				}
+				catch (Exception ex1)
+				{
+					Console.WriteLine("Unable to save to scan file: " + ex1);
+				}
+
+				var contentUri = Android.Net.Uri.FromFile(f);
+				var mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile, contentUri);
+				context.SendBroadcast(mediaScanIntent);
+			}
+			catch (Exception ex2)
+			{
+				Console.WriteLine("Unable to save to gallery: " + ex2);
+			}
 		}
 
 		public async Task<List<MediaFile>> PickMediaAsync(PickMediaOptions options = null)
@@ -435,8 +452,7 @@ namespace Plugin.Media
 				pickerIntent.PutExtra(MediaPickerActivity.ExtraPath, options.Directory);
 				pickerIntent.PutExtra(MediaStore.Images.ImageColumns.Title, options.Name);
 
-				var cameraOptions = (options as StoreCameraMediaOptions);
-				if (cameraOptions != null)
+				if (options is StoreCameraMediaOptions cameraOptions)
 				{
 					if (cameraOptions.DefaultCamera == CameraDevice.Front)
 					{
