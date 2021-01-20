@@ -14,6 +14,8 @@ using ImageIO;
 using MobileCoreServices;
 using System.Drawing;
 using AVFoundation;
+using Photos;
+using System.Linq;
 
 namespace Plugin.Media
 {
@@ -353,9 +355,12 @@ namespace Plugin.Media
                 {
                     meta = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
                 }
-
-			}
-			catch (Exception ex)
+                if (options.RotateImage)
+                {
+                    meta.SetValueForKey((NSNumber)0, ImageIO.CGImageProperties.Orientation);
+                }
+            }
+            catch (Exception ex)
 			{
 				Console.WriteLine($"Unable to get metadata: {ex}");
 			}
@@ -375,7 +380,7 @@ namespace Plugin.Media
             }
             
 
-            string aPath = null;
+            string aPath = path;
             if (source != UIImagePickerControllerSourceType.Camera)
             {
 
@@ -386,24 +391,10 @@ namespace Plugin.Media
             else
             {
                 if (options.SaveToAlbum)
-                {
-                    try
-                    {
-                        var library = new ALAssetsLibrary();
-                        if (options.RotateImage)
-                        {
-                            meta.SetValueForKey((NSNumber)0, ImageIO.CGImageProperties.Orientation);
-                        }
-                        var albumSave = await library.WriteImageToSavedPhotosAlbumAsync(cgImage, meta);
-                        aPath = albumSave.AbsoluteString;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("unable to save to album:" + ex);
-                    }
+				{
+                    PhotoLibraryAccess.SaveImageToGalery(image, options.Directory);
                 }
-
-            }
+			}
 
             var fullimage = image.CIImage;
             var media = new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
@@ -432,7 +423,8 @@ namespace Plugin.Media
             return media;
         }
 
-	    private static NSData GetImageWithQuality(float quality, UIImage image)
+
+		private static NSData GetImageWithQuality(float quality, UIImage image)
 	    {
 		    var finalQuality = quality;
 		    var imageData = image.AsJPEG(finalQuality);
@@ -577,7 +569,7 @@ namespace Plugin.Media
                 }
             }
 
-            string aPath = null;
+            string aPath = path;
             if (source != UIImagePickerControllerSourceType.Camera)
             {
                 //try to get the album path's url
@@ -587,19 +579,10 @@ namespace Plugin.Media
             else
             {
                 if (options.SaveToAlbum)
-                {
-                    try
-                    {
-                        var library = new ALAssetsLibrary();
-                        var albumSave = await library.WriteVideoToSavedPhotosAlbumAsync(new NSUrl(path));
-                        aPath = albumSave.AbsoluteString;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("unable to save to album:" + ex);
-                    }
-                }
-            }
+				{
+					PhotoLibraryAccess.SaveVideoToGalery(url, path, options.Directory);
+				}
+			}
 
             var asset = AVAsset.FromUrl(new NSUrl($"file://{path}"));
             var duration = asset.Duration.Seconds;
@@ -611,7 +594,7 @@ namespace Plugin.Media
             };
         }
 
-        private static string GetUniquePath(string type, string path, string name)
+		private static string GetUniquePath(string type, string path, string name)
         {
             var isPhoto = (type == MediaImplementation.TypeImage);
             var ext = Path.GetExtension(name);

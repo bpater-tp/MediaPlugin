@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using CoreImage;
 using Foundation;
 using Photos;
+using UIKit;
 
 namespace Plugin.Media
 {
@@ -55,6 +57,108 @@ namespace Plugin.Media
             }
 
             return meta;
+		}
+
+		public static bool SaveImageToGalery(UIImage image, string albumName)
+		{
+			var saved = true;
+			PHAssetCollection customAlbum = null;
+			if (!string.IsNullOrEmpty(albumName))
+			{
+				customAlbum = FindOrCreateAlbum(albumName);
+				if (customAlbum == null)
+				{
+					return false;
+				}
+			}
+
+			PHPhotoLibrary.SharedPhotoLibrary.PerformChanges(
+				() =>
+				{
+					var assetRequest = PHAssetChangeRequest.FromImage(image);
+					if (customAlbum != null)
+					{
+						var albumRequest = PHAssetCollectionChangeRequest.ChangeRequest(customAlbum);
+						albumRequest?.AddAssets(new[] { assetRequest.PlaceholderForCreatedAsset });
+					}
+				},
+				(success, error) =>
+				{
+					if (!success)
+					{
+						Console.WriteLine(error);
+						saved = success;
+					}
+				}
+			);
+			return saved;
+		}
+
+		public static bool SaveVideoToGalery(NSUrl video, string path, string albumName)
+		{
+			var saved = true;
+			//if (string.IsNullOrEmpty(albumName))
+			//{
+				UIVideo.SaveToPhotosAlbum(path, (path, error) =>
+				{
+					if (error != null)
+					{
+						saved = false;
+						Console.WriteLine(error);
+					}
+				});
+				return saved;
+			//}
+			//var compatible = UIVideo.IsCompatibleWithSavedPhotosAlbum(path);
+			//var customAlbum = FindOrCreateAlbum(albumName);
+			//if (customAlbum == null)
+			//{
+			//	return false;
+			//}
+			//PHPhotoLibrary.SharedPhotoLibrary.PerformChanges(
+			//	() =>
+			//	{
+			//		var assetRequest = PHAssetChangeRequest.FromVideo(video);
+			//		var albumRequest = PHAssetCollectionChangeRequest.ChangeRequest(customAlbum);
+			//		albumRequest?.AddAssets(new[] { assetRequest.PlaceholderForCreatedAsset });
+			//	},
+			//	(success, error) =>
+			//	{
+			//		if (!success)
+			//		{
+			//			Console.WriteLine(error);
+			//			saved = success;
+			//		}
+			//	}
+			//);
+			//return saved;
+		}
+
+		private static PHAssetCollection FindOrCreateAlbum(string albumName)
+		{
+			var albums = PHAssetCollection.FetchAssetCollections(PHAssetCollectionType.Album, PHAssetCollectionSubtype.AlbumRegular, null);
+			var customAlbum = (PHAssetCollection)albums.FirstOrDefault(s => ((PHAssetCollection)s).LocalizedTitle.Equals(albumName));
+			if (customAlbum == null)
+			{
+				var success = PHPhotoLibrary.SharedPhotoLibrary.PerformChangesAndWait(
+					() =>
+					{
+						PHAssetCollectionChangeRequest.CreateAssetCollection(albumName);
+					}, out var error
+				);
+				if (success)
+				{
+					albums = PHAssetCollection.FetchAssetCollections(PHAssetCollectionType.Album, PHAssetCollectionSubtype.AlbumRegular, null);
+					customAlbum = (PHAssetCollection)albums.FirstOrDefault(s => ((PHAssetCollection)s).LocalizedTitle.Equals(albumName));
+				}
+				else
+				{
+					Console.WriteLine(error);
+					customAlbum = null;
+				}
+			}
+
+			return customAlbum;
 		}
 	}
 }
