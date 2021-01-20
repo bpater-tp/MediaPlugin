@@ -44,8 +44,8 @@ namespace MediaTest.iOS
                     OverlayViewProvider = OverlaySwitch.On ? func : null,
                     AllowCropping = CroppingSwitch.On,
                     CompressionQuality = (int)SliderQuality.Value,
-                    Directory = "Sample",
-                    DefaultCamera = FrontSwitch.On ? Plugin.Media.Abstractions.CameraDevice.Front : Plugin.Media.Abstractions.CameraDevice.Rear,
+					Directory = "Sample",
+					DefaultCamera = FrontSwitch.On ? Plugin.Media.Abstractions.CameraDevice.Front : Plugin.Media.Abstractions.CameraDevice.Rear,
                     Location = fakeLocation,
                 });
 
@@ -98,6 +98,7 @@ namespace MediaTest.iOS
                 var test = await CrossMedia.Current.TakeVideoAsync(new Plugin.Media.Abstractions.StoreVideoOptions
                 {
                     Name = "test1.mp4",
+                    Directory = "Sample",
                     SaveToAlbum = true
                 });
 
