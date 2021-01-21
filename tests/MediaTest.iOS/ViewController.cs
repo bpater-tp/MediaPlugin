@@ -75,7 +75,7 @@ namespace MediaTest.iOS
 
                 foreach (var t in test) {
                     Console.WriteLine(t.Path);
-                    Console.WriteLine($"{t.MediaTakenAt}\n{t.Orientation}\n{t.Latitude}{t.LatitudeRef} {t.Longitude}{t.LongitudeRef}\n");
+                    Console.WriteLine($"{t.MediaTakenAt}\n{t.Orientation}\n{t.Latitude}{t.LatitudeRef} {t.Longitude}{t.LongitudeRef}\nlocal id = {t.Id}\n");
                 }
                 //new UIAlertView("Success", mediafile.Path, null, "OK").Show();
 
@@ -91,6 +91,8 @@ namespace MediaTest.iOS
 
                     mediafile.Dispose();
                 }
+
+                CrossMedia.Current.RemoveMediaFromGallery(test.Select(a => a.Id).ToArray());
             };
 
             TakeVideo.TouchUpInside += async (sender, args) =>
