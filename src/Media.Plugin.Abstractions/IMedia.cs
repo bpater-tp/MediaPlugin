@@ -76,5 +76,12 @@ namespace Plugin.Media.Abstractions
 		/// <param name="options"></param>
 		/// <returns>MediaFile object containing either image or video file reference</returns>
         Task<MediaFile> TakeMediaAsync(StoreVideoOptions options);
+
+        /// <summary>
+        /// Remove images with provided ids from system gallery
+        /// </summary>
+        /// <param name="ids">array of local ids taken from gallery itself</param>
+        /// <returns>true on success</returns>
+        bool RemoveMediaFromGallery(string[] ids);
     }
 }

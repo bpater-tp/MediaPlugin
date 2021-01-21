@@ -14,6 +14,7 @@ namespace Plugin.Media.Abstractions
     /// </summary>
     public sealed class MediaFile : IDisposable
     {
+        public string Id;
         public MediaType Type;
         public int Orientation;
         public DateTime? MediaTakenAt;

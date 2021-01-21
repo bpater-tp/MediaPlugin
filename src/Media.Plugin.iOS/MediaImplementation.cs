@@ -199,7 +199,9 @@ namespace Plugin.Media
         public Task<List<MediaFile>> PickMultiplePhotos(PickMediaOptions options = null)
             => PickMediaFiles(new[] { PHAssetMediaType.Image }, options);
 
-        private UIPopoverController popover;
+		public bool RemoveMediaFromGallery(string[] ids) => PhotoLibraryAccess.DeleteImagesFromGallery(ids);
+
+		private UIPopoverController popover;
         private UIImagePickerControllerDelegate pickerDelegate;
         /// <summary>
         /// image type
@@ -414,6 +416,7 @@ namespace Plugin.Media
                                 media.Longitude = tempMedia.Longitude;
                                 media.LongitudeRef = tempMedia.LongitudeRef;
                                 media.Type = MediaType.Image;
+                                media.Id = asset.LocalIdentifier;
                                 images.Add(media);
                                 break;
                             case PHAssetMediaType.Video:

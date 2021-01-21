@@ -328,6 +328,7 @@ namespace Plugin.Media
                 image = image.RotateImage();
             }
 
+            string localId = null;
 			NSDictionary meta = null;
             try
             {
@@ -353,7 +354,7 @@ namespace Plugin.Media
                 }
                 else
                 {
-                    meta = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
+                    (meta, localId) = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
                 }
                 if (options.RotateImage)
                 {
@@ -420,6 +421,7 @@ namespace Plugin.Media
             {
                 media.LongitudeRef = obj.ToString();
             }
+            media.Id = localId;
             return media;
         }
 

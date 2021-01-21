@@ -17,7 +17,7 @@ namespace Plugin.Media
 		/// </summary>
 		/// <param name="url"></param>
 		/// <returns></returns>
-		public static NSDictionary GetPhotoLibraryMetadata(NSUrl url)
+		public static (NSDictionary, string) GetPhotoLibraryMetadata(NSUrl url)
 		{
 			NSDictionary meta = null;
 
@@ -56,7 +56,7 @@ namespace Plugin.Media
 			    });
             }
 
-            return meta;
+			return (meta, image.LocalIdentifier);
 		}
 
 		public static bool SaveImageToGalery(UIImage image, string albumName)
@@ -160,5 +160,25 @@ namespace Plugin.Media
 
 			return customAlbum;
 		}
+
+		public static bool DeleteImagesFromGallery(string[] localIds)
+		{
+			var images = PHAsset.FetchAssetsUsingLocalIdentifiers(localIds, new PHFetchOptions());
+			var assets = images.Select(a => (PHAsset)a).ToArray();
+			var success = PHPhotoLibrary.SharedPhotoLibrary.PerformChangesAndWait
+			(
+				() =>
+				{
+					PHAssetChangeRequest.DeleteAssets(assets);
+				}, out var error
+			);
+			if (error != null)
+			{
+				Console.WriteLine(error);
+			}
+			return success;
+		}
+
+
 	}
 }

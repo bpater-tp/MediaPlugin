@@ -960,5 +960,7 @@ namespace Plugin.Media
 		{
 			throw new NotImplementedException();
 		}
+
+		public bool RemoveMediaFromGallery(string[] ids) => throw new NotImplementedException();
 	}
 }
