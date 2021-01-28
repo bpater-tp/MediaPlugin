@@ -425,6 +425,7 @@ namespace Plugin.Media
                                 media.Duration = asset.Duration;
                                 media.MediaTakenAt = (DateTime?)asset.CreationDate;
                                 media.Type = MediaType.Video;
+                                media.Id = asset.LocalIdentifier;
                                 images.Add(media);
                                 break;
                         }
