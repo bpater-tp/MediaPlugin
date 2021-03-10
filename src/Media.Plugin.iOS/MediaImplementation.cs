@@ -463,6 +463,7 @@ namespace Plugin.Media
                         {
                             throw ex.InnerException;
                         }
+                        throw ex;
                     }
                 }
 
@@ -491,7 +492,8 @@ namespace Plugin.Media
                         {
                             var description = error.LocalizedDescription;
                             var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
-                            throw new Exception($"{description}. {reason}");
+                            tcs.SetException(new Exception($"{description}. {reason}"));
+                            return;
                         }
 
                         var resources = PHAssetResource.GetAssetResources(asset);
