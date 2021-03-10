@@ -125,16 +125,26 @@ namespace MediaAndroidTest
 
             FindViewById<Button>(Resource.Id.button3).Click += async (sender, args) =>
             {
-                var media = new Plugin.Media.MediaImplementation();
-                var file = await Plugin.Media.CrossMedia.Current.PickVideoAsync();
-                if (file == null)
-                    return;
+				try
+				{
 
-                var path = file.Path;
-                Toast.MakeText(this, path, ToastLength.Long).Show();
-                System.Diagnostics.Debug.WriteLine(path);
+					var media = new Plugin.Media.MediaImplementation();
+					var file = await Plugin.Media.CrossMedia.Current.PickVideoAsync();
+					if (file == null)
+						return;
 
-                file.Dispose();
+					var path = file.Path;
+					Toast.MakeText(this, path, ToastLength.Long).Show();
+					System.Diagnostics.Debug.WriteLine(path);
+
+					file.Dispose();
+
+				}
+				catch (Exception ex)
+				{
+                    Console.WriteLine(ex);
+                    Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                }
             };
 
         }

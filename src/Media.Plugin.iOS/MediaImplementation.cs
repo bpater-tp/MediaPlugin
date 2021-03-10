@@ -492,7 +492,7 @@ namespace Plugin.Media
                         {
                             var description = error.LocalizedDescription;
                             var reason = error.UserInfo.ValueForKey((NSString)"NSUnderlyingError");
-                            tcs.SetException(new Exception($"{description}. {reason}"));
+                            tcs.SetException(new FileLoadException($"{description}. {reason}"));
                             return;
                         }
 

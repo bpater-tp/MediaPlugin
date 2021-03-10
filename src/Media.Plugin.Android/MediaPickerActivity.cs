@@ -328,19 +328,28 @@ namespace Plugin.Media
             {
                 return taskPaths.ContinueWith(t =>
                 {
-                    var fileList = t.Result;
-                    if (!fileList.Any())
-                    {
-                        return new MediaPickedEventArgs(requestCode, new MediaFileNotFoundException(originalPath));
-                    }
+					try
+					{
 
-                    var mediaList = fileList.Select(mediafile =>
-                        new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)
-                        {
-                            Type = mediafile.ToLower().EndsWith("mp4") ? Abstractions.MediaType.Video : Abstractions.MediaType.Image
-                        }
-                    ).ToList();
-                    return new MediaPickedEventArgs(requestCode, false, mediaList);
+						var fileList = t.Result;
+						if (!fileList.Any())
+						{
+							return new MediaPickedEventArgs(requestCode, new MediaFileNotFoundException(originalPath));
+						}
+
+						var mediaList = fileList.Select(mediafile =>
+							new MediaFile(mediafile, () => File.OpenRead(mediafile), originalPath)
+							{
+								Type = mediafile.ToLower().EndsWith("mp4") ? Abstractions.MediaType.Video : Abstractions.MediaType.Image
+							}
+						).ToList();
+						return new MediaPickedEventArgs(requestCode, false, mediaList);
+
+					}
+					catch (Exception ex)
+					{
+                        return new MediaPickedEventArgs(requestCode, new FileLoadException("Cannot read file", ex));
+					}
                 });
             }
             
