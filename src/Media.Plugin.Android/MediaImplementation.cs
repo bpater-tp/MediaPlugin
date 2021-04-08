@@ -145,11 +145,6 @@ namespace Plugin.Media
 			if (string.IsNullOrWhiteSpace(media?.Path))
 				return media;
 
-			if (options.SaveToAlbum)
-			{
-				SaveMediaToAlbum(options, media);
-			}
-
 			//check to see if we need to rotate if success
 
 
@@ -178,6 +173,11 @@ namespace Plugin.Media
 					exif.SaveAttributes();
 				}
 				UpdateMetadata(ref media, exif);
+
+				if (options.SaveToAlbum)
+				{
+					SaveMediaToAlbum(options, media);
+				}
 			}
 			catch (Exception ex)
 			{
