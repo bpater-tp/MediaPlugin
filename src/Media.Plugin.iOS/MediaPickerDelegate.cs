@@ -322,11 +322,12 @@ namespace Plugin.Media
 
 			var (localId, meta) = GetImageMetadata(info);
 
-			//iOS quality is 0.0-1.0
-			var quality = (options.CompressionQuality / 100f);
+			var quality = (options.CompressionQuality / 100f);  //iOS quality is 0.0-1.0
 			var savedImage = false;
 			if (meta != null)
+			{
 				savedImage = SaveImageWithMetadata(image, quality, meta, path);
+			}
 
 			if (!savedImage)
 			{
@@ -336,11 +337,9 @@ namespace Plugin.Media
 				imageData.Dispose();
 			}
 
-
 			var aPath = path;
 			if (source != UIImagePickerControllerSourceType.Camera)
 			{
-
 				//try to get the album path's url
 				var url = (NSUrl)info[UIImagePickerController.ReferenceUrl];
 				aPath = url?.AbsoluteString;
@@ -349,7 +348,7 @@ namespace Plugin.Media
 			{
 				if (options.SaveToAlbum)
 				{
-					PhotoLibraryAccess.SaveImageToGalery(image, options.Directory);
+					PhotoLibraryAccess.SaveImageToGalery(path, options.Directory);
 				}
 			}
 

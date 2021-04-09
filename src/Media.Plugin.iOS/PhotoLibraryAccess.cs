@@ -59,7 +59,7 @@ namespace Plugin.Media
 			return (meta, image.LocalIdentifier);
 		}
 
-		public static bool SaveImageToGalery(UIImage image, string albumName)
+		public static bool SaveImageToGalery(string imagePath, string albumName)
 		{
 			var saved = true;
 			PHAssetCollection customAlbum = null;
@@ -75,7 +75,7 @@ namespace Plugin.Media
 			PHPhotoLibrary.SharedPhotoLibrary.PerformChanges(
 				() =>
 				{
-					var assetRequest = PHAssetChangeRequest.FromImage(image);
+					var assetRequest = PHAssetChangeRequest.FromImage(NSUrl.FromFilename(imagePath));
 					if (customAlbum != null)
 					{
 						var albumRequest = PHAssetCollectionChangeRequest.ChangeRequest(customAlbum);
