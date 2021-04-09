@@ -259,172 +259,174 @@ namespace Plugin.Media
 
 
         private async Task<MediaFile> GetPictureMediaFile(NSDictionary info)
-        {
-            var image = (UIImage)info[UIImagePickerController.EditedImage] ?? (UIImage)info[UIImagePickerController.OriginalImage];
-	        if (image == null)
-		        return null;
+		{
+			var image = (UIImage)info[UIImagePickerController.EditedImage] ?? (UIImage)info[UIImagePickerController.OriginalImage];
+			if (image == null)
+				return null;
 
 			// If rotate image option, then rotate the image to the original orientation it was taken
 			// instead of the orientation apple saves it to storage as with the orientation as metadata.
-			if (options.RotateImage) 
+			if (options.RotateImage)
 			{
-					image = RotateImage(image);
+				image = RotateImage(image);
 			}
 
-            var path = GetOutputPath(MediaImplementation.TypeImage,
-                options.Directory ?? ((IsCaptured) ? string.Empty : "temp"),
-                options.Name);
+			var path = GetOutputPath(MediaImplementation.TypeImage,
+				options.Directory ?? ((IsCaptured) ? string.Empty : "temp"),
+				options.Name);
 
-            var cgImage = image.CGImage;
+			var cgImage = image.CGImage;
 
-            var percent = 1.0f;
-            float newHeight = image.CGImage.Height;
-            float newWidth = image.CGImage.Width;
+			var percent = 1.0f;
+			float newHeight = image.CGImage.Height;
+			float newWidth = image.CGImage.Width;
 
-            if (options.PhotoSize != PhotoSize.Full)
-            {
-                try
-                {
-                    switch (options.PhotoSize)
-                    {
-                        case PhotoSize.Large:
-                            percent = .75f;
-                            break;
-                        case PhotoSize.Medium:
-                            percent = .5f;
-                            break;
-                        case PhotoSize.Small:
-                            percent = .25f;
-                            break;
-                        case PhotoSize.Custom:
-                            percent = (float)options.CustomPhotoSize / 100f;
-                            break;
-                    }
+			if (options.PhotoSize != PhotoSize.Full)
+			{
+				try
+				{
+					percent = options.PhotoSize switch
+					{
+						PhotoSize.Large => .75f,
+						PhotoSize.Medium => .5f,
+						PhotoSize.Small => .25f,
+						PhotoSize.Custom => options.CustomPhotoSize / 100f,
+					};
 
-                    if (options.PhotoSize == PhotoSize.MaxWidthHeight && options.MaxWidthHeight.HasValue)
-                    {
-                        var max = Math.Max(image.CGImage.Width, image.CGImage.Height);
-                        if (max > options.MaxWidthHeight.Value)
-                        {
-                            percent = (float)options.MaxWidthHeight.Value / (float)max;
-                        }
-                    }
+					if (options.PhotoSize == PhotoSize.MaxWidthHeight && options.MaxWidthHeight.HasValue)
+					{
+						var max = Math.Max(image.CGImage.Width, image.CGImage.Height);
+						if (max > options.MaxWidthHeight.Value)
+						{
+							percent = (float)options.MaxWidthHeight.Value / (float)max;
+						}
+					}
 
-                    if (percent < 1.0f)
-                    {
-                        //begin resizing image
-                        image = image.ResizeImageWithAspectRatio(percent);
-                    }
-                   
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unable to compress image: {ex}");
-                }
-            }
+					if (percent < 1.0f)
+					{
+						//begin resizing image
+						image = image.ResizeImageWithAspectRatio(percent);
+					}
 
-            if (options.RotateImage)
-            {
-                image = image.RotateImage();
-            }
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Unable to compress image: {ex}");
+				}
+			}
 
-            string localId = null;
+			if (options.RotateImage)
+			{
+				image = image.RotateImage();
+			}
+
+			var (localId, meta) = GetImageMetadata(info);
+
+			//iOS quality is 0.0-1.0
+			var quality = (options.CompressionQuality / 100f);
+			var savedImage = false;
+			if (meta != null)
+				savedImage = SaveImageWithMetadata(image, quality, meta, path);
+
+			if (!savedImage)
+			{
+				var imageData = GetImageWithQuality(quality, image);
+
+				imageData.Save(path, true);
+				imageData.Dispose();
+			}
+
+
+			var aPath = path;
+			if (source != UIImagePickerControllerSourceType.Camera)
+			{
+
+				//try to get the album path's url
+				var url = (NSUrl)info[UIImagePickerController.ReferenceUrl];
+				aPath = url?.AbsoluteString;
+			}
+			else
+			{
+				if (options.SaveToAlbum)
+				{
+					PhotoLibraryAccess.SaveImageToGalery(image, options.Directory);
+				}
+			}
+
+			var fullimage = image.CIImage;
+			var media = new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
+			SetMediaMetadata(localId, meta, ref media);
+			return media;
+		}
+
+		private static void SetMediaMetadata(string localId, NSDictionary meta, ref MediaFile media)
+		{
+			var exif = meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary;
+			var gps = meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary;
+			var dateString = exif.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal).ToString();
+			media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+			int.TryParse(meta.ValueForKey(ImageIO.CGImageProperties.Orientation).ToString(), out media.Orientation);
+			var obj = new NSObject();
+			if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitude, out obj) ?? false)
+			{
+				media.Latitude = ((NSNumber)obj).FloatValue;
+			}
+			if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitudeRef, out obj) ?? false)
+			{
+				media.LatitudeRef = obj.ToString();
+			}
+			if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitude, out obj) ?? false)
+			{
+				media.Longitude = ((NSNumber)obj).FloatValue;
+			}
+			if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitudeRef, out obj) ?? false)
+			{
+				media.LongitudeRef = obj.ToString();
+			}
+			media.Id = localId;
+		}
+
+		private (string, NSDictionary) GetImageMetadata(NSDictionary info)
+		{
+			string localId = null;
 			NSDictionary meta = null;
-            try
-            {
-                if (source == UIImagePickerControllerSourceType.Camera)
-                {
-                    meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
-                    if (meta != null && meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
-                    {
-                        var newMeta = new NSMutableDictionary();
-                        newMeta.SetValuesForKeysWithDictionary(meta);
-                        var newTiffDict = new NSMutableDictionary();
-                        newTiffDict.SetValuesForKeysWithDictionary(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
-                        newTiffDict.SetValueForKey(meta[ImageIO.CGImageProperties.Orientation], ImageIO.CGImageProperties.TIFFOrientation);
-                        newMeta[ImageIO.CGImageProperties.TIFFDictionary] = newTiffDict;
+			try
+			{
+				if (source == UIImagePickerControllerSourceType.Camera)
+				{
+					meta = info[UIImagePickerController.MediaMetadata] as NSDictionary;
+					if (meta != null && meta.ContainsKey(ImageIO.CGImageProperties.Orientation))
+					{
+						var newMeta = new NSMutableDictionary();
+						newMeta.SetValuesForKeysWithDictionary(meta);
+						var newTiffDict = new NSMutableDictionary();
+						newTiffDict.SetValuesForKeysWithDictionary(meta[ImageIO.CGImageProperties.TIFFDictionary] as NSDictionary);
+						newTiffDict.SetValueForKey(meta[ImageIO.CGImageProperties.Orientation], ImageIO.CGImageProperties.TIFFOrientation);
+						newMeta[ImageIO.CGImageProperties.TIFFDictionary] = newTiffDict;
 
 						meta = newMeta;
-                    }
-                    var location = options.Location;
-                    if (meta != null && location != null)
-                    {
-                        meta = SetGpsLocation(meta, location);
-                    }
-                }
-                else
-                {
-                    (meta, localId) = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
-                }
-                if (options.RotateImage)
-                {
-                    meta.SetValueForKey((NSNumber)0, ImageIO.CGImageProperties.Orientation);
-                }
-            }
-            catch (Exception ex)
+					}
+					var location = options.Location;
+					if (meta != null && location != null)
+					{
+						meta = SetGpsLocation(meta, location);
+					}
+				}
+				else
+				{
+					(meta, localId) = PhotoLibraryAccess.GetPhotoLibraryMetadata(info[UIImagePickerController.ReferenceUrl] as NSUrl);
+				}
+				if (options.RotateImage)
+				{
+					meta.SetValueForKey((NSNumber)0, ImageIO.CGImageProperties.Orientation);
+				}
+			}
+			catch (Exception ex)
 			{
 				Console.WriteLine($"Unable to get metadata: {ex}");
 			}
-
-            //iOS quality is 0.0-1.0
-            var quality = (options.CompressionQuality / 100f);
-            var savedImage = false;
-            if (meta != null)
-                savedImage = SaveImageWithMetadata(image, quality, meta, path);
-
-            if(!savedImage)
-            {
-	            var imageData = GetImageWithQuality(quality, image);
-
-	            imageData.Save(path, true);
-	            imageData.Dispose();
-            }
-            
-
-            string aPath = path;
-            if (source != UIImagePickerControllerSourceType.Camera)
-            {
-
-                //try to get the album path's url
-                var url = (NSUrl)info[UIImagePickerController.ReferenceUrl];
-                aPath = url?.AbsoluteString;
-            }
-            else
-            {
-                if (options.SaveToAlbum)
-				{
-                    PhotoLibraryAccess.SaveImageToGalery(image, options.Directory);
-                }
-			}
-
-            var fullimage = image.CIImage;
-            var media = new MediaFile(path, () => File.OpenRead(path), albumPath: aPath);
-            var exif = meta[ImageIO.CGImageProperties.ExifDictionary] as NSDictionary;
-            var gps = meta[ImageIO.CGImageProperties.GPSDictionary] as NSDictionary;
-            string dateString = exif.ValueForKey(ImageIO.CGImageProperties.ExifDateTimeOriginal).ToString();
-            media.MediaTakenAt = DateTime.ParseExact(dateString, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
-            int.TryParse(meta.ValueForKey(ImageIO.CGImageProperties.Orientation).ToString(), out media.Orientation);
-            NSObject obj = new NSObject();
-            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitude, out obj) ?? false)
-            {
-                media.Latitude = ((NSNumber)obj).FloatValue;
-            }
-            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLatitudeRef, out obj) ?? false)
-            {
-                media.LatitudeRef = obj.ToString();
-            }
-            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitude, out obj) ?? false)
-            {
-                media.Longitude = ((NSNumber)obj).FloatValue;
-            }
-            if (gps?.TryGetValue(ImageIO.CGImageProperties.GPSLongitudeRef, out obj) ?? false)
-            {
-                media.LongitudeRef = obj.ToString();
-            }
-            media.Id = localId;
-            return media;
-        }
-
+			return (localId, meta);
+		}
 
 		private static NSData GetImageWithQuality(float quality, UIImage image)
 	    {
