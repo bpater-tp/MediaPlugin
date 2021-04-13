@@ -100,7 +100,7 @@ namespace MediaTest.iOS
                 var test = await CrossMedia.Current.TakeVideoAsync(new Plugin.Media.Abstractions.StoreVideoOptions
                 {
                     Name = "test1.mp4",
-                    Directory = "Sample",
+                    Directory = "tpVideos",
                     SaveToAlbum = true
                 });
 

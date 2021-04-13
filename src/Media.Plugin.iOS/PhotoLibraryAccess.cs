@@ -97,41 +97,48 @@ namespace Plugin.Media
 		public static bool SaveVideoToGalery(NSUrl video, string path, string albumName)
 		{
 			var saved = true;
-			//if (string.IsNullOrEmpty(albumName))
-			//{
-				UIVideo.SaveToPhotosAlbum(path, (path, error) =>
+			var compatible = UIVideo.IsCompatibleWithSavedPhotosAlbum(path);
+			var customAlbum = string.IsNullOrEmpty(albumName) ? null : FindOrCreateAlbum(albumName);
+			if (!compatible)
+			{
+				return false;
+			}
+			UIVideo.SaveToPhotosAlbum(path, (path, error) =>
+			{
+				if (error != null)
 				{
-					if (error != null)
+					saved = false;
+					Console.WriteLine(error);
+				}
+				else if (customAlbum != null)
+				{
+					var savedAsset = (PHAsset)PHAsset.FetchAssets(PHAssetMediaType.Video,
+						new PHFetchOptions
+						{
+							SortDescriptors = new[] { new NSSortDescriptor("creationDate", false) },
+							FetchLimit = 1
+						}).FirstOrDefault();
+					if (savedAsset != null)
 					{
-						saved = false;
-						Console.WriteLine(error);
+						PHPhotoLibrary.SharedPhotoLibrary.PerformChanges(() =>
+							{
+								var albumRequest = PHAssetCollectionChangeRequest.ChangeRequest(customAlbum);
+								albumRequest?.AddAssets(new[] { savedAsset });
+							},
+							(success, error) =>
+							{
+								if (!success)
+								{
+									Console.WriteLine(error);
+									saved = success;
+								}
+							}
+						);
 					}
-				});
-				return saved;
-			//}
-			//var compatible = UIVideo.IsCompatibleWithSavedPhotosAlbum(path);
-			//var customAlbum = FindOrCreateAlbum(albumName);
-			//if (customAlbum == null)
-			//{
-			//	return false;
-			//}
-			//PHPhotoLibrary.SharedPhotoLibrary.PerformChanges(
-			//	() =>
-			//	{
-			//		var assetRequest = PHAssetChangeRequest.FromVideo(video);
-			//		var albumRequest = PHAssetCollectionChangeRequest.ChangeRequest(customAlbum);
-			//		albumRequest?.AddAssets(new[] { assetRequest.PlaceholderForCreatedAsset });
-			//	},
-			//	(success, error) =>
-			//	{
-			//		if (!success)
-			//		{
-			//			Console.WriteLine(error);
-			//			saved = success;
-			//		}
-			//	}
-			//);
-			//return saved;
+				}
+			});
+
+			return saved;
 		}
 
 		private static PHAssetCollection FindOrCreateAlbum(string albumName)
