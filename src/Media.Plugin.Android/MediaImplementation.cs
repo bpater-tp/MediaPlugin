@@ -97,7 +97,7 @@ namespace Plugin.Media
 					}
 					else
 					{
-						imageChanged = await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, originalMetadata);
+						imageChanged = await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, options.MaxWidthHeight, originalMetadata);
 					}
 					if (imageChanged)
 					{
@@ -160,7 +160,7 @@ namespace Plugin.Media
 				}
 				else
 				{
-					imageChanged = await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, exif);
+					imageChanged = await ResizeAsync(media.Path, options.PhotoSize, options.CompressionQuality, options.CustomPhotoSize, options.MaxWidthHeight, exif);
 				}
 				SetMissingMetadata(exif, options.Location);
 				if (imageChanged)
@@ -593,8 +593,8 @@ namespace Plugin.Media
 					{
 						var rotation = GetRotation(exif);
 
-						// if we don't need to rotate, aren't resizing, and aren't adjusting quality then simply return
-						if (rotation == 0 && mediaOptions.PhotoSize == PhotoSize.Full && mediaOptions.CompressionQuality == 100)
+						// if we don't need to rotate, aren't resizing, aren't adjusting quality and don't need to check MaxWidthHeight then simply return
+						if (rotation == 0 && mediaOptions.PhotoSize == PhotoSize.Full && mediaOptions.CompressionQuality == 100 && !mediaOptions.MaxWidthHeight.HasValue)
 							return false;
 
 						var percent = 1.0f;
@@ -623,12 +623,17 @@ namespace Plugin.Media
 						//already on background task
 						BitmapFactory.DecodeFile(filePath, options);
 
-						if (mediaOptions.PhotoSize == PhotoSize.MaxWidthHeight && mediaOptions.MaxWidthHeight.HasValue)
+						if (mediaOptions.MaxWidthHeight.HasValue)
 						{
-							var max = Math.Max(options.OutWidth, options.OutHeight);
+							var max = (int)(Math.Max(options.OutWidth, options.OutHeight));
 							if (max > mediaOptions.MaxWidthHeight)
 							{
-								percent = (float)mediaOptions.MaxWidthHeight / (float)max;
+								percent = Math.Min(percent, (float)mediaOptions.MaxWidthHeight / (float)max);
+							}
+							else
+							{
+								if (rotation == 0 && mediaOptions.PhotoSize == PhotoSize.Full && mediaOptions.CompressionQuality == 100)
+									return false;
 							}
 						}
 
@@ -752,7 +757,7 @@ namespace Plugin.Media
 		/// <param name="customPhotoSize">Custom size in percent</param>
 		/// <param name="exif">original metadata</param>
 		/// <returns>True if rotation or compression occured, else false</returns>
-		public Task<bool> ResizeAsync(string filePath, PhotoSize photoSize, int quality, int customPhotoSize, ExifInterface exif)
+		public Task<bool> ResizeAsync(string filePath, PhotoSize photoSize, int quality, int customPhotoSize, int? maxWidthHeight, ExifInterface exif)
 		{
 			if (string.IsNullOrWhiteSpace(filePath))
 				return Task.FromResult(false);
@@ -763,7 +768,7 @@ namespace Plugin.Media
 				{
 					try
 					{
-						if (photoSize == PhotoSize.Full)
+						if (photoSize == PhotoSize.Full && quality == 100 && !maxWidthHeight.HasValue)
 							return false;
 
 						var percent = 1.0f;
@@ -792,6 +797,20 @@ namespace Plugin.Media
 
 						//already on background task
 						BitmapFactory.DecodeFile(filePath, options);
+
+						if (maxWidthHeight.HasValue)
+						{
+							var max = (int)(Math.Max(options.OutWidth, options.OutHeight));
+							if (max > maxWidthHeight)
+							{
+								percent = Math.Min(percent, (float)maxWidthHeight / (float)max);
+							}
+							else
+							{
+								if (photoSize == PhotoSize.Full && quality == 100)
+									return false;
+							}
+						}
 
 						var finalWidth = (int)(options.OutWidth * percent);
 						var finalHeight = (int)(options.OutHeight * percent);
