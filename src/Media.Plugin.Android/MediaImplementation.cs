@@ -82,7 +82,7 @@ namespace Plugin.Media
 			for (int i = 0; i < mediaList.Count; i++)
 			{
 				var media = mediaList[i];
-				if (string.IsNullOrWhiteSpace(media?.Path))
+				if (string.IsNullOrWhiteSpace(media?.Path) || media?.Type == Abstractions.MediaType.Video)
 				{
 					continue;
 				}
